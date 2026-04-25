@@ -1,7 +1,7 @@
 ---
 tags: [index, navigation]
 created: 2026-04-18
-updated: 2026-04-24
+updated: 2026-04-25
 last_build: 2026-04-24-phase4-coach-frontend-complete
 last_design: 2026-04-24-phase4-coach-frontend-design
 last_ingest: 2026-04-22
@@ -28,6 +28,15 @@ Master catalog of all Neurospect wiki pages.
 ### Tools
 
 _None yet._
+
+---
+
+## Roadmap
+
+Forward-looking product roadmap (horizons: Now / Next / Later / Strategic / Research / Compliance-Sensitive). Supersedes the v1 phased plan in `entities/projects/neurospect.md` for forward decisions.
+
+- [[concepts/roadmap/README]] — main roadmap with horizon assignments, prioritization rationale, lifecycle convention
+- [[concepts/roadmap/ideas/README]] — idea-backlog index (15 stubs)
 
 ---
 

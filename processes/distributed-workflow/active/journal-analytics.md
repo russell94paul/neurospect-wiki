@@ -679,6 +679,7 @@ Paul handles git commits — never run git commit.
 
 ## See Also
 
+- [[concepts/roadmap/README]] — strategic context (journal data is the substrate for Next/Later horizons)
 - [[processes/distributed-workflow/active/ai-coach]] — sister module (shares backend)
 - [[processes/distributed-workflow/active/course-and-kb]] — strategy definitions inform the setup_type field
 - [[entities/projects/neurospect]] — full roadmap and architecture

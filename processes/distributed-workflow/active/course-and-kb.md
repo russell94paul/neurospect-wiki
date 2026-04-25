@@ -245,6 +245,7 @@ Boot procedure for any of these:
 
 ## See Also
 
+- [[concepts/roadmap/README]] — strategic context (course KB feeds in-app course section + AI coaching)
 - [[processes/distributed-workflow/active/ai-coach]] — consumes the entry models YAML
 - [[processes/distributed-workflow/active/kickoff]] — previous workstream
 - `C:\Users\PaulRussell\repos\wiki\processes\distributed-workflow\orchestration-pattern.md`

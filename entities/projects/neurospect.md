@@ -3,7 +3,8 @@ tags: [entity, project, neurospect, trading, journal, ai-assistant, ict]
 aliases: [Neurospect, NeuroSpect]
 sources: []
 created: 2026-04-16
-updated: 2026-04-24
+updated: 2026-04-25
+deployment_status: phase1_complete
 phase3_status: complete
 phase4_status: implemented
 ---
@@ -74,6 +75,8 @@ The backend is fundamentally an **event-normalization and reconciliation system*
 
 ## Phased Roadmap
 
+> **Superseded for forward planning.** The horizon-based roadmap at [[concepts/roadmap/README]] is the canonical forward-planning artefact. The v1 phased plan below is kept for historical reference — most of Phase 1 (and parts of Phase 2/3) have already shipped; see *Current State* above for what's actually built.
+
 ### Phase 1 -- MVP
 - Manual trade journal with ICT-specific structured schema
 - Screenshot uploads with markup tools
@@ -102,6 +105,8 @@ The backend is fundamentally an **event-normalization and reconciliation system*
 
 ## Moonshot Ideas
 
+> **Superseded for forward planning.** The catalogue below is preserved as a research record. Forward-planning decisions on these (and on newer brainstormed ideas) live in [[concepts/roadmap/README]] under the *Strategic* and *Research* horizons.
+
 The v2-moonshot track explores 10 ambitious future directions, with the top 4:
 
 1. **Execution Guardian**: Detects likely self-sabotage (revenge trading, FOMO, plan deviation) and adds friction (cooldowns, forced checklists, reduced-size mode)
@@ -126,6 +131,7 @@ The platform's data model and AI layer are built around ICT / Smart Money Concep
 - ~~Choosing technology stack~~ — **resolved:** Python/FastAPI + Postgres + Render + Discord OAuth. See [[concepts/architecture/tech-stack]].
 - ~~Phase 3 (frontend)~~ — **complete.** See [[concepts/architecture/phase3-frontend-structure]].
 - ~~Phase 4 (AI Coach frontend)~~ — **complete.** See [[concepts/architecture/phase4-coach-frontend]].
+- **Deployment Phase 1 (backend prep) — complete.** Prompt files bundled, gunicorn added, requirements.txt generated, DATABASE_URL shim added, render.yaml created. Both repos on GitHub. Ready for Render + Cloudflare Pages dashboard steps.
 - Broker API integration strategy (which brokers first, auth flows, rate limiting)
 - Discord bot integration for community features
 - Data pipeline for market context snapshots at trade entry time

@@ -237,6 +237,21 @@ TradingView's webhook source IPs (as of 2026): `52.89.214.238`, `34.212.75.30`, 
 
 ## Session Log
 
+### 2026-04-24 — Phase 1 backend prep complete
+
+- did: implemented all Phase 1 code changes required before Render can deploy.
+  - Copied wiki prompt files into `neurospect-api/app/coach/prompts/` (system-prompt-template.md + strategies.json)
+  - Updated `app/config.py`: `ai_coach_prompt_dir` default now points to bundled `app/coach/prompts/`; added `async_database_url` and `sync_database_url` properties with `postgres://` → `postgresql+asyncpg://` / `postgresql+psycopg2://` shims; made `database_url_sync` optional with empty-string default (derives from `DATABASE_URL` on Render if not set explicitly)
+  - Updated `app/database.py`: uses `settings.async_database_url` instead of raw `settings.database_url`
+  - Updated `alembic/env.py`: uses `settings.sync_database_url` instead of raw `os.environ.get("DATABASE_URL_SYNC")`; removed now-unused `import os`
+  - Added `gunicorn = "^23.0"` to `pyproject.toml`; ran `poetry add` to generate `poetry.lock`; ran `poetry export --without-hashes` to generate `requirements.txt` (51 lines, fully pinned)
+  - Created `render.yaml` at repo root (exact spec from tracker; healthCheckPath `/health` matching `main.py`)
+  - Created `README.md` with Prompt Files sync rule documented
+  - `tsc -b` in `neurospect-app` passes cleanly — no frontend regressions
+- decided: `database_url_sync` made optional (default `""`) so Alembic can derive sync URL from `DATABASE_URL` on Render without a second manual env var. Local dev can still override with `DATABASE_URL_SYNC` in `.env`.
+- decided: poetry was not previously installed in this environment; installed via pip 26.0.1 + added `poetry-plugin-export` for `poetry export` support.
+- next: Paul commits both repos → Render dashboard setup (Phase 2) → Cloudflare Pages (Phase 3) → end-to-end verification (Phase 4)
+
 ### 2026-04-24 — tracker created
 
 - did: created this tracker. Phase 4 frontend complete and verified locally. Deployment is the next gate.
@@ -299,6 +314,7 @@ Post-session (MANDATORY per wiki Architecture Doc Integrity rules):
 
 ## See Also
 
+- [[concepts/roadmap/README]] — strategic context (Now horizon: production stabilization)
 - [[concepts/architecture/tech-stack]] — Render topology, env var surface, render.yaml spec
 - [[concepts/architecture/phase2-project-structure]] — backend layout, Alembic config
 - [[concepts/architecture/phase4-coach-frontend]] — frontend architecture (what's being deployed)

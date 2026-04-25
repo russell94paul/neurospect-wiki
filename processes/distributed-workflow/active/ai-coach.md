@@ -494,6 +494,7 @@ Paul handles git commits — never run `git commit`.
 
 ## See Also
 
+- [[concepts/roadmap/README]] — strategic context (AI Coach surface underpins multiple Later/Strategic ideas)
 - [[processes/distributed-workflow/active/course-and-kb]] — prerequisite (entry models library)
 - [[processes/distributed-workflow/active/journal-analytics]] — sister module
 - [[entities/projects/neurospect]] — full project overview and roadmap
