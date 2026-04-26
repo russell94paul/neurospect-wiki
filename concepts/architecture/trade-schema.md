@@ -3,7 +3,7 @@ tags: [architecture, schema, journal, analytics, neurospect]
 aliases: [Trade Schema, ICT Trade Data Model, Journal Schema]
 sources: [processes/distributed-workflow/active/journal-analytics.md]
 created: 2026-04-22
-updated: 2026-04-22
+updated: 2026-04-26
 ---
 
 # Trade Schema
@@ -54,6 +54,7 @@ Captured **at entry**. All nullable until the trade is actually taken.
 |-------|------|------------|-------------|
 | `entry_price` | DECIMAL(12,4) | | Price at entry |
 | `entry_time` | TIMESTAMPTZ | | Timestamp of entry |
+| `position_size` | INTEGER | | Number of contracts traded. Pulled from Tradovate fill `qty` when broker auto-populate is wired up — see [[../../processes/distributed-workflow/active/broker-integration]]. |
 | `stop_price` | DECIMAL(12,4) | | Stop loss price |
 | `stop_logic` | TEXT | | Why the stop is placed here (e.g. "below the FVG low", "under the order block") |
 | `target_price` | DECIMAL(12,4) | | Take profit target price |
@@ -152,6 +153,7 @@ CREATE TABLE trades (
     -- Entry (nullable until entry)
     entry_price             DECIMAL(12,4),
     entry_time              TIMESTAMPTZ,
+    position_size           INTEGER,
     stop_price              DECIMAL(12,4),
     stop_logic              TEXT,
     target_price            DECIMAL(12,4),
@@ -324,7 +326,7 @@ The AI coach operates at session granularity (`london`, `ny_am`, `ny_pm`) matchi
 
 - **User-defined setup types.** The `setup_type` ENUM covers the core ICT models. If users develop custom setups, this could evolve to a `setup_types` lookup table with user-owned rows. For MVP, the ENUM is sufficient.
 
-- **Position sizing / risk fields.** Fields like `position_size`, `risk_amount`, `account_balance` are intentionally omitted from MVP. They can be added as nullable columns when the P&L tracking feature is built.
+- **Risk / account fields.** `position_size` was added 2026-04-26 to support broker auto-populate (see [[../../processes/distributed-workflow/active/broker-integration]]). Companion fields `risk_amount` and `account_balance` remain deferred — they'll arrive with the P&L tracking feature.
 
 - **Multi-leg trades.** The current schema is one entry + one exit per trade. Scaling/pyramiding would require a `trade_legs` child table. Deferred until there's demand.
 
