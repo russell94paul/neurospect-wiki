@@ -237,6 +237,43 @@ TradingView's webhook source IPs (as of 2026): `52.89.214.238`, `34.212.75.30`, 
 
 ## Session Log
 
+### 2026-04-26 — Security cleanup complete
+
+- did: rotated `TRADINGVIEW_WEBHOOK_SECRET` (new value set in Render env vars). Rotated per-user webhook token via `/coach/setup` → Revoke → Generate. Updated TradingView alert with new webhook URL and new secret value.
+- did: enabled `TRADINGVIEW_IP_ALLOWLIST` in Render env vars (`52.89.214.238,34.212.75.30,54.218.53.128,52.32.178.7`). Verified webhook still returns 202 after redeploy.
+- next: AI Coach pre-fill feature (Phase 2 of journaling UX) — planning session
+
+### 2026-04-26 — Phase 4 complete — TradingView webhook verified end-to-end
+
+- did: wired up TradingView Pine Script → webhook → Claude → coach panel end-to-end. All confirmed working in prod.
+- pitfalls encountered:
+  - `AI_COACH_PROMPT_DIR` was set in Render env vars to the local Windows wiki path — deleted it so the bundled `app/coach/prompts/` default kicks in
+  - `CLAUDE_MAX_TOKENS` default of 2048 too small — set to 8192 in Render env vars
+  - `CLAUDE_TIMEOUT_SECONDS` needed to be set to 60 in Render env vars
+  - Pine Script `barstate.isrealtime` used in a plot variable (`bgcolor`) triggers TradingView's "repaint" warning which **silently blocks all alert() delivery** — removing it from `fire`/`bgcolor` fixed the issue. The `alert()` function itself already only fires on real-time bars; the guard was redundant and harmful.
+  - Pine Script `alert()` with `alert.freq_once_per_bar` can have its per-bar quota consumed during input-change recalculation — use `alert.freq_all` for debugging, revert to `alert.freq_once_per_bar` for production
+  - `confirm=true` on Pine inputs removed (was suspected blocker, ultimately not the cause, but simpler without it)
+  - `request.security()` does NOT block `alert()` when `barstate.isrealtime` is absent from plots — confirmed working together
+  - Pine Script v5 → v6 upgrade required (TradingView flags v5 as outdated; `trigger` is a reserved word in v6)
+  - Test payload for curl had inconsistent `price_vs_midnight_open` flag vs actual OHLC values — Claude wrote very long reasoning responses that hit token/timeout limits. Real chart data is self-consistent and responses are shorter.
+- env vars added to Render this session: `AI_COACH_PROMPT_DIR` (deleted), `CLAUDE_MAX_TOKENS=8192`, `CLAUDE_TIMEOUT_SECONDS=60`
+- verified: TradingView alert fires → webhook accepted (202) → Claude call completes → coach panel updates with bias badge, narrative, strategy cards ✓
+- next: rotate `TRADINGVIEW_WEBHOOK_SECRET` and webhook token (both exposed during debugging session), wire R2 screenshots, enable IP allowlist
+
+### 2026-04-25 — Phases 2 + 3 complete, Phase 4 partially verified
+
+- did: completed full deployment — Render web service live, Cloudflare Pages live, Discord OAuth working end-to-end, trade journal saving trades.
+- pitfalls encountered (document for future deploys):
+  - `DATABASE_URL` on Render uses `postgresql://` prefix not `postgres://` — async shim needed to handle both
+  - FastAPI 0.115 on Python 3.14 raises AssertionError for 204 routes — added `response_class=Response` + explicit `return Response(status_code=204)`. Also pinned `.python-version` to 3.13.
+  - `pythonVersion` field in render.yaml is NOT picked up for manually-created services — must use `.python-version` file
+  - `preDeployCommand` in render.yaml is NOT run for manually-created services (Blueprint-only feature) — moved `alembic upgrade head` into `startCommand` as `alembic upgrade head && gunicorn ...`
+  - `DISCORD_CLIENT_ID` and `DISCORD_CLIENT_SECRET` were not imported from .env (missed during setup) — must be added manually in Render dashboard
+  - Render free tier cold-starts after inactivity — visit `/health` to warm before testing auth
+- verified: Discord OAuth login ✓, trade saves and appears in trades list ✓, screenshots 503 gracefully (R2 not configured — expected) ✓
+- deferred: TradingView Pine script → webhook → coach panel end-to-end test (requires TradingView alert setup), R2 screenshot wiring
+- next: Phase 4 TradingView wiring session
+
 ### 2026-04-24 — Phase 1 backend prep complete
 
 - did: implemented all Phase 1 code changes required before Render can deploy.
@@ -260,7 +297,71 @@ TradingView's webhook source IPs (as of 2026): `52.89.214.238`, `34.212.75.30`, 
 - decided: Discord OAuth app must be created by Paul before the implementation session starts (manual step, requires browser login to Discord Developer Portal). Instructions above.
 - next: create Discord app (Paul, before next session) → push both repos to GitHub → execute boot prompt below.
 
-## Boot Prompt
+## Boot Prompt — Phase 5 (R2 Screenshots + IP Allowlist)
+
+**Recommended model:** Sonnet. **Working directories:** `neurospect-api`.
+
+````
+Neurospect is fully deployed and Phase 4 (TradingView webhook end-to-end) is complete and verified.
+
+Boot procedure:
+1. Read `C:\Users\PaulRussell\repos\neurospect-wiki\CLAUDE.md`
+2. Read `processes/distributed-workflow/active/deployment.md`
+
+What remains:
+1. Wire Cloudflare R2 for screenshot uploads (currently 503 gracefully). Setup steps in tracker Phase 1 §2.
+2. Enable `TRADINGVIEW_IP_ALLOWLIST` in Render env vars (IPs in tracker Phase 1 §1f) — do after confirming webhook still works.
+3. Tokens were rotated after Phase 4 session — verify Pine script and TradingView alert webhook URL are updated to new values.
+
+The app is live and usable without R2. R2 is the only remaining wiring task.
+````
+
+## Boot Prompt — Phase 4 TradingView Wiring
+
+**Recommended model:** Sonnet. **Working directories:** `neurospect-api` and `neurospect-app`.
+
+````
+You are completing Phase 4 of the Neurospect deployment: wiring up the TradingView webhook end-to-end so a live alert fires the AI coach pipeline.
+
+Boot procedure:
+1. Read `C:\Users\PaulRussell\repos\neurospect-wiki\CLAUDE.md`
+2. Read `processes/distributed-workflow/active/deployment.md` — all deployment decisions and pitfalls are documented there.
+3. Read `concepts/architecture/tradingview-connector.md` — the canonical doc for the webhook pipeline architecture.
+
+Context (what is already done):
+- Backend live at `https://neurospect-api.onrender.com` (Render Starter, Python 3.13, gunicorn + UvicornWorker)
+- Frontend live at `https://neurospect-app.pages.dev` (Cloudflare Pages)
+- Discord OAuth login working end-to-end
+- Trade journal (create/read/close) verified working in prod
+- Alembic migrations running via `startCommand`: `alembic upgrade head && gunicorn ...`
+- R2 screenshots NOT wired — uploads 503 gracefully (intentionally deferred)
+
+What remains (Phase 4):
+1. Go to `https://neurospect-app.pages.dev/coach/setup` → Generate Token → copy the webhook URL (should show `neurospect-api.onrender.com/webhooks/tradingview/<token>`)
+2. Open TradingView → load the Pine script from `neurospect-wiki/assets/pine/neurospect-coach.pine` → add it as an indicator
+3. Create a TradingView alert using that indicator → paste the webhook URL → set the alert message to the Pine script JSON payload format
+4. Fire the alert (manually trigger or wait for condition) → watch the `/coach` panel on the Pages frontend cycle from pending → complete
+5. Verify the coaching response renders correctly (bias badge, strategy cards, narrative)
+
+If the coach panel shows an error or the webhook returns 4xx/5xx, check:
+- `ANTHROPIC_API_KEY` is set in Render env vars (it was marked `sync: false` — must be set manually)
+- `TRADINGVIEW_WEBHOOK_SECRET` is set and matches the secret in TradingView alert payload
+- `PUBLIC_BASE_URL` is set to `https://neurospect-api.onrender.com`
+
+Optional in this session:
+- Wire up R2 screenshots (Cloudflare R2 bucket + API token — see tracker Phase 1 §2 for setup steps)
+- Enable `TRADINGVIEW_IP_ALLOWLIST` once webhook is confirmed working (IPs in tracker §1f)
+
+Post-session (MANDATORY per wiki Architecture Doc Integrity rules):
+- Append session log to `processes/distributed-workflow/active/deployment.md`
+- Update `entities/projects/neurospect.md` deployment status
+- Append to `log.md`
+- Write boot prompt for next session if work remains
+````
+
+---
+
+## Boot Prompt — Phase 1 (original, archived)
 
 **Recommended model:** Sonnet. **Working directories:** `neurospect-api` and `neurospect-app`.
 

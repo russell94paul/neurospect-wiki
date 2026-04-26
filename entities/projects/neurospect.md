@@ -3,10 +3,12 @@ tags: [entity, project, neurospect, trading, journal, ai-assistant, ict]
 aliases: [Neurospect, NeuroSpect]
 sources: []
 created: 2026-04-16
-updated: 2026-04-25
-deployment_status: phase1_complete
+updated: 2026-04-26
+deployment_status: live
 phase3_status: complete
-phase4_status: implemented
+phase4_status: complete
+tradingview_webhook_status: verified_end_to_end
+journaling_ux_phase1_status: in_progress
 ---
 
 # Neurospect
@@ -131,7 +133,8 @@ The platform's data model and AI layer are built around ICT / Smart Money Concep
 - ~~Choosing technology stack~~ — **resolved:** Python/FastAPI + Postgres + Render + Discord OAuth. See [[concepts/architecture/tech-stack]].
 - ~~Phase 3 (frontend)~~ — **complete.** See [[concepts/architecture/phase3-frontend-structure]].
 - ~~Phase 4 (AI Coach frontend)~~ — **complete.** See [[concepts/architecture/phase4-coach-frontend]].
-- **Deployment Phase 1 (backend prep) — complete.** Prompt files bundled, gunicorn added, requirements.txt generated, DATABASE_URL shim added, render.yaml created. Both repos on GitHub. Ready for Render + Cloudflare Pages dashboard steps.
+- **Deployment — live, fully operational (2026-04-26).** Backend on Render (Python 3.13, gunicorn + UvicornWorker, Alembic migrations in startCommand), frontend on Cloudflare Pages. Discord OAuth working. Trade journal saving. TradingView webhook → Claude → coach panel verified end-to-end. R2 screenshots working. `TRADINGVIEW_IP_ALLOWLIST` enabled. Webhook secret and user token rotated.
+- **Journaling UX Phase 1 — in progress (2026-04-26).** Tab-based trade form (Pre-Trade / Entry / Post-Trade) implemented in `neurospect-app`. Pre-Trade fields split into 6 prominent + Advanced collapsible (6 optional fields). Defaults: trade_date = today, instrument = NQ. Pine script static mirror synced v5→v6. Awaiting Paul to push to main for Cloudflare auto-deploy.
 - Broker API integration strategy (which brokers first, auth flows, rate limiting)
 - Discord bot integration for community features
 - Data pipeline for market context snapshots at trade entry time
