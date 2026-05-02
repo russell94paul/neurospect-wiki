@@ -3,7 +3,7 @@ tags: [architecture, frontend, neurospect, phase3]
 aliases: [Frontend Architecture, Neurospect App Structure]
 sources: []
 created: 2026-04-23
-updated: 2026-04-23
+updated: 2026-04-26 (1c)
 ---
 
 # Phase 3 — Frontend Architecture
@@ -32,18 +32,26 @@ neurospect-app/
 ├── src/
 │   ├── components/
 │   │   ├── layout/
-│   │   │   ├── sidebar.tsx        # Fixed left nav (Desktop + mobile Sheet)
+│   │   │   ├── sidebar.tsx        # Fixed left nav (Desktop + mobile Sheet); Settings link added in 1c
 │   │   │   ├── user-menu.tsx      # Discord avatar + Logout dropdown
-│   │   │   └── app-shell.tsx      # Flex container: sidebar | main + Outlet
+│   │   │   └── app-shell.tsx      # Flex container: sidebar | main + Outlet; ActiveTradeBadge + BrokerDisconnectedBanner added in 1c
+│   │   ├── settings/              # Added in 1c
+│   │   │   ├── settings-shell.tsx     # Sidebar nav ("Broker Connections") + children slot
+│   │   │   ├── broker-credentials-form.tsx  # Token-paste form; POST /credentials/token
+│   │   │   ├── broker-status-card.tsx       # Connection status, test button, disconnect
+│   │   │   └── auto-fetch-toggle.tsx        # Manual / Automatic radio; persists to localStorage
 │   │   ├── trade/
 │   │   │   ├── status-badge.tsx   # Colored Badge per trade status/outcome
 │   │   │   ├── mistake-tag-input.tsx # Tag input with suggestions
 │   │   │   ├── pre-trade-fields.tsx  # Pre-trade RHF fieldset
-│   │   │   ├── entry-fields.tsx      # Entry RHF fieldset
-│   │   │   ├── post-trade-fields.tsx # Post-trade RHF fieldset
-│   │   │   ├── trade-form.tsx        # Main form (collapsible sections, PATCH, status transitions)
+│   │   │   ├── entry-fields.tsx      # Entry RHF fieldset; TradovateFillButton added in 1c
+│   │   │   ├── post-trade-fields.tsx # Post-trade RHF fieldset; TradovateFillButton added in 1c
+│   │   │   ├── trade-form.tsx        # Main form; handleEntryFillApplied / handleExitFillApplied added in 1c
 │   │   │   ├── trade-card.tsx        # Compact list card
-│   │   │   └── trade-filters.tsx     # URL-driven filter bar
+│   │   │   ├── trade-filters.tsx     # URL-driven filter bar
+│   │   │   ├── tradovate-fill-button.tsx        # "Fetch from Tradovate" with disabled states + picker (added 1c)
+│   │   │   ├── tradovate-fill-picker-dialog.tsx # Multi-fill picker dialog (added 1c)
+│   │   │   └── active-trade-guard-dialog.tsx    # 409 guard modal for NewTradePage (added 1c)
 │   │   ├── screenshot/
 │   │   │   ├── screenshot-upload.tsx # Per-phase drag-and-drop upload zone
 │   │   │   ├── screenshot-grid.tsx   # Thumbnail grid grouped by phase + delete
@@ -57,8 +65,12 @@ neurospect-app/
 │   ├── hooks/
 │   │   ├── use-trades.ts        # useTrades, useTrade, useCreateTrade, useUpdateTrade, useDeleteTrade
 │   │   ├── use-screenshots.ts   # useScreenshots, useUploadScreenshot, useDeleteScreenshot
-│   │   └── use-analytics.ts     # useSummary, useBySetup, useBySession, useByInstrument,
-│   │                             #   useByDayOfWeek, useMistakes, useRDistribution
+│   │   ├── use-analytics.ts     # useSummary, useBySetup, useBySession, useByInstrument,
+│   │   │                        #   useByDayOfWeek, useMistakes, useRDistribution
+│   │   ├── use-tradovate.ts     # useBrokerCredentials, useSaveBrokerToken, useTestBrokerCredentials,
+│   │   │                        #   useDeleteBrokerCredentials, useFetchTradovateFills,
+│   │   │                        #   useApplyTradovateFill (added 1c)
+│   │   └── use-active-trade.ts  # useActiveTrade() → Trade | null (added 1c)
 │   ├── lib/
 │   │   ├── api.ts      # ky instance: baseUrl + Bearer injection + 401 → /login redirect
 │   │   ├── auth.ts     # AuthProvider context: token/user/isLoading, login/debugLogin/logout
@@ -69,8 +81,9 @@ neurospect-app/
 │   │   ├── auth-callback.tsx  # Exchanges OAuth code for JWT, stores token, nav to /dashboard
 │   │   ├── dashboard.tsx      # Analytics dashboard (all 6 chart/table components)
 │   │   ├── trades.tsx         # Trade list with URL-driven filters + pagination
-│   │   ├── new-trade.tsx      # Create mode (TradeForm with no trade prop)
-│   │   └── trade-detail.tsx   # Edit mode (TradeForm + Screenshots section)
+│   │   ├── new-trade.tsx      # Create mode (TradeForm with no trade prop); ActiveTradeGuardDialog added in 1c
+│   │   ├── trade-detail.tsx   # Edit mode (TradeForm + Screenshots section)
+│   │   └── settings-broker.tsx # /settings/broker — SettingsShell + credentials form + status card + toggle (added 1c)
 │   ├── types/
 │   │   └── api.ts   # All TypeScript interfaces mirroring backend Pydantic schemas + 11 ENUM types
 │   ├── App.tsx      # createBrowserRouter: /login, /auth/callback, ProtectedLayout + 5 child routes
@@ -89,6 +102,8 @@ neurospect-app/
 | `/trades` | TradesPage | Protected |
 | `/trades/new` | NewTradePage | Protected |
 | `/trades/:id` | TradeDetailPage | Protected |
+| `/settings` | → `/settings/broker` redirect | Protected |
+| `/settings/broker` | BrokerSettingsPage | Protected |
 
 `ProtectedLayout` checks `token` from `useAuth()` and redirects to `/login` if absent.
 

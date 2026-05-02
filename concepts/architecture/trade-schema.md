@@ -4,6 +4,7 @@ aliases: [Trade Schema, ICT Trade Data Model, Journal Schema]
 sources: [processes/distributed-workflow/active/journal-analytics.md]
 created: 2026-04-22
 updated: 2026-04-26
+sources: [processes/distributed-workflow/active/journal-analytics.md, processes/distributed-workflow/active/broker-integration.md]
 ---
 
 # Trade Schema
@@ -81,6 +82,17 @@ Captured **after exit**. All nullable until the trade is closed.
 | `quality_grade` | `grade_type` ENUM | | Overall trade quality grade independent of outcome. A+ = perfect execution, A = minor deviation, B = decent but flawed, C = poor execution |
 | `post_trade_notes` | TEXT | | Freetext post-trade review notes |
 
+### Broker Fill IDs
+
+Set by the `apply-tradovate-fill` endpoint (1c). Not patchable directly via `PATCH /api/trades/:id`. Null until a fill is applied.
+
+| Field | Type | Constraint | Notes |
+|-------|------|------------|-------|
+| `tradovate_fill_id_entry` | BIGINT | UNIQUE partial (not null, not deleted) | Tradovate fill ID of the opening fill |
+| `tradovate_fill_id_exit` | BIGINT | UNIQUE partial (not null, not deleted) | Tradovate fill ID of the closing fill |
+
+The unique partial indexes prevent the same Tradovate fill from being applied to two trade rows — idempotency guard for auto-fill.
+
 ### Metadata Fields
 
 | Field | Type | Constraint | Notes |
@@ -97,6 +109,8 @@ Captured **after exit**. All nullable until the trade is closed.
 
 ```sql
 CREATE TYPE session_type AS ENUM ('asia', 'london', 'ny_am', 'ny_pm');
+-- added in 0004_broker_credentials:
+CREATE TYPE tradovate_environment AS ENUM ('demo', 'live');
 CREATE TYPE kill_zone_type AS ENUM ('asia', 'london_open', 'ny_am_open', 'ny_pm_open', 'london_close');
 CREATE TYPE bias_type AS ENUM ('bullish', 'bearish', 'neutral');
 CREATE TYPE opp_type AS ENUM ('below_all', 'below_some', 'above_all', 'above_some');
@@ -175,12 +189,44 @@ CREATE TABLE trades (
     quality_grade           grade_type,
     post_trade_notes        TEXT,
 
+    -- Broker fill IDs (set by apply-tradovate-fill; idempotency guard)
+    tradovate_fill_id_entry BIGINT,
+    tradovate_fill_id_exit  BIGINT,
+
     -- Metadata
     status                  trade_status NOT NULL DEFAULT 'pre_trade',
     created_at              TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at              TIMESTAMPTZ NOT NULL DEFAULT now(),
     is_deleted              BOOLEAN NOT NULL DEFAULT false,
     deleted_at              TIMESTAMPTZ
+);
+
+-- ============================================================
+-- broker_credentials (added in 0004_broker_credentials)
+-- One row per (user, broker). Username + password encrypted via Fernet
+-- (key in BROKER_CRED_SECRET). OAuth tokens refreshed automatically.
+-- ============================================================
+CREATE TABLE broker_credentials (
+    id                       UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id                  UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    broker                   VARCHAR(32) NOT NULL DEFAULT 'tradovate',
+    environment              tradovate_environment NOT NULL DEFAULT 'demo',
+
+    username_encrypted       TEXT NOT NULL,
+    password_encrypted       TEXT NOT NULL,
+
+    access_token             TEXT,
+    md_access_token          TEXT,
+    access_token_expires_at  TIMESTAMPTZ,
+
+    last_auth_at             TIMESTAMPTZ,
+    last_auth_error          TEXT,
+    is_disconnected          BOOLEAN NOT NULL DEFAULT false,
+
+    created_at               TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at               TIMESTAMPTZ NOT NULL DEFAULT now(),
+
+    UNIQUE (user_id, broker)
 );
 
 -- ============================================================
@@ -215,6 +261,14 @@ CREATE INDEX ix_trades_mistake_tags ON trades USING GIN (mistake_tags) WHERE NOT
 
 -- Screenshots by trade
 CREATE INDEX ix_screenshots_trade ON trade_screenshots (trade_id);
+
+-- Broker fill ID idempotency (added in 0004_broker_credentials)
+CREATE UNIQUE INDEX ix_trades_tv_fill_entry
+    ON trades (user_id, tradovate_fill_id_entry)
+    WHERE tradovate_fill_id_entry IS NOT NULL AND NOT is_deleted;
+CREATE UNIQUE INDEX ix_trades_tv_fill_exit
+    ON trades (user_id, tradovate_fill_id_exit)
+    WHERE tradovate_fill_id_exit IS NOT NULL AND NOT is_deleted;
 ```
 
 ### Updated-at Trigger
@@ -260,6 +314,18 @@ All endpoints require Discord OAuth token. All queries are scoped to the authent
 | `POST` | `/api/trades/{id}/screenshots` | Upload screenshot. Multipart form: file + `phase`. Stores file to R2, saves reference row in `trade_screenshots`. |
 | `GET` | `/api/trades/{id}/screenshots` | List screenshots for a trade (returns metadata + signed URLs). |
 | `DELETE` | `/api/trades/{id}/screenshots/{sid}` | Delete a screenshot (removes from R2 + deletes row). |
+
+### Broker Integration (Tradovate)
+
+Prefix: `/api/tradovate`. See [[../../processes/distributed-workflow/active/broker-integration]] for full design.
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/api/tradovate/credentials` | Store Tradovate credentials (authenticates immediately, upserts) |
+| `GET` | `/api/tradovate/credentials` | Returns masked credential status (environment, is_connected, last_auth_at) |
+| `DELETE` | `/api/tradovate/credentials` | Hard delete stored credentials |
+| `POST` | `/api/tradovate/credentials/test` | Re-authenticate and update token |
+| `GET` | `/api/tradovate/fills` | Query: `trade_date`, `instrument`, `since_time`. Returns fills with bracket info. |
 
 ### Analytics
 

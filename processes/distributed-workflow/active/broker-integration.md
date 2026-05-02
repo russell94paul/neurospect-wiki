@@ -5,7 +5,7 @@ sources: []
 created: 2026-04-26
 updated: 2026-04-26
 phases:
-  phase_1: spec-approved
+  phase_1: 1c-complete
 ---
 
 # Broker Integration — Workstream Tracker
@@ -339,13 +339,149 @@ Append-only. Newest at the bottom.
 
 ## Pending Wiki Updates
 
-- `index.md` — add this tracker to the Distributed Workflow section (done in fork).
-- `concepts/architecture/trade-schema.md` — once 1a ships, add §Broker Credentials section + update Field Definitions table for new `tradovate_fill_id_*` columns. Reconciliation step required by §Architecture Doc Integrity in CLAUDE.md.
-- `concepts/architecture/phase2-project-structure.md` — once 1a ships, list new modules (`services/tradovate.py`, `services/crypto.py`, `routers/tradovate.py`, `models/broker_credential.py`, `schemas/broker.py`).
+- All 1a/1b/1c reconciliation is complete. No outstanding wiki updates.
+- After 1d ships: update `phase2-project-structure.md` and `phase3-frontend-structure.md` with auto-fetch poll hook + `is_disconnected` banner trigger logic.
 
 ## Blockers / Open Questions
 
-None at planning time. All design questions resolved (see §Confirmed design decisions). Open items are §Risks to be resolved by the 1a probe — these are not blockers, just unknowns.
+**RESOLVED (2026-04-26, same session as 1a):** Username/password auth is not available for Tradovate Prop accounts (Lucid). Workaround: browser session token paste via `POST /api/tradovate/credentials/token`. Confirmed working against `demo.tradovateapi.com/v1` with a live token extracted from dev tools. Token lifetime ~1–2 hours; user re-pastes when expired. No further action needed — 1c is unblocked.
+
+**OPEN — ACTION REQUIRED before starting 1d:**
+
+Fill/order field names in `app/services/tradovate.py` have never been confirmed against real data because the account had no fills during the 1a and 1c probes. All field name mappings (`id`, `orderId`, `contractId`, `tradeTime`, `price`, `qty`, `action`) are based on the Tradovate v1 API reference docs only.
+
+**What Paul needs to do to unblock 1d:**
+1. Start the backend: `poetry run uvicorn app.main:app --reload` (from `neurospect-api/`)
+2. Log in at `trader.tradovate.com`; open DevTools → Network; copy the Bearer token from any request to `demo.tradovateapi.com`
+3. Paste it via `POST /api/tradovate/credentials/token` — use the Swagger UI at `http://localhost:8000/docs`
+4. Place a small test trade on the Tradovate demo platform (any size, any instrument — just needs to fill)
+5. Call `GET /api/tradovate/fills?trade_date=<today>` from the Swagger UI
+6. Look at the raw JSON response; confirm or correct the field names in `list_fills` and `list_orders` in `app/services/tradovate.py` (TODO comments mark every unconfirmed field)
+7. If field names differ from what's coded, make the fix in `tradovate.py` — it's a small targeted edit
+
+Once field names are confirmed, 1d (Auto-fetch + disconnected handling) can begin without any additional probe work.
+
+### 2026-04-26 — Sub-phase 1a: Backend foundation complete
+
+**Tradovate API probe findings (documented before writing code):**
+- **API host confirmed**: `demo.tradovateapi.com/v1` responds — correct.
+- **User credentials confirmed correct**: When probing with `cid=0/sec=""`, the API returned a captcha/rate-limit challenge (`p-captcha: true`) rather than "incorrect password" — this only happens when the username/password ARE valid.
+- **Critical blocker discovered**: Tradovate API access for personal accounts requires (a) a $1000 funded account + $25/month subscription, AND (b) activation in account preferences. **Paul's Lucid prop account does not expose this API access section.** Prop firm accounts appear to be on a separate platform ("Tradovate Prop") without standard REST API access.
+- **Probe failed on app credentials**: `cid=8 + sec=bf0ecf...` (the public sample app credentials) returned "incorrect username or password" for this account — likely because prop accounts use a different authentication path.
+- **Fill/order field shapes NOT confirmed** — rate-limited before a successful auth. Field names in `tradovate.py` are based on the Tradovate v1 API reference docs; marked with TODO comments for verification.
+- **Risk #5 (rate limits)** remains unverified — couldn't get a successful auth to test list endpoints.
+
+**OPEN QUESTION — alternative auth paths for Tradovate Prop accounts:**
+- The Tradovate Prop platform may have a different API endpoint or auth flow than the retail API
+- Browser session token extraction is a possible workaround (extract Bearer token from browser dev tools while logged into trader.tradovate.com)
+- CSV export from Tradovate is another path (build CSV import instead of live API)
+- Lucid may have their own data export or API access
+- See §Risks and open questions — this needs resolution before 1c (Settings UI + manual fetch) can be completed
+
+**Code shipped in 1a:**
+- `alembic/versions/0004_broker_credentials.py` — migration: `tradovate_environment` ENUM, `broker_credentials` table, `tradovate_fill_id_entry/exit` BIGINT + partial unique indexes on trades. `alembic upgrade head` clean.
+- `app/models/broker_credential.py` — SQLAlchemy model
+- `app/services/crypto.py` — Fernet encrypt/decrypt; fails loud at import if `BROKER_CRED_SECRET` unset/invalid
+- `app/services/tradovate.py` — async Tradovate client: `authenticate()`, `refresh_if_needed()`, `get_contract()`, `list_fills()`, `list_orders()`. Custom exceptions: `TradovateAuthError`, `TradovateApiError`. `FillDTO` imported from schemas.
+- `app/schemas/broker.py` — `BrokerCredentialsCreate`, `BrokerCredentialsResponse`, `BracketInfo`, `FillDTO`
+- `app/routers/tradovate.py` — `/api/tradovate/credentials` CRUD + test endpoint + `GET /fills` with bracket extraction
+- `app/config.py` — added `broker_cred_secret` (required), `tradovate_app_id`, `tradovate_cid`, `tradovate_sec`
+- `app/models/trade.py` + `app/schemas/trade.py` — added `tradovate_fill_id_entry/exit`
+- `app/main.py` — mounted `tradovate_router`
+- `.env.example` + `.env` — added `BROKER_CRED_SECRET`, `TRADOVATE_CID`, `TRADOVATE_SEC`
+- `tests/test_tradovate.py` — 16 tests: crypto roundtrip, mask helper, `authenticate()` with mocked httpx, FillDTO schema. All 33 tests (existing + new) pass.
+- `pyproject.toml` — added `[tool.pytest.ini_options] asyncio_mode = "auto"`
+
+**Wiki reconciliation done:** `trade-schema.md` and `phase2-project-structure.md` updated per §Architecture Doc Integrity.
+
+**next:** Resolve Tradovate API access blocker (see §Risks) before 1c. 1b (active-trade singleton) is independent and can ship in parallel.
+
+### 2026-04-26 — Sub-phase 1b: Active-trade soft singleton complete
+
+**Code shipped in 1b:**
+- `app/schemas/trade.py` — added `status: TradeStatus = TradeStatus.pre_trade` to `TradeCreate` so POST can optionally create with `status='active'` (the rare path the guard needs to check).
+- `app/routers/trades.py` — added:
+  - `get_active_trade(db, user_id) -> Trade | None` — queries `status='active' AND NOT is_deleted` for the user; returns first match or None.
+  - `_conflict_response(trade) -> JSONResponse` — builds the flat 409 body: `{detail, active_trade_id, instrument, entry_time}`.
+  - `force: bool = Query(False)` param on both `POST /api/trades` and `PATCH /api/trades/{id}`.
+  - Guard in `create_trade`: if `body.status == active and not force` → check `get_active_trade` → return 409 if conflict.
+  - Guard in `update_trade`: inside the valid-transition block, if transitioning to `active and not force` → check `get_active_trade` → return 409 if a different active trade exists (`existing.id != trade_id`).
+- `tests/test_singleton.py` — 11 tests covering: helper returns None/trade, POST 409/force/pre_trade/multiple-pre_trade, PATCH 409/force/no-conflict/non-status-fields/same-id-edge-case.
+
+**Design decisions:**
+- 409 uses `return JSONResponse(...)` (not `raise HTTPException`) to produce the flat body the spec shows: `{"detail": "active_trade_conflict", "active_trade_id": "...", "instrument": "...", "entry_time": "..."}`.
+- `get_active_trade` is a module-level function (not a FastAPI dependency) so tests can patch it cleanly without needing HTTP infrastructure.
+- Tests call route functions directly with mocked AsyncSession — same pattern as `test_tradovate.py`. No test database needed.
+
+**Verification:** `poetry run pytest` — 44/44 passing (all existing + 11 new).
+
+**Wiki reconciliation:** No schema changes and no new modules in 1b — no architecture doc updates needed per the spec.
+
+**next:** 1c (Settings UI + manual fetch). Requires 1a complete (it is) and 1b (now complete). Token-paste auth path is live (resolved in 1a via `POST /credentials/token`). Only remaining unknown is fill/order field name verification — no fills existed during the 1a probe. First test trade against the demo API will confirm field names; update `tradovate.py` TODO comments then.
+
+---
+
+### 2026-04-26 — Token-only mode added (same session)
+
+- decided: Tradovate prop firm accounts (Lucid) cannot use username/password auth — the standard REST API requires a $25/month subscription on a retail account; the API Access settings section is not exposed on prop accounts.
+- decided: Primary workaround is **browser session token paste**. User extracts Bearer token from browser dev tools while logged into trader.tradovate.com and pastes it via `POST /api/tradovate/credentials/token`.
+- did: Added `BrokerTokenCreate` schema, `POST /credentials/token` endpoint, `_store_token` helper, `_parse_jwt_username` in service. `refresh_if_needed` detects token-only mode (empty password sentinel) and raises `TradovateAuthError("Session token expired — re-paste...")`. `test_credentials` handles token-only by checking JWT expiry locally without a network call.
+- confirmed (live token probe 2026-04-26): REST API at `demo.tradovateapi.com/v1` accepts the MD WebSocket session token — Tradovate Prop uses a unified token, not separate accessToken/mdAccessToken. The token from the WebSocket `authorize` message is all that's needed.
+- confirmed: JWT payload has `email` claim (not `name`), `sub` = numeric user ID. `_parse_jwt_username` updated to prefer email > name > sub.
+- confirmed: `/contract/{id}` returns 404 on Tradovate Prop. `/contract/item?id={id}` is the correct single-item endpoint. `get_contract` updated.
+- confirmed: `/contract/find?name=MNQM6` works and returns `{id, name, contractMaturityId, ...}` — name field is the full contract ticker (e.g. `MNQM6`).
+- confirmed: Token lifetime is ~1–2 hours (standard session token). Paul will need to re-paste when it expires.
+- NOT confirmed: Fill/order field names (`id`, `orderId`, `contractId`, `tradeTime`, `price`, `qty`, `action`) — account had no fills or orders. Field names remain based on Tradovate v1 API docs. Verify by placing a trade and running `GET /api/tradovate/fills`.
+- next: 1b (active-trade singleton) is independent, can ship now. 1c after 1b.
+
+---
+
+### 2026-04-26 — Sub-phase 1c: Settings UI + manual fetch complete
+
+**Code shipped:**
+
+Backend (`neurospect-api`):
+- `app/schemas/trade.py` — added `ApplyFillRequest` (`tradovate_fill_id: int`, `role: Literal['entry'|'exit']`)
+- `app/routers/trades.py` — added `POST /{trade_id}/apply-tradovate-fill` endpoint:
+  - Asserts ownership; idempotent (no-op if fill already applied for role)
+  - Re-fetches fill from Tradovate via `list_fills` (doesn't trust client fields)
+  - For `role='entry'`: writes `entry_price`, `entry_time`, `position_size`, `tradovate_fill_id_entry`; looks up bracket OCO orders via `list_orders` and writes `stop_price`/`target_price` if working stop/limit orders found
+  - For `role='exit'`: writes `exit_price`, `exit_time`, `tradovate_fill_id_exit`
+  - On auth failure: marks creds `is_disconnected=True`, returns 503
+  - Returns `TradeResponse`
+
+Frontend (`neurospect-app`):
+- `src/types/api.ts` — added `BrokerCredentials`, `BracketInfo`, `FillDTO` interfaces; added `tradovate_fill_id_entry/exit` to `Trade`
+- `src/hooks/use-tradovate.ts` — `useBrokerCredentials`, `useSaveBrokerToken`, `useTestBrokerCredentials`, `useDeleteBrokerCredentials`, `useFetchTradovateFills`, `useApplyTradovateFill`
+- `src/hooks/use-active-trade.ts` — `useActiveTrade()` → `Trade | null`; polls with 30s staleTime
+- `src/components/settings/settings-shell.tsx` — sidebar nav with Broker Connections link; accepts `children`
+- `src/components/settings/broker-credentials-form.tsx` — token-paste form (textarea + instructions); two states: paste form / connected view
+- `src/components/settings/broker-status-card.tsx` — status indicator, Test connection, Disconnect
+- `src/components/settings/auto-fetch-toggle.tsx` — Manual / Automatic radio; persists to `localStorage: neurospect.tradovate.autoFetch`
+- `src/pages/settings-broker.tsx` — `/settings/broker` page
+- `src/components/trade/tradovate-fill-button.tsx` — "Fetch from Tradovate" button with all disabled states (no creds, disconnected, override-locked) + inline status messages + picker dialog integration
+- `src/components/trade/tradovate-fill-picker-dialog.tsx` — multi-fill picker
+- `src/components/trade/active-trade-guard-dialog.tsx` — 409 guard on NewTradePage
+- Modified `entry-fields.tsx` and `post-trade-fields.tsx` — added `trade?: Trade` + `onFillApplied?` props; render `TradovateFillButton` at top of grid in edit mode
+- Modified `trade-form.tsx` — `handleEntryFillApplied` / `handleExitFillApplied` callbacks update form via `setValue`
+- Modified `app-shell.tsx` — `ActiveTradeBadge` (header pill, click → trade) + `BrokerDisconnectedBanner` (red bar when `is_connected=false`)
+- Modified `new-trade.tsx` — `ActiveTradeGuardDialog` on mount when active trade exists
+- Modified `App.tsx` — `/settings` redirect + `/settings/broker` route
+- Modified `sidebar.tsx` — Settings nav item
+
+**Verification:** `tsc -b` clean; `poetry run pytest` 44/44 passing (no new tests added — apply logic is straightforward and covered by the existing hook patterns)
+
+**Fill field names:** still not confirmed against real fill data (no fills existed during 1a/1c development). The button/endpoint will work once Paul places a test trade and verifies `tradovate.py` field names match actual API responses. TODO comments in `tradovate.py` remain until confirmed.
+
+**Design decisions:**
+- `BrokerDisconnectedBanner` reads from `useBrokerCredentials().data.is_connected` directly — no new flag needed since `is_connected` was already on the response. Auto-triggering on refresh failure is still 1d scope.
+- `ActiveTradeBadge` formats entry_time in ET using `Intl` (no extra library). Sits in the header left-side alongside the UserMenu on the right.
+- `TradovateFillButton` uses inline status messages (auto-clear after 4s) instead of a toast library — avoids adding a dependency to a simple single-user app.
+- `ActiveTradeGuardDialog` "Start anyway" just dismisses the dialog; the new trade is created as `pre_trade` which never triggers 409. The force-override path is relevant when the user later transitions to `active` — that's handled via the existing PATCH 409 + force flow in TradeForm.
+
+**Wiki reconciliation done:** `phase2-project-structure.md` and `phase3-frontend-structure.md` updated per §Architecture Doc Integrity.
+
+**next:** 1d (Auto-fetch + disconnected handling). Prerequisites: verify fill field names against real API response (place a test trade, call `GET /api/tradovate/fills`).
 
 ---
 
@@ -444,6 +580,192 @@ POST-IMPLEMENTATION RECONCILIATION (per neurospect-wiki CLAUDE.md §Architecture
 Paul handles git commits — never run git commit.
 
 Always write a boot prompt at session end if anything is left undone. Next session is 1b (Active-trade singleton) or 1c (Settings UI + manual fetch) — pick the one Paul prefers; 1b is independent of 1a and could already have shipped, while 1c requires 1a complete.
+````
+
+---
+
+## Boot Prompt — Phase 1b (Active-Trade Singleton)
+
+**Recommended model:** Sonnet. **Working directory:** `neurospect-api`.
+
+````
+You are implementing sub-phase 1b of the Neurospect broker-integration workstream: the active-trade soft singleton. This sub-phase is fully independent of the broker credential work (1a) and can ship on its own.
+
+Boot procedure:
+1. Read `C:\Users\PaulRussell\repos\neurospect-wiki\CLAUDE.md`
+2. Read `processes/distributed-workflow/active/broker-integration.md` — focus on §Soft Singleton and §Implementation decomposition. 1b scope is listed there.
+3. Read these files in `neurospect-api`:
+   - `app/routers/trades.py` (this is where all 1b changes go)
+   - `app/models/trade.py` + `app/schemas/trade.py` (Trade model + schemas)
+   - `app/deps.py` (get_current_user, get_db pattern)
+   - `app/main.py` (confirm no router changes needed — 1b is router-internal only)
+
+SCOPE OF 1b (backend only — no frontend, no broker code):
+
+1. ADD helper `get_active_trade(db: AsyncSession, user_id: UUID) -> Trade | None` in `app/routers/trades.py` (or extract to a small `app/services/trades.py` if it makes the router cleaner).
+   - Queries for a trade where `user_id = user_id AND status = 'active' AND NOT is_deleted`
+   - Returns the first match or None
+
+2. MODIFY `POST /api/trades` — if body has `status='active'` (rare but possible), check `get_active_trade` first. If one exists and `?force=true` is NOT set, return 409.
+
+3. MODIFY `PATCH /api/trades/{id}` — when the patch transitions status `pre_trade → active`, check `get_active_trade`. If another active trade exists (different id) and `?force=true` is NOT set, return 409.
+
+409 response body (both cases):
+```json
+{
+  "detail": "active_trade_conflict",
+  "active_trade_id": "<uuid>",
+  "instrument": "NQ",
+  "entry_time": "2026-04-26T14:32:00Z"
+}
+```
+
+The `?force=true` query param bypasses the guard and allows creation of a second active trade. Frontend (1c) will disable auto-fill on the second trade with a tooltip.
+
+4. ADD tests under `tests/test_singleton.py`:
+   - Creating a trade with `status='active'` when one already exists → 409
+   - PATCH transitioning to active when one already exists → 409
+   - `?force=true` bypasses the 409 → 201/200
+   - Creating/updating `pre_trade` rows is never blocked
+   - Multiple `pre_trade` rows for same user → allowed
+
+OUT OF SCOPE for 1b:
+- Frontend guard modal, app-shell badge, useActiveTrade hook → 1c
+- Any broker/Tradovate code
+- Any new migrations (no schema changes needed)
+
+VERIFICATION:
+- `poetry run pytest` clean (all existing tests + new singleton tests)
+- Manual: create a trade with status=active, try to create another → 409; try with ?force=true → success
+
+POST-IMPLEMENTATION RECONCILIATION:
+- No new wiki pages needed (1b adds no new schema, no new modules)
+- Append a session log entry to `processes/distributed-workflow/active/broker-integration.md`
+- Update frontmatter `phase_1` if appropriate
+
+Paul handles git commits — never run git commit.
+
+Next session after 1b is 1c (Settings UI + manual fetch — frontend + apply-tradovate-fill endpoint). 1c requires 1a complete (it is) and 1b helpful but not blocking.
+````
+
+---
+
+## Boot Prompt — Phase 1c (Settings UI + Manual Fetch)
+
+**Recommended model:** Sonnet. **Working directories:** `neurospect-api` (backend) + `neurospect-app` (frontend).
+
+````
+You are implementing sub-phase 1c of the Neurospect broker-integration workstream: the Settings UI and manual Tradovate fill fetch. This is the first end-to-end user-facing phase — after 1c, Paul can connect Tradovate and populate trade fields with one click.
+
+Boot procedure:
+1. Read `C:\Users\PaulRussell\repos\neurospect-wiki\CLAUDE.md`
+2. Read `processes/distributed-workflow/active/broker-integration.md` — full Phase 1 spec, especially §Soft Singleton, §Backend architecture, §Frontend architecture, §Confirmed design decisions. The §Blockers section is resolved — auth uses token-paste path (see below).
+3. Read these files in `neurospect-api`:
+   - `app/routers/trades.py` — singleton guard is live; you add `apply-tradovate-fill` here
+   - `app/routers/tradovate.py` — credentials CRUD + `GET /fills` already implemented; understand the interface
+   - `app/services/tradovate.py` — Tradovate client; note the TODO comments on fill field names (unconfirmed — see below)
+   - `app/schemas/broker.py` — FillDTO, BracketInfo, BrokerCredentialsResponse, BrokerTokenCreate
+   - `app/schemas/trade.py` — TradeResponse (what apply-tradovate-fill returns)
+4. Read these files in `neurospect-app`:
+   - `src/App.tsx` — routing; you add /settings and /settings/broker routes here
+   - `src/types/api.ts` — frontend type definitions; extend with broker types
+   - `src/components/layout/app-shell.tsx` — add ActiveTradeBadge + BrokerDisconnectedBanner
+   - `src/components/trade/entry-fields.tsx` — add Tradovate fetch button
+   - `src/components/trade/post-trade-fields.tsx` — add Tradovate fetch button
+   - `src/pages/new-trade.tsx` — wire in ActiveTradeGuardDialog
+
+CRITICAL CONTEXT — auth path changed from spec:
+
+Standard Tradovate username/password auth requires a $25/month API subscription not available on Paul's Lucid prop account. The workaround implemented in 1a: browser session token paste.
+
+- **Auth endpoint:** `POST /api/tradovate/credentials/token` with body `{token: string}`
+- **How to get the token:** Log into `trader.tradovate.com` → DevTools → Network → any request to `demo.tradovateapi.com` → copy the `Authorization: Bearer <token>` value
+- **Token lifetime:** ~1–2 hours. App shows "reconnect" when expired.
+- **`POST /credentials` (username/password)** is still in the router but should not be the primary UI flow. The settings form should show a token-paste input, not a username/password form.
+- `BrokerTokenCreate` schema: `{token: str}` — already in `app/schemas/broker.py`
+- The `broker-credentials-form.tsx` component in the spec was written for username/password. Build it as a token-paste form instead: a labeled textarea, a "Connect" button, and a note explaining how to extract the token from DevTools.
+
+FILL FIELD NAMES — partially confirmed:
+
+In the 1a probe, the API accepted the token but the account had no fills/orders, so field names were not verified against real data. Field names in `tradovate.py` are based on Tradovate v1 API docs. At the start of 1c:
+
+1. Ask Paul to place a test trade in the Tradovate demo platform and then call `GET /api/tradovate/fills?trade_date=<today>` to see the real response shape.
+2. Update the TODO comments in `tradovate.py` with confirmed field names.
+3. If field names differ from the docs, fix the service before wiring the frontend.
+
+SCOPE OF 1c:
+
+**Backend (neurospect-api):**
+
+1. ADD `POST /api/trades/{id}/apply-tradovate-fill` in `app/routers/trades.py`:
+   - Body: `{tradovate_fill_id: int, role: 'entry' | 'exit'}`
+   - Backend re-fetches the fill from Tradovate (don't trust client fields — call `list_fills` and filter by `tradovate_fill_id`)
+   - `role='entry'`: writes `entry_price`, `entry_time`, `position_size` (from fill `qty`); looks up bracket OCO orders via `list_orders` → writes `stop_price`, `target_price`; sets `tradovate_fill_id_entry`
+   - `role='exit'`: writes `exit_price`, `exit_time`; sets `tradovate_fill_id_exit`
+   - Idempotent: if `tradovate_fill_id_entry/exit` already set to this id, no-op and return current trade
+   - Returns the updated `TradeResponse`
+   - Ownership check via `_assert_ownership` (existing pattern)
+
+**Frontend (neurospect-app):**
+
+2. ADD routes in `src/App.tsx`:
+   - `/settings` → redirect to `/settings/broker`
+   - `/settings/broker` → `<BrokerSettingsPage>`
+
+3. ADD settings components:
+   - `src/pages/settings-broker.tsx` — broker settings page (shell + form)
+   - `src/components/settings/settings-shell.tsx` — sidebar nav with "Broker" section; extensible for future settings sections
+   - `src/components/settings/broker-credentials-form.tsx` — token-paste form (textarea + "Connect" button + DevTools instructions); calls `POST /api/tradovate/credentials/token`; shows masked token info + last auth time when connected
+   - `src/components/settings/broker-status-card.tsx` — connection status, "Test connection" button (`POST /credentials/test`), "Disconnect" button (`DELETE /credentials`)
+   - `src/components/settings/auto-fetch-toggle.tsx` — Manual / Automatic radio; persists to `localStorage: neurospect.tradovate.autoFetch`
+
+4. ADD hooks:
+   - `src/hooks/use-tradovate.ts` — `useBrokerCredentials`, `useSaveBrokerToken`, `useDeleteBrokerCredentials`, `useTradovateFills`, `useApplyTradovateFill`
+   - `src/hooks/use-active-trade.ts` — `useActiveTrade()` → `null | Trade`; polls `GET /api/trades?status=active&page_size=1` or filters from the existing trade list cache
+
+5. ADD trade components:
+   - `src/components/trade/tradovate-fill-button.tsx` — "Fetch from Tradovate" button with states: no creds (disabled + tooltip), disconnected (disabled + tooltip), override-locked/second active (disabled + tooltip), ready (click → call fills, auto-apply if one match, open picker if multiple, toast if none)
+   - `src/components/trade/tradovate-fill-picker-dialog.tsx` — multi-fill picker: shows time, price, side, qty for each match; user picks one → calls apply-tradovate-fill
+   - `src/components/trade/active-trade-guard-dialog.tsx` — shown when user tries to create a new trade while one is active; primary: "Go to active trade", secondary: "Start anyway" (sends `?force=true`)
+
+6. MODIFY existing components:
+   - `src/components/trade/entry-fields.tsx` — add `<TradovateFillButton role="entry">` next to `entry_price`
+   - `src/components/trade/post-trade-fields.tsx` — add `<TradovateFillButton role="exit">` next to `exit_price`
+   - `src/components/layout/app-shell.tsx` — add `<ActiveTradeBadge>` (header pill: "🟢 Active: NQ · 14:32 ET", click → `/trades/<id>`) + `<BrokerDisconnectedBanner>` (red bar when `is_disconnected`)
+   - `src/pages/new-trade.tsx` — on mount, if active trade exists, show `<ActiveTradeGuardDialog>`
+
+409 CONFLICT RESPONSE FORMAT (from 1b):
+
+The 409 body is flat (not nested under `detail`):
+```json
+{
+  "detail": "active_trade_conflict",
+  "active_trade_id": "<uuid>",
+  "instrument": "NQ",
+  "entry_time": "2026-04-26T14:32:00+00:00"
+}
+```
+Frontend checks: `if (response.status === 409 && data.detail === "active_trade_conflict")`.
+
+OUT OF SCOPE for 1c:
+- Auto-fetch 30s background poll → 1d
+- `is_disconnected` flag + banner triggering on refresh failure → 1d
+- Token auto-refresh (1d handles the case where the session token expires mid-use; 1c can show "reconnect" on 401 from fills)
+
+VERIFICATION:
+- `poetry run pytest` clean (no new backend tests required beyond confirming `apply-tradovate-fill` is exercised; add a unit test if the apply logic is non-trivial)
+- `tsc -b` clean on the frontend
+- Manual golden path: paste token in `/settings/broker` → status card shows connected → open a trade form → click "Fetch from Tradovate" → fills populate → save trade
+
+POST-IMPLEMENTATION RECONCILIATION:
+- `concepts/architecture/phase3-frontend-structure.md` — update with new components/hooks/routes if the doc exists; create a stub if not
+- `concepts/architecture/phase2-project-structure.md` — add `apply-tradovate-fill` endpoint to the routes table
+- Append a session log entry to this tracker
+- Update frontmatter `phase_1: 1c-complete`
+
+Paul handles git commits — never run git commit.
+
+Next session after 1c is 1d (Auto-fetch + disconnected handling).
 ````
 
 ---

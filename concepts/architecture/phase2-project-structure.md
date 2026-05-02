@@ -3,7 +3,7 @@ tags: [architecture, backend, fastapi, neurospect, journal, analytics]
 aliases: [Phase 2 Project Structure, neurospect-api Layout]
 sources: [processes/distributed-workflow/active/journal-analytics.md]
 created: 2026-04-22
-updated: 2026-04-23
+updated: 2026-04-26 (1c)
 ---
 
 # Phase 2 — Backend Project Structure (APPROVED)
@@ -38,8 +38,10 @@ neurospect-api/
 ├── alembic/
 │   ├── env.py               # Sync Alembic env (psycopg2, not asyncpg)
 │   └── versions/
-│       ├── 0001_initial.py  # 11 ENUMs, 3 tables, 7 indexes, triggers
-│       └── 0002_coach_tables.py  # coaching_event_status ENUM, tradingview_tokens, coaching_events
+│       ├── 0001_initial.py           # 11 ENUMs, 3 tables, 7 indexes, triggers
+│       ├── 0002_coach_tables.py      # coaching_event_status ENUM, tradingview_tokens, coaching_events
+│       ├── 0003_add_position_size.py # position_size INTEGER on trades
+│       └── 0004_broker_credentials.py # tradovate_environment ENUM, broker_credentials table, tradovate_fill_id_* on trades
 ├── app/
 │   ├── __init__.py
 │   ├── main.py              # FastAPI app, router mounts, lifespan
@@ -59,23 +61,28 @@ neurospect-api/
 │   │   ├── trade.py         # Trade ORM model (all columns from DDL)
 │   │   ├── screenshot.py    # TradeScreenshot ORM model
 │   │   ├── tv_token.py      # TradingViewToken ORM model
-│   │   └── coaching_event.py # CoachingEvent ORM model
+│   │   ├── coaching_event.py # CoachingEvent ORM model
+│   │   └── broker_credential.py # BrokerCredential ORM model (added 1a)
 │   ├── schemas/
 │   │   ├── __init__.py
-│   │   ├── trade.py         # TradeCreate, TradeUpdate, TradeResponse, TradeListResponse
+│   │   ├── trade.py         # TradeCreate, TradeUpdate, TradeResponse, TradeListResponse, ApplyFillRequest (1c)
 │   │   ├── screenshot.py    # ScreenshotResponse (includes presigned URL)
 │   │   ├── analytics.py     # One response model per analytics endpoint
-│   │   └── coach.py         # Layer2Payload, Layer3Response, WebhookAccepted, CoachingEventResponse, TvTokenResponse
+│   │   ├── coach.py         # Layer2Payload, Layer3Response, WebhookAccepted, CoachingEventResponse, TvTokenResponse
+│   │   └── broker.py        # BrokerCredentialsCreate/Response, FillDTO, BracketInfo (added 1a)
 │   ├── routers/
 │   │   ├── __init__.py
-│   │   ├── trades.py        # 5 CRUD endpoints
+│   │   ├── trades.py        # 5 CRUD endpoints + POST /{id}/apply-tradovate-fill (added 1c)
 │   │   ├── screenshots.py   # 3 screenshot endpoints
 │   │   ├── analytics.py     # 7 analytics endpoints
-│   │   └── tv_tokens.py     # Per-user TradingView webhook token CRUD
+│   │   ├── tv_tokens.py     # Per-user TradingView webhook token CRUD
+│   │   └── tradovate.py     # /api/tradovate/* — credentials CRUD, fills (added 1a)
 │   ├── services/
 │   │   ├── __init__.py
 │   │   ├── r2.py            # R2Client: upload_bytes(), delete(), presign()
-│   │   └── analytics.py     # Raw SQL analytics queries
+│   │   ├── analytics.py     # Raw SQL analytics queries
+│   │   ├── crypto.py        # Fernet encrypt/decrypt for broker credentials (added 1a)
+│   │   └── tradovate.py     # Async Tradovate REST client — authenticate, list_fills, list_orders (added 1a)
 │   └── coach/
 │       ├── __init__.py
 │       ├── router.py        # Webhook ingestion + events polling (full implementation)
