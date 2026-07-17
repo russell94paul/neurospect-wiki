@@ -21,8 +21,9 @@ positive expectancy → go live.*
    model. ✅ (Phase 1)
 3. **ICT-course track** — the same for the MrWitness-AXL model, built as an *aggregator + gap-fill*
    (much already exists). ✅ (Phase 2, 2026-07-17)
-4. **Unified model** — merge both into one playbook. ⛔ Deferred to a dedicated deep-research session
-   *after* both tracks exist and have been backtested (Phase 3).
+4. **Unified model + frontier content** — synthesize both tracks into one playbook **and** research
+   deep / unique / frontier ICT content that accelerates the path to mastery. A course-content
+   deep-research session (Phase 3). Backtesting is **out of scope** (reframe 2026-07-17). ⏭ **NEXT.**
 
 ## Lane
 
@@ -36,8 +37,15 @@ Read-as-source, never modify: `concepts/aura/*`, `concepts/course/*`, `concepts/
 
 ## Decisions (approved 2026-07-17, do not re-litigate)
 
-- **Two parallel tracks**, then a **later** unified-model deep-research session. Do NOT merge the two
-  models until both tracks are complete and backtested.
+- **Two parallel tracks**, then a **later** unified-model deep-research session. ~~Do NOT merge the two
+  models until both tracks are complete and backtested.~~
+- **[AMENDED 2026-07-17 PM — approved by Paul]** Reframe confirmed: this mastery layer is **course
+  content**, not a personal live-trading / Neurospect-app deliverable. Consequences: (a) **backtesting is
+  out of scope** for this workstream and the **"backtested-first" precondition on Phase 3 is dropped**;
+  (b) Phase 3 proceeds **next** as a **course-content deep-research** session, **broadened** from a pure
+  A+B merge to *"deep, rich, unique, frontier ICT content that accelerates the path to mastery"* — the
+  unified playbook is its centrepiece, not its whole scope; (c) a **subsequent** session may then build a
+  **graded learning roadmap + progress tracker** over the resulting content.
 - **Full tooling available** (Sequential-SMT indicator, TradingView bar-replay, futures incl. 6S) →
   drills are tool-assisted **and** include hand-marking variants (eye-training / muscle memory).
 - **No-drift rule:** mastery pages LINK to concept/entry-model pages as source-of-truth; never restate.
@@ -55,8 +63,12 @@ Aggregator + gap-fill (see boot prompt below). Delivered:
 `concepts/mastery/ict-course/{rules,exercises,tracker}.md` (no new learning-path/checklist — reuse
 existing). Additive cross-links from `course/README.md` + `entry-models/README.md`.
 
-### Phase 3 — Unified-model deep-research ⛔ (deferred)
-Reconcile Aura + ICT-course into one playbook; fills the reserved slot in `concepts/mastery/README.md`.
+### Phase 3 — Course-content deep-research (unified model + frontier ICT) ⏭ NEXT
+Reframed 2026-07-17 (see Decisions amendment): backtest gate **dropped**. A deep-research session that
+(a) reconciles Aura + ICT-course into **one unified playbook** (fills the reserved slot in
+`concepts/mastery/README.md`), and (b) researches + synthesizes **deep / unique / frontier ICT content**
+— cited, source-quality-vetted, pedagogically organized. A later session builds the graded learning
+roadmap + tracker over the result. Boot prompt provided to Paul 2026-07-17 (see chat/handoff).
 
 ## Session Log
 
@@ -102,6 +114,85 @@ Reconcile Aura + ICT-course into one playbook; fills the reserved slot in `conce
 - verified: isolation clean (no ALDC refs); no-drift honored (LINKED to — did not restate — entry-model
   YAML); all new intra-wiki wikilinks resolve to real pages.
 - next: Phase 3 (unified-model deep-research) — deferred until both tracks are backtested.
+
+## Next Session Boot Prompt (Phase 3 — course-content deep research) ⏭ ACTIVE
+
+Recommended launch: `claude --model opus[1m]`, then `/effort high`. The `/deep-research` skill is a
+**tool, not a requirement** — used for Thrust B's web fan-out; Thrust A is direct synthesis. Paste:
+
+```
+Neurospect wiki — Phase 3: course-content DEEP RESEARCH (unified model + frontier ICT).
+Working dir: C:\Users\PaulRussell\repos\neurospect-wiki
+
+BOOT / CONTEXT
+1. Read CLAUDE.md in full — obey: Isolation Rule (Neurospect lane only; NO ALDC content or refs),
+   Architecture Doc Integrity (canonical-doc / no-drift: LINK to existing pages, never restate),
+   Page Format, and Rules #3 (update index.md), #4 (append log.md), #5 (prefer updating over creating),
+   #6 (flag contradictions, never silently overwrite), #7 (cite every factual claim).
+2. Read processes/distributed-workflow/active/mastery-layer.md IN FULL — especially the Decisions
+   (note the 2026-07-17 PM amendment: backtesting is OUT OF SCOPE; the backtested-first gate is DROPPED)
+   and the Phase 3 description. This is the work plan.
+3. Survey what already exists so you neither duplicate nor contradict it:
+   - concepts/mastery/README.md + both built tracks (aura/*, ict-course/*) — the learn-to-execute layer.
+   - concepts/business-logic/ict-*.md — the reference KB (liquidity, narratives, entry-models, smt,
+     market-structure, order-flow, deviations, live-commentary).
+   - concepts/course/* (16 learner lessons), concepts/entry-models/* (7 execution specs + AI-coach YAML),
+     concepts/aura/* (the dOoMeR corpus).
+   Produce a one-page "current coverage map" so the research targets GAPS and the FRONTIER, not restatement.
+
+OBJECTIVE (pre-answered so you don't need to ask; refine only if genuinely ambiguous)
+Audience: Paul — an intermediate→advancing ICT / Smart Money Concepts trader building a personal course /
+knowledge base toward mastery. Markets: index futures (NQ/ES/YM) primary, plus the Aura triads
+(metals, forex incl. 6S, energy, crypto). Timeframes: intraday 1m–4H with HTF context to weekly/quarterly.
+Lineage: ICT (Michael J. Huddleston / Inner Circle Trader) + the two ingested mentors (MrWitness-AXL;
+dOoMeR / "Aura"). Deliver TWO thrusts:
+
+  THRUST A — UNIFIED MODEL (centrepiece). Reconcile the MrWitness-AXL (ICT-course) and dOoMeR (Aura)
+  models into ONE coherent, principled playbook — not a mashup. The two use deliberately different
+  vocabularies and the wiki already flags specific divergences (quadrants vs discount/EQ/premium;
+  "order block" terminology; Time Sum/369; same-TF triad SMT vs cross-cycle Sequential SMT; DXY vs the
+  6S Aura Asset). For each divergence, decide and justify: when to use which, or why one supersedes the
+  other, or why both coexist. Output a single unified framework (structural primitives → confirmation →
+  execution → risk → psychology) that a learner can actually follow. Fills the reserved "unified model"
+  slot in concepts/mastery/README.md.
+
+  THRUST B — DEEP / UNIQUE / FRONTIER CONTENT. Research the broader ICT body of knowledge and the best
+  community refinements to surface high-impact concepts NOT yet covered in this wiki, that materially
+  accelerate mastery. Candidate areas to investigate (guide, not limit — rank by impact, drop the weak):
+  IPDA data ranges & the liquidity matrix; interbank price delivery algorithm logic; time-based models
+  (ICT macros, time-of-day algorithmic behavior, killzone micro-structure); Quarterly Theory / 90-min
+  cycles; PO3 & dealing-range mechanics at scale; seasonal tendencies & day-of-week edge; high- vs
+  low-probability day classification; news-embargo / high-impact-event delivery behavior; institutional
+  order-flow refinements; standard-deviation projection nuance; multi-timeframe liquidity runs.
+
+QUALITY BAR (this is what makes it "best/most thorough" rather than a noise dump)
+- Research method: use the /deep-research skill FOR THRUST B's web fan-out (fan-out searches → fetch
+  PRIMARY sources → adversarially verify claims → cite). Do THRUST A as DIRECT SYNTHESIS of the existing
+  corpus (reasoning, not web search). The skill is a tool, not a requirement — WebSearch/WebFetch directly
+  is fine; what is mandatory is this quality bar. (Optional, for max thoroughness: drive Thrust B's
+  fan-out with a Workflow. Opus, high effort.)
+- Source hierarchy: ICT's OWN primary teachings first; the two ingested corpora second; reputable
+  community work third; treat random YouTube/marketing as unverified until corroborated.
+- Label every concept ESTABLISHED / EMERGING / SPECULATIVE-or-FRINGE. Flag unfalsifiable or
+  marketing claims explicitly and do NOT present them as edge. Surface contradictions rather than
+  smoothing them over.
+- CITE every claim (source URL / video / the ingested transcript path). Where a wiki page is already
+  canonical for a concept, LINK and extend it — do not restate (no-drift).
+- Keep it pedagogical: for each frontier concept give what it is, why it matters to execution/edge,
+  how it interacts with the unified model, and its common failure mode — organized so the NEXT session
+  can sequence it into a learning roadmap.
+
+WORKFLOW / OUTPUT
+- FIRST present a PLAN (use plan mode) for approval before writing: the proposed page taxonomy (where the
+  unified playbook lives — suggest concepts/mastery/unified/ — and where frontier pages live — propose
+  concepts/advanced/ or extensions to concepts/business-logic/), the RANKED research agenda, and the
+  source-quality rubric. Do not create pages until the plan is approved.
+- THEN on approval: write the deep-research synthesis + the cited pages; update index.md, append log.md,
+  and add a Phase 3 entry to the mastery-layer tracker session log.
+- OUT OF SCOPE this session (do NOT do): backtesting, Neurospect-app integration, and the graded
+  learning roadmap / progress tracker (that is the FOLLOWING session).
+- Paul handles git commits — never commit. Respect the Isolation Rule throughout.
+```
 
 ## Next Session Boot Prompt (Phase 2 — ICT-course track) — ✅ EXECUTED 2026-07-17
 
