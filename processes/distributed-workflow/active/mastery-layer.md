@@ -23,7 +23,10 @@ positive expectancy → go live.*
    (much already exists). ✅ (Phase 2, 2026-07-17)
 4. **Unified model + frontier content** — synthesize both tracks into one playbook **and** research
    deep / unique / frontier ICT content that accelerates the path to mastery. A course-content
-   deep-research session (Phase 3). Backtesting is **out of scope** (reframe 2026-07-17). ⏭ **NEXT.**
+   deep-research session (Phase 3). Backtesting is **out of scope** (reframe 2026-07-17). ✅ (2026-07-17)
+5. **Graded learning roadmap + progress tracker** — sequence the unified playbook + frontier content into
+   one ordered path graded on the existing ladder/confidence/gate; plus a bounded Tier-1 upgrade pass on the
+   frontier pages (Phase 4). Backtesting remains out of scope. ⏭ **NEXT.**
 
 ## Lane
 
@@ -63,12 +66,19 @@ Aggregator + gap-fill (see boot prompt below). Delivered:
 `concepts/mastery/ict-course/{rules,exercises,tracker}.md` (no new learning-path/checklist — reuse
 existing). Additive cross-links from `course/README.md` + `entry-models/README.md`.
 
-### Phase 3 — Course-content deep-research (unified model + frontier ICT) ⏭ NEXT
+### Phase 3 — Course-content deep-research (unified model + frontier ICT) ✅ (2026-07-17)
 Reframed 2026-07-17 (see Decisions amendment): backtest gate **dropped**. A deep-research session that
 (a) reconciles Aura + ICT-course into **one unified playbook** (fills the reserved slot in
 `concepts/mastery/README.md`), and (b) researches + synthesizes **deep / unique / frontier ICT content**
 — cited, source-quality-vetted, pedagogically organized. A later session builds the graded learning
 roadmap + tracker over the result. Boot prompt provided to Paul 2026-07-17 (see chat/handoff).
+
+### Phase 4 — Graded learning roadmap + progress tracker (+ Tier-1 upgrade) ⏭ NEXT
+Sequence the [[concepts/mastery/unified/README|Unified Playbook]] and `concepts/advanced/*` into ONE ordered
+curriculum graded on the **existing** ladder/confidence/Readiness-to-Live Gate (reuse, don't reinvent):
+`concepts/mastery/unified/learning-path.md` (the sequenced spine, folding in the two per-track paths by
+reference) + `concepts/mastery/unified/tracker.md` (the living per-concept progress grid). Second thrust
+(context permitting): a bounded **Tier-1 upgrade pass** on the frontier pages. Boot prompt below.
 
 ## Session Log
 
@@ -115,7 +125,115 @@ roadmap + tracker over the result. Boot prompt provided to Paul 2026-07-17 (see 
   YAML); all new intra-wiki wikilinks resolve to real pages.
 - next: Phase 3 (unified-model deep-research) — deferred until both tracks are backtested.
 
-## Next Session Boot Prompt (Phase 3 — course-content deep research) ⏭ ACTIVE
+### 2026-07-17 — Phase 3 (course-content deep research: unified model + frontier ICT)
+- approach: Opus main session. Surveyed via 2 Explore agents (flagged AXL↔Aura divergences w/ file:line; frontier-topic
+  coverage gaps). Presented plan; Paul approved via AskUserQuestion — **focused** web iteration (not an exhaustive
+  Workflow), unified playbook → `concepts/mastery/unified/`. Thrust A written as direct synthesis; Thrust B via 3
+  parallel Sonnet research agents (WebSearch/WebFetch → adversarial verify → tier+label).
+- did (Thrust A — unified model, no web): `concepts/mastery/unified/README.md` (5-layer playbook: psychology →
+  structural primitives → nested-SMT confirmation → execution → risk; one-glance decision flow) +
+  `divergence-rulings.md` (R1–R8, each cited: SMT-role→COEXIST-LAYERED, swing-filter→COEXIST, quadrants→COEXIST,
+  order-block→SUPERSET, **risk fixed-$ vs %/R→SUPERSEDE-%/R [previously-unflagged, surfaced per Rule #6]**,
+  Time-Sum→DROP, 6S→ADOPT-additive, sequencing→psychology-first; + convergences). Two new **EMERGING** confluences:
+  nested SMT stack (R1), double-qualified swing (R2).
+- did (Thrust B — frontier, focused web): `concepts/advanced/` = README (Tier rubric + label key + WHERE/WHEN/
+  DIRECTION/CONFIRM confluence stack + unfalsifiability critique) + 4 pages: ict-macros-and-silver-bullet (SB
+  ESTABLISHED/Tier-1; macros community-reconstructed; killzone-boundary contradiction flagged), ipda-data-ranges
+  (20/40/60 ESTABLISHED; "liquidity matrix"→SPECULATIVE, real term = PD Array Matrix; IRL/ERL; LRLR/HRLR), 
+  quarterly-theory (EMERGING — Trader Daye, NOT ICT; True-Day-Open 3-referent disambiguation), cbdr-and-sd-projections
+  (CBDR/flout ESTABLISHED; SD=arithmetic ≠ Fibonacci ≠ statistical-std-dev; index-futures pip→point gap). Every
+  claim cited; contradictions surfaced; marketing win-rates rejected.
+- honesty note: web pass captured almost **no Tier-1 verbatim** (YouTube transcripts + X threads un-fetchable,
+  402/403) → most Thrust-B claims are corroborated-**Tier-2**. Upgrading key claims to Tier-1 (pull actual ICT
+  video transcripts) is the highest-value follow-up. Whole frontier confluence stack is **EMERGING, unbacktested.**
+- bookkeeping: `mastery/README.md` Unified row Deferred→Built (+ slot note, See Also); `index.md` (Unified track +
+  Advanced/Frontier section, `last_research`); `log.md` appended; this tracker Phase 3 ✅.
+- verified: isolation clean (no ALDC refs); no-drift honored (LINK, never restate canonical `ict-*`/`aura-*`/
+  entry-model pages); new intra-wiki wikilinks target real pages.
+- next: **graded learning roadmap + progress tracker** over the unified playbook + frontier pages (following
+  session, per amendment). Optional: Tier-1 upgrade pass on the frontier pages; later, backtesting (separate workstream).
+
+## Next Session Boot Prompt (Phase 4 — graded learning roadmap + Tier-1 upgrade) ⏭ ACTIVE
+
+Recommended launch: **Sonnet** (aggregation/sequencing that mirrors the two existing tracks; escalate to
+`opus` only if the cross-track sequencing gets genuinely hard). For the Tier-1 thrust the `/deep-research`
+skill / direct WebSearch+WebFetch is the tool. Working dir: `C:\Users\PaulRussell\repos\neurospect-wiki`. Paste:
+
+```
+Neurospect wiki — Phase 4: GRADED LEARNING ROADMAP + progress tracker (over the unified model + frontier ICT).
+Working dir: C:\Users\PaulRussell\repos\neurospect-wiki
+
+BOOT / CONTEXT
+1. Read CLAUDE.md IN FULL — obey: Isolation Rule (Neurospect lane only; NO ALDC content or refs),
+   Architecture Doc Integrity (canonical-doc / no-drift: LINK to existing pages, never restate), Page Format,
+   Rules #3 (update index.md), #4 (append log.md), #5 (prefer updating over creating), #6 (flag contradictions),
+   #7 (cite every claim). Paul handles git commits — NEVER commit.
+2. Read processes/distributed-workflow/active/mastery-layer.md IN FULL — the Decisions (note the 2026-07-17 PM
+   amendment: backtesting is OUT OF SCOPE) and the Phase 3 session log. This is the work plan.
+3. Survey what Phase 3 produced so you neither duplicate nor contradict it:
+   - concepts/mastery/README.md — the SHARED grading model (4-stage ladder Learned→Can-mark→Backtested→
+     Live-ready, 1–5 confidence, rep counters, the evidence-based Readiness-to-Live Gate). REUSE this; do not
+     invent a new grading system.
+   - concepts/mastery/unified/README.md — the 5-layer Unified Playbook + one-glance decision flow.
+   - concepts/mastery/unified/divergence-rulings.md — the 8 AXL↔Aura rulings (R1–R8).
+   - concepts/advanced/* — frontier hub + 4 pages (ict-macros-and-silver-bullet, ipda-data-ranges,
+     quarterly-theory, cbdr-and-sd-projections); each carries a source TIER + an ESTABLISHED/EMERGING/
+     SPECULATIVE label. Preserve those labels when the concept enters the roadmap.
+   - The tracks you sequence OVER (fold in by reference, do NOT restate): concepts/mastery/aura/{learning-path,
+     exercises,tracker}.md, concepts/mastery/ict-course/{exercises,tracker}.md, concepts/course/README.md.
+
+OBJECTIVE (pre-answered; refine only if genuinely ambiguous)
+Build the GRADED LEARNING ROADMAP + PROGRESS TRACKER that sequences the Unified Playbook and the frontier
+content into ONE ordered path to mastery, graded on the EXISTING ladder/confidence/gate. This is the deferred
+follow-on named in the tracker amendment. Two deliverables:
+
+  A. concepts/mastery/unified/learning-path.md — ONE unified, sequenced curriculum. Order the 5 playbook
+     layers (psychology → structural primitives → nested-SMT confirmation → execution → risk) into stages;
+     each stage lists: the concepts to master (LINK to the unified README layer + canonical concept pages),
+     the drills to run (LINK to aura/exercises + ict-course/exercises — never fork them), the ladder-stage
+     exit bar, and where each frontier concept (concepts/advanced/*) slots in as a LATER, confluence-stacking
+     stage (they depend on the primitives + SMT stack first). Fold aura/learning-path + course/README into this
+     single spine by REFERENCE, not restatement.
+  B. concepts/mastery/unified/tracker.md — the living per-concept progress grid, mirroring aura/tracker.md +
+     ict-course/tracker.md: every unified-playbook concept + every frontier concept gets a ladder-stage /
+     confidence(1–5) / rep-count row, grouped by learning-path stage, plus the Readiness-to-Live Gate (link it
+     from mastery/README — keep the evidence gate). Tag EMERGING/SPECULATIVE frontier rows as study-and-watch,
+     NOT trade-live-on.
+
+  Grading model: REUSE mastery/README's ladder + 1–5 confidence + rep counters + Readiness-to-Live Gate by
+  LINK. "Graded" = each concept carries its ladder stage + exit criteria + rep target, sequenced so earlier
+  stages gate later ones. Do NOT duplicate the mastery-model text.
+
+SECOND THRUST (only if context allows; otherwise leave for a follow-up and SAY SO in the session log):
+  Tier-1 UPGRADE PASS on concepts/advanced/*. Phase 3 captured almost no Tier-1 verbatim (YouTube/X
+  un-fetchable). Try to pull ACTUAL ICT primary sources to upgrade the highest-value corroborated-Tier-2
+  claims — prioritise: IPDA 20/40/60 mechanics, CBDR window + body/wick measurement, Midnight-Open bias,
+  Silver Bullet step-by-step (its video titles are already Tier-1; the mechanics are Tier-3). Update tier
+  labels + citations ONLY where a genuine primary source is found. Do NOT downgrade the honesty caveats or
+  inflate confidence. Bounded — no rabbit-holing.
+
+QUALITY BAR
+- No-drift: LINK to the mastery model, playbook, rulings, concept pages, entry-model YAML, and exercise
+  libraries — never restate them. If the roadmap needs a concept the wiki lacks, flag it; do not invent.
+- Keep EMERGING/SPECULATIVE labels attached when frontier concepts enter the roadmap — a learner must never be
+  told to trade live on unbacktested confluence. The Readiness-to-Live Gate governs sim→live.
+- Cite any new claim (Tier-1 pass). Surface contradictions; never smooth them.
+
+WORKFLOW / OUTPUT
+- FIRST present a short PLAN (plan mode) for approval before writing: the stage sequence, where each frontier
+  concept slots in, and the tracker grid shape. Do not create pages until approved.
+- THEN on approval: write learning-path.md + tracker.md; additive cross-links from unified/README + mastery/
+  README (add the Unified track's learning-path/tracker to See Also); update index.md (extend the Unified
+  track lines), append log.md, add a Phase 4 session-log entry to this tracker.
+- OUT OF SCOPE (do NOT do): backtesting (separate workstream), Neurospect-app integration.
+- Paul handles git commits — never commit. Respect the Isolation Rule throughout.
+```
+
+## Next Session Boot Prompt (Phase 3 — course-content deep research) — ✅ EXECUTED 2026-07-17
+
+> **This phase is complete** (see the 2026-07-17 Phase 3 session log above). The prompt below is retained as
+> a record of the plan. The next open work is a **graded learning roadmap + progress tracker** over the
+> unified playbook + frontier pages (deliberately deferred to a following session, per the amendment).
 
 Recommended launch: `claude --model opus[1m]`, then `/effort high`. The `/deep-research` skill is a
 **tool, not a requirement** — used for Thrust B's web fan-out; Thrust A is direct synthesis. Paste:

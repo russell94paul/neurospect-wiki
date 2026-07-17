@@ -6,6 +6,7 @@ last_fork: 2026-04-26-broker-integration-forked-from-journaling-ux
 last_build: 2026-04-26-phase4-deployment-complete
 last_design: 2026-04-24-phase4-coach-frontend-design
 last_ingest: 2026-07-16-aura-phase3-reconciliation
+last_research: 2026-07-17-mastery-phase3-unified-model-and-frontier-ict
 ---
 
 # Neurospect Wiki Index
@@ -156,6 +157,19 @@ readiness tracking. Two parallel tracks (Aura + ICT-course, both built); a unifi
   - [[concepts/mastery/ict-course/exercises]] — drills index + gap-fill (Module 2 + M4.3-4.4) + tape-reading drills from the 11 stream + 2 YouTube transcripts
   - [[concepts/mastery/ict-course/tracker]] — per-lesson + per-entry-model ladder/confidence/reps + backtest-expectancy + AXL readiness gate
   - *(no separate learning-path/checklist — reuses [[concepts/course/README]] and the entry-model YAML)*
+- **Unified track (Phase 3 — reconciles both):**
+  - [[concepts/mastery/unified/README]] — the Unified Playbook: one 5-layer sequence (psychology → structural primitives → nested-SMT confirmation → execution → risk) + one-glance decision flow
+  - [[concepts/mastery/unified/divergence-rulings]] — 8 cited rulings (R1–R8) reconciling every flagged AXL↔Aura divergence; two new EMERGING confluences (nested SMT stack; double-qualified swing)
+
+### Advanced / Frontier (Phase 3 deep research)
+
+Deep, less-common ICT concepts researched from the wider body of knowledge to extend the unified playbook — every page source-tiered and labelled ESTABLISHED / EMERGING / SPECULATIVE-or-FRINGE.
+
+- [[concepts/advanced/README]] — frontier hub: source-quality rubric + the cross-cutting WHERE/WHEN/DIRECTION/CONFIRM confluence stack + the unfalsifiability critique
+- [[concepts/advanced/ict-macros-and-silver-bullet]] — ICT Macros, killzone micro-structure / Judas swing, Silver Bullet (one model at three zoom levels)
+- [[concepts/advanced/ipda-data-ranges]] — IPDA 20/40/60-day ranges + IRL/ERL; "liquidity matrix" debunked → PD Array Matrix
+- [[concepts/advanced/quarterly-theory]] — Quarterly Theory / 90-min cycles / True-Day-Open disambiguation (community — Trader Daye, not ICT)
+- [[concepts/advanced/cbdr-and-sd-projections]] — CBDR / Asian range / flout + standard-deviation projections (SD ≠ Fibonacci disambiguation)
 
 ### Patterns
 

@@ -30,10 +30,14 @@ library, and a living mastery tracker.
 |---|---|---|
 | [[concepts/mastery/aura/rules\|Aura (dOoMeR)]] | Sequential-SMT model — psychology-first; ranges + triads + Sequential SMT + Aura Asset; Dante risk | **Built (Phase 1)** |
 | [[concepts/mastery/ict-course/rules\|ICT-course (MrWitness-AXL)]] | four-stage price delivery; consolidation / E&R / reversal / London / Model 2022 OTE / daily-bias / SMT; AXL discipline | **Built (Phase 2)** |
-| **Unified model** | a single reconciled playbook merging both | **Deferred** — a dedicated deep-research session *after* both tracks exist |
+| [[concepts/mastery/unified/README\|Unified model]] | a single reconciled 5-layer playbook merging both, with per-divergence rulings | **Built (Phase 3, 2026-07-17)** |
 
-> The unified-model slot is intentionally empty. Do not attempt to merge the two models until both tracks
-> are complete and each has been run through backtesting; the merge is its own workstream.
+> **Unified model — built.** The [[concepts/mastery/unified/README|Unified Playbook]] reconciles the two
+> tracks into one principled sequence (psychology → structural primitives → nested-SMT confirmation →
+> execution → risk); every AXL↔Aura divergence has a cited ruling in
+> [[concepts/mastery/unified/divergence-rulings]]. Frontier ICT content that extends its execution/confirmation
+> layers lives in [[concepts/advanced/README]]. *(The original "merge only after backtesting" precondition was
+> dropped in the 2026-07-17 PM tracker amendment — this layer is course content, not a live-trading deliverable.)*
 
 ## How this layer relates to the rest of the wiki (no-drift rule)
 
@@ -107,6 +111,7 @@ size up.
 
 - **Aura track:** [[concepts/mastery/aura/rules]] · [[concepts/mastery/aura/checklist]] · [[concepts/mastery/aura/learning-path]] · [[concepts/mastery/aura/exercises]] · [[concepts/mastery/aura/tracker]]
 - **ICT-course track:** [[concepts/mastery/ict-course/rules]] · [[concepts/mastery/ict-course/exercises]] · [[concepts/mastery/ict-course/tracker]] *(learning-path + checklist reuse [[concepts/course/README]] and the entry-model YAML — not duplicated here)*
+- **Unified track:** [[concepts/mastery/unified/README]] (the playbook) · [[concepts/mastery/unified/divergence-rulings]] (the reconciliation) · [[concepts/advanced/README]] (frontier ICT that extends it)
 - [[concepts/aura/README]] — the Aura concept KB this track builds on
 - [[concepts/course/README]] — the ICT-course learning path (Track 2 will build on it)
 - [[concepts/entry-models/README]] — per-strategy execution checklists (canonical; the ICT track links here)
