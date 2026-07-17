@@ -684,6 +684,66 @@ Paul handles git commits — never run git commit.
 - did: specced the table in [[concepts/architecture/trade-schema]] §Missed Trades — fields (date/session/setup, `miss_type` = almost_took|hesitated|canceled, `hesitation_tags`, planned entry/stop/target, `hypothetical_outcome`, `hypothetical_r`, screenshot child table), full DDL (2 new ENUMs, 2 tables, 4 indexes, trigger), REST API (`/api/missed-trades`), and 3 analytics endpoints. The headline analytic is opportunity cost: forgone R on missed winners vs. R saved by canceling losers.
 - status: **designed, not yet implemented.** A future backend session adds migration `000X_missed_trades` + routers + a "Missed Trades" frontend surface. Analytics pair with the existing `mistake_tags` layer and feed [[concepts/roadmap/ideas/mistake-driven-action-items]].
 - next: implement when the journal module gets its next build cycle; no code written this session.
+  Boot prompt for that build is below.
+
+## Next Session Boot Prompt — `missed_trades` Implementation
+
+**Recommended model:** Sonnet (execution of an already-approved spec). **Working directory:**
+`C:\Users\PaulRussell\repos\neurospect-api` (backend build; frontend is a follow-on session).
+
+````
+You are implementing the `missed_trades` feature in the Neurospect backend. The schema is already
+designed and approved — this session writes the code to match it. Do NOT redesign the schema.
+
+Boot procedure:
+1. Read `C:\Users\PaulRussell\repos\neurospect-wiki\CLAUDE.md` (esp. Architecture Doc Integrity +
+   post-implementation reconciliation — you MUST reconcile the wiki after coding).
+2. Read `concepts/architecture/trade-schema.md` §"Missed Trades (`missed_trades`)" — the CANONICAL
+   spec: field table, DDL (2 ENUMs `miss_type`/`hypothetical_outcome`, 2 tables `missed_trades` +
+   `missed_trade_screenshots`, 4 indexes, updated_at trigger), REST API (`/api/missed-trades` + a
+   screenshots subresource), and 3 analytics endpoints (missed-summary, missed-by-reason,
+   missed-by-setup). This is the contract — build exactly this.
+3. Read `processes/distributed-workflow/active/journal-analytics.md` (this tracker) — the 2026-07-16
+   `missed_trades` decision entry for rationale (separate table so executed-trade analytics aren't
+   diluted; Dante's canceled-order edge; headline metric = opportunity cost).
+4. In `neurospect-api`, read the EXISTING patterns to mirror (do not invent new conventions):
+   - `alembic/versions/` — latest migration (chain the new one off its head; use `ALTER TYPE`/
+     `CREATE TYPE` style already in use). Number it `000X_missed_trades`.
+   - `app/models/` — `trade.py`, `trade_screenshot.py`, `enums.py` (ORM + ENUM patterns;
+     `DateTime(timezone=True)`, soft-delete columns).
+   - `app/schemas/` — `trade.py`, `screenshot.py` (Pydantic Create/Update/Response + list wrappers).
+   - `app/routers/` — `trades.py`, `screenshots.py`, `analytics.py` (CRUD w/ user scoping +
+     soft-delete filter; multipart screenshot upload via the R2 `get_r2()` dependency that 503s when
+     R2 is unconfigured locally; analytics use raw `text()` SQL).
+   - `app/main.py` — how routers are mounted (mount the new `missed_trades` router + its analytics).
+   - `tests/` — existing test style.
+
+Implement (mirroring the above):
+- Alembic migration `000X_missed_trades`: both ENUMs, both tables, 4 indexes, the updated_at trigger
+  on `missed_trades` (reuse the existing `update_updated_at()` function).
+- ORM models: `MissedTrade`, `MissedTradeScreenshot`.
+- Pydantic schemas: MissedTradeCreate / MissedTradeUpdate / MissedTradeResponse / list wrapper;
+  screenshot response.
+- Router `/api/missed-trades`: POST, GET (with the filters listed in the spec), GET{id}, PATCH
+  (partial, `exclude_unset=True`), DELETE (soft), plus the 3 screenshot endpoints (R2 key pattern
+  `{user_id}/missed/{missed_trade_id}/{uuid4()}.{ext}` — no phase segment).
+- Analytics endpoints: missed-summary (count; would_win vs would_lose; forgone R = sum of positive
+  hypothetical_r; R-saved = sum of negative hypothetical_r on canceled/hesitated), missed-by-reason
+  (unnest hesitation_tags + count), missed-by-setup (count + forgone R per setup_type).
+- Tests for the router + analytics.
+- Verify: run the migration against the local Docker Postgres (`neurospect-db`), start uvicorn with
+  DEBUG=true, exercise create → patch (fill hypothetical outcome) → list → missed-summary.
+
+Post-session (MANDATORY per wiki Architecture Doc Integrity rules):
+- Update `concepts/architecture/trade-schema.md` §Missed Trades: change the status line from
+  "designed, not yet implemented" to implemented, and set the migration number to the real one.
+- Add a session-log entry to this tracker; update `index.md` + append `log.md`.
+- If any implementation decision deviates from the spec, document it and update the spec.
+- Paul handles git commits — never run git commit.
+
+Follow-on (separate session): add a "Missed Trades" surface to `neurospect-app` (list + entry form +
+an opportunity-cost tile on the dashboard), mirroring the existing trade CRUD + analytics components.
+````
 
 ## See Also
 
