@@ -1,7 +1,7 @@
 ---
 tags: [index, navigation]
 created: 2026-04-18
-updated: 2026-07-16
+updated: 2026-07-17
 last_fork: 2026-04-26-broker-integration-forked-from-journaling-ux
 last_build: 2026-04-26-phase4-deployment-complete
 last_design: 2026-04-24-phase4-coach-frontend-design
@@ -139,6 +139,24 @@ flagged, never silently merged, with two-way cross-refs. See [[processes/distrib
 - [[concepts/aura/risk-management]] — Dante "Blueprint": sizing, daily stop, 10R circuit-breaker, expectancy (aura-13)
 - [[concepts/aura/trade-reviews]] — 13 consolidated worked examples (aura-18…30)
 
+### Mastery (Learn-to-Execute)
+
+The learn-to-execute layer: turning the models into live-trading skill, with drills and evidence-based
+readiness tracking. Two parallel tracks (Aura + ICT-course, both built); a unified model is deferred.
+
+- [[concepts/mastery/README]] — mastery hub: the 4-stage ladder, confidence scale, and Readiness-to-Live Gate
+- **Aura (dOoMeR) track:**
+  - [[concepts/mastery/aura/rules]] — the Aura model as an executable rulebook (54 rules, cited to aura-NN)
+  - [[concepts/mastery/aura/checklist]] — pre-market → framing → entry → management → exit → review sheet
+  - [[concepts/mastery/aura/learning-path]] — sequenced curriculum (Stage 0 psychology → Stage 6 live)
+  - [[concepts/mastery/aura/exercises]] — drill library (hand-mark + tool-assisted + replay + tape + study-replicate)
+  - [[concepts/mastery/aura/tracker]] — living per-concept mastery + backtest-expectancy + readiness tracker
+- **ICT-course (MrWitness-AXL) track:**
+  - [[concepts/mastery/ict-course/rules]] — the 16 lessons' scattered rules normalized into one cited rulebook (41 rules), reconciling the two extra checklist/routine loci
+  - [[concepts/mastery/ict-course/exercises]] — drills index + gap-fill (Module 2 + M4.3-4.4) + tape-reading drills from the 11 stream + 2 YouTube transcripts
+  - [[concepts/mastery/ict-course/tracker]] — per-lesson + per-entry-model ladder/confidence/reps + backtest-expectancy + AXL readiness gate
+  - *(no separate learning-path/checklist — reuses [[concepts/course/README]] and the entry-model YAML)*
+
 ### Patterns
 
 _None yet._
@@ -159,6 +177,7 @@ _None yet._
 - [[processes/distributed-workflow/active/monorepo-migration]] — consolidate `neurospect-wiki` + `neurospect-api` + `neurospect-app` into one `neurospect` monorepo. Phase 0 (scoping).
 
 - [[processes/distributed-workflow/active/aura-ingest]] — transcribe + synthesize the second mentor corpus (Aura / dOoMeR); reconcile into existing notes. **Complete** — all phases done (30 transcripts, 14 concept pages, reconciled into ict-*/entry-models/schema/roadmap).
+- [[processes/distributed-workflow/active/mastery-layer]] — learn-to-execute layer (rules/checklist/learning-path/exercises/tracker per model). **Phases 1–2 done** (mastery system + Aura track + ICT-course track); Phase 3 (unified model) deferred.
 
 #### Zeus OS (Product Suite)
 

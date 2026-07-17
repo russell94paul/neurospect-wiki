@@ -48,6 +48,12 @@ Aura is an ICT/SMC framework, but it diverges from the MrWitness-AXL corpus in t
 
 ## Suggested learning path
 
+> **Want to *practise and master* this, not just read it?** The drill-based, progress-tracked version of
+> this path — with rules, an execution checklist, hand-marking + backtest exercises, and a
+> readiness-to-live gate — lives in [[concepts/mastery/aura/learning-path]] (part of the
+> [[concepts/mastery/README|Mastery layer]]). The outline below is the reading order; the mastery track is
+> the *doing* order.
+
 1. **Psychology & discipline (videos 1–5)** — the foundation the rest is built on:
    - [[concepts/aura/psychology-foundations]] — why traders fail; systems > goals (aura-01)
    - [[concepts/aura/mind-and-emotional-control]] — the "four killers"; circuit-breaker rules (aura-02, 03)
@@ -71,6 +77,7 @@ Aura is an ICT/SMC framework, but it diverges from the MrWitness-AXL corpus in t
 
 ## See Also
 
+- [[concepts/mastery/aura/rules]] — this framework distilled into an executable rulebook (+ checklist, learning path, exercises, tracker)
 - [[entities/people/doomer]] — the Aura mentor
 - [[processes/distributed-workflow/active/aura-ingest]] — ingest workstream tracker (Phase 3 = reconciliation)
 - [[concepts/course/README]] — the analogous MrWitness-AXL course KB

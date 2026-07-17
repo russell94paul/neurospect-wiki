@@ -89,3 +89,4 @@ Each lesson page has:
 - [[concepts/business-logic/ict-liquidity]] — reference KB for liquidity concepts
 - [[concepts/business-logic/ict-narratives]] — reference KB for APD stages and sessions
 - [[concepts/entry-models/README]] — entry model library (use after completing course)
+- [[concepts/mastery/ict-course/rules]] — the *doing* layer: this course's rules as one executable rulebook, drills, and a readiness-to-live tracker (part of the [[concepts/mastery/README|Mastery layer]]). This page is the reading order; the mastery track is the practising order.

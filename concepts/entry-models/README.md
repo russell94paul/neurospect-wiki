@@ -90,3 +90,4 @@ See [[smt-confirmation-entry]] for the fully attributed, merged Sequential SMT e
 - [[concepts/business-logic/ict-entry-models]] — reference KB for PDA mechanics
 - [[concepts/business-logic/ict-narratives]] — bias and session context
 - [[processes/distributed-workflow/active/ai-coach]] — the AI coach module that consumes these YAML blocks
+- [[concepts/mastery/ict-course/tracker]] — the mastery layer's per-model backtest/readiness tracker (Stage 7 drills each of these checklists in bar-replay toward positive expectancy; it **links** to these YAML blocks, never forks them)
