@@ -112,6 +112,8 @@ Enrich canonical pages with attributed Aura content (additive only; flag contrad
 - `ict-liquidity` ← ranges, gaps · `ict-market-structure` ← swing-points
 - entry-models library ← aura-asset, time-sum, trade framing
 - `journal-analytics` tracker + roadmap ideas ← journaling-system + psychology block
+- `trade-schema.md` ← spec a new lightweight `missed_trades` table (decided — see the
+  Phase 2 log's "next" block for the field list).
 Deepen `entities/people/doomer.md`. Two-way cross-refs.
 
 ### Phase 4 — Close-out
@@ -176,7 +178,11 @@ Update `index.md` (Aura concept section + sources), append `log.md` per phase, l
   - `ict-liquidity.md` / `ict-market-structure.md` / `ict-order-flow.md` ← ranges (note: Aura uses
     discount/EQ/premium, **no quadrants**), gaps, swing points, HTF→LTF cascade.
   - `trade-schema.md` **gap**: missed/canceled trades are not modeled — Aura's strongest journaling
-    anecdote (Dante tracking canceled orders). Decision needed: new table vs. status flag.
+    anecdote (Dante tracking canceled orders). **DECIDED 2026-07-16 (Paul): new lightweight
+    `missed_trades` table** (separate from `trades`, so executed-trade analytics aren't diluted).
+    Phase 3 should spec this table (fields: date/session, setup, why-missed/canceled, the
+    hesitation reason, screenshot, and the price outcome vs. the plan) and note it in
+    `trade-schema.md` + the `journal-analytics` tracker.
   - roadmap ideas ← journaling-system (reduce-journaling-friction), psychology "four killers"
     (trader-psychology-profiler), risk rules (overtrading-risk-limits), never-miss-twice
     (mistake-driven-action-items).
@@ -186,21 +192,40 @@ Update `index.md` (Aura concept section + sources), append `log.md` per phase, l
 
 ## Next Session Boot Prompt (Phase 3 — reconciliation)
 
+Paste this into a fresh/cleared session pointed at `C:\Users\PaulRussell\repos\neurospect-wiki`:
+
 ```
-Read C:\Users\PaulRussell\repos\neurospect-wiki\CLAUDE.md, then this tracker
-(processes/distributed-workflow/active/aura-ingest.md — especially the 2026-07-16 Phase 2 log
-and its "next (Phase 3)" target list), then index.md.
+We are doing PHASE 3 of the Aura ingest workstream. Boot up:
+1. Read CLAUDE.md (esp. the Isolation Rule + Architecture Doc Integrity + Rules #6 "flag
+   contradictions, never silently overwrite").
+2. Read processes/distributed-workflow/active/aura-ingest.md IN FULL — especially the
+   2026-07-16 Phase 2 session log and its "next (Phase 3)" target list, which IS the work plan.
+3. Read index.md for the catalog.
 
-Phases 0–2 are complete: 30 transcripts in sources/neurospect/aura/, and 14 standalone Aura
-concept pages in concepts/aura/.
+Context: Phases 0–2 are complete and committed (commit a4701a2). 30 immutable transcripts live
+in sources/neurospect/aura/; 14 standalone Aura concept pages live in concepts/aura/ (fully
+isolated from the existing notes so far).
 
-Do Phase 3 — reconciliation. Enrich the canonical concepts/business-logic/ict-* pages (and the
-entry-models library, journal-analytics tracker, and roadmap ideas) with ATTRIBUTED Aura content.
-Rules: additive only; attribute every merged claim ("MrWitness-AXL: X; Aura (dOoMeR): Y"); flag
-contradictions explicitly, never silently overwrite (CLAUDE #6). Add two-way cross-refs between
-ict-* pages and the concepts/aura/ pages. Use the per-target list in the Phase 2 session-log
-"next" block as the work plan. Then deepen entities/people/doomer.md from the synthesized pages,
-and run a lint pass (orphans, cross-refs, isolation-rule check). Update index.md and log.md.
+Task — Phase 3 reconciliation: enrich the canonical concepts/business-logic/ict-* pages (plus the
+entry-models library, the journal-analytics tracker, roadmap ideas, and trade-schema.md) with
+ATTRIBUTED Aura content, using the per-target list in the Phase 2 log.
+
+Hard rules:
+- Additive only. Attribute every merged claim, e.g. "MrWitness-AXL: X; Aura (dOoMeR): Y".
+- Flag contradictions explicitly (CLAUDE #6) — never silently overwrite verified notes.
+- Add two-way cross-refs between the ict-* pages and the concepts/aura/ pages.
+- Respect the Isolation Rule (no ALDC references).
+
+Decided inputs (do NOT re-litigate):
+- trade-schema.md: add a NEW lightweight `missed_trades` table (separate from `trades`). Spec
+  fields per the Phase 2 log's "next" block; note it in trade-schema.md + journal-analytics.
+- Patch concepts/aura/ranges.md + gaps.md to cross-ref "cracking correlation" (it is a real term,
+  documented in concepts/aura/sequential-smt.md; the structure agent dropped it as garbled).
+
+Approach: consider fanning out per-target subagents on Sonnet (as Phase 2 did), but since this
+edits VERIFIED notes, review each merge before finalizing. Then deepen entities/people/doomer.md
+from the synthesized pages, run a lint pass (orphans, cross-refs, isolation-rule check), and
+update index.md + log.md. Ask Paul before committing.
 ```
 
 ## See Also
