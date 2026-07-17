@@ -88,6 +88,8 @@ Behavioural and intelligence layers. Most of these depend on **Next** items havi
 - [[concepts/roadmap/ideas/neurospect-voice]] — voice-based ICT/psychology coach with persistent user memory · *backlog*
 - [[concepts/roadmap/ideas/in-app-course-section]] — structured learning surface inside the app, sourced from the existing course KB · *backlog*
 - [[concepts/roadmap/ideas/ui-design-exploration]] — differentiated UI/workflow patterns ("Clause" design exploration); runs in parallel · *backlog*
+- [[concepts/roadmap/ideas/trading-improvement-engine]] — AI-proposed trading plan adjustments from journal/P&L analysis; closed-loop: detect → propose → approve → track · *backlog*
+- [[concepts/roadmap/ideas/strategy-adjustment-portal]] — structured plan change requests with AI coach evaluation before committing · *backlog*
 - **AI-generated ICT trade reviews** *(original v1 Phase 3.)*
 - **Personal edge detection / A+ setup scoring** *(original v1 Phase 3.)*
 - **Auto-tagging from chart/image/context** *(original v1 Phase 3.)*

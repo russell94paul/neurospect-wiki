@@ -25,6 +25,8 @@ One stub per brainstormed feature/concept. Each stub is intentionally short; the
 - [[concepts/roadmap/ideas/neurospect-voice]] — voice psychology coach with persistent memory · *backlog*
 - [[concepts/roadmap/ideas/in-app-course-section]] — structured learning surface inside the app · *backlog*
 - [[concepts/roadmap/ideas/ui-design-exploration]] — differentiated UI/workflow patterns · *backlog*
+- [[concepts/roadmap/ideas/trading-improvement-engine]] — AI-proposed trading plan adjustments from journal analysis · *backlog*
+- [[concepts/roadmap/ideas/strategy-adjustment-portal]] — structured plan change requests with AI coach evaluation · *backlog*
 
 ## Strategic horizon
 
