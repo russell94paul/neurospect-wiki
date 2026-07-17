@@ -116,9 +116,12 @@ Enrich canonical pages with attributed Aura content (additive only; flag contrad
   Phase 2 log's "next" block for the field list).
 Deepen `entities/people/doomer.md`. Two-way cross-refs.
 
-### Phase 4 — Close-out
+### Phase 4 — Close-out ✅ (2026-07-16)
 Update `index.md` (Aura concept section + sources), append `log.md` per phase, lint pass
-(orphans, cross-refs, isolation-rule check).
+(orphans, cross-refs, isolation-rule check). Done alongside Phase 3: index.md Aura section marked
+reconciled + `last_ingest` bumped, `log.md` Phase 3 row appended, lint clean (isolation rule held,
+all new cross-refs resolve, additive-only verified via git). Reverse `mrwitness-axl → doomer`
+entity link added. **Aura ingest workstream complete — all phases done.**
 
 ## Session Log
 

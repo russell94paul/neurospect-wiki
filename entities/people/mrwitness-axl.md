@@ -57,4 +57,5 @@ The Neurospect mentorship content is delivered by two instructors who co-teach e
 - [[ict-market-structure]] — Vol 3 Classes 2, 4, 5
 - [[ict-order-flow]] — Vol 4 Class 1
 - [[ict-smt]] — Vol 4 Class 2
+- [[entities/people/doomer]] — second mentor corpus (Aura / dOoMeR); reconciled into these notes in Phase 3 (attributed, divergences flagged)
 - [[entities/projects/neurospect]] — parent project
