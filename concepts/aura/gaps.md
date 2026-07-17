@@ -68,6 +68,8 @@ The practical trading application dOoMeR gives directly (aura-09):
 - **Long bias:** target = premium of the current range, specifically liquidity within a gap in that premium.
 - He references that Squash SMT (a divergence check, detailed in [[concepts/aura/sequential-smt]]) "can help gauge your targets" alongside gap liquidity, but defers the full mechanics of trade framing to a later lesson (aura-12) — out of scope here.
 
+> **Cross-ref — cracking correlation within gaps:** a recurring higher-probability signal in the corpus is a **cracking correlation** landing *inside* a shared gap — one triad asset retraces into a common FVG/NWOG/NDOG while another does not (an "SMT fail"). The term "cracking correlation" and its correlation baseline live in [[concepts/aura/triads-asset-selection]] and [[concepts/aura/sequential-smt]]; worked examples of it occurring within gaps are in [[concepts/aura/trade-reviews]].
+
 ### Patience rule
 
 dOoMeR flags a specific failure mode: taking a premature scalp off a level that looks like a gap-liquidity reversal, without waiting for price to actually reach the deeper discount/premium target where the larger expansive move originates:
@@ -93,5 +95,7 @@ Go back to the ~50 ranges marked out in the prior lesson's homework (aura-08) an
 - [[concepts/aura/ranges]] — gaps are located specifically within a range's discount/premium
 - [[concepts/aura/swing-points]] — the liquidity nested inside a gap is itself a swing high/low
 - [[concepts/aura/sequential-smt]] — Squash SMT referenced here as a target-gauging tool, detailed on that page
+- [[concepts/aura/triads-asset-selection]] — the correlation baseline behind "cracking correlation" within gaps
+- [[concepts/business-logic/ict-liquidity]] — canonical FVG/inefficiency note; Aura gap types + "what lies within" reconciled into it (Phase 3)
 - [[entities/people/doomer]]
 - [[concepts/aura/README]]

@@ -75,6 +75,8 @@ One week later, dOoMeR refines the method taught in aura-08 by introducing indic
 
 > "I want to position the extremes of my ranges... on swing points, higher time frame swing points that have SMT within them." (aura-11)
 
+(The underlying SMT divergence used to qualify these anchors — one triad asset failing to confirm a level the others take — is what dOoMeR calls **cracking correlation**; the term and its correlation baseline are documented in [[concepts/aura/triads-asset-selection]] and [[concepts/aura/sequential-smt]].)
+
 This directly builds on the qualification rule from [[concepts/aura/swing-points]] — swing points with SMT hold more reliably, so they make better range anchors than unqualified swing points. Key refinements from aura-11:
 
 - **New range trigger (refined):** a HTF Sequential SMT event plus an expansive move away from the prior trend is the confirmation signal to anchor a new range at that swing point. Tracking continues "until we either have an opposing sequential SMT or another sequential [SMT] of the same time frame" — either can validly close out the range.
@@ -102,5 +104,7 @@ Full trade-framing mechanics (entries without Sequential SMT, model construction
 - [[concepts/aura/swing-points]] — ranges are anchored on swing points; SMT-qualified swing points make stronger anchors
 - [[concepts/aura/gaps]] — liquidity within gaps refines exactly where inside a range's discount/premium price is headed
 - [[concepts/aura/sequential-smt]] — the SMT mechanics used in aura-11 to qualify range anchors
+- [[concepts/aura/triads-asset-selection]] — the correlation baseline behind "cracking correlation" SMT
+- [[concepts/business-logic/ict-liquidity]] — canonical liquidity + premium/discount note; Aura ranges reconciled into it (Phase 3), incl. the quadrant-vs-discount/EQ/premium divergence
 - [[entities/people/doomer]]
 - [[concepts/aura/README]]

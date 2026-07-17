@@ -1,9 +1,14 @@
 ---
 tags: [entry-models, library, neurospect]
 aliases: [Entry Models Library, Strategy Library]
-sources: []
+sources:
+  - sources/neurospect/aura/aura-08-ranges.md
+  - sources/neurospect/aura/aura-09-gaps-what-lies-within.md
+  - sources/neurospect/aura/aura-11-ranges-and-sequential-smt.md
+  - sources/neurospect/aura/aura-12-confirming-sequential-smt-and-framing-trades.md
+  - sources/neurospect/aura/aura-15-aura-asset.md
 created: 2026-04-22
-updated: 2026-04-22
+updated: 2026-07-16
 ---
 
 # Entry Models Library
@@ -64,6 +69,18 @@ If any of these five are missing, do not take the trade regardless of how clean 
 **Target defaults:**
 - First partial: opposite side of the range or the first deviation beyond the obvious liquidity level
 - Runner: previous day high/low; -2 to -2.5 Fibonacci deviation from the manipulation swing
+
+---
+
+## Aura (dOoMeR) — A Parallel Entry Philosophy
+
+**Attribution:** Aura (dOoMeR) is a second mentor corpus ingested into this wiki (see [[concepts/aura/README]]). Its entry philosophy runs in parallel to the MrWitness-AXL models above — it is not merged into a single checklist with them.
+
+Aura frames every entry off two structural primitives — [[concepts/aura/ranges|ranges]] (discount/equilibrium/premium) and [[concepts/aura/gaps|gaps]] (specifically the liquidity resting *within* a gap in the range's discount/premium) — confirmed by [[concepts/aura/sequential-smt|Sequential SMT]], a fractal, cross-time-cycle divergence filter, rather than same-timeframe triad divergence alone. Every triad additionally carries a fourth divergence leg, the [[concepts/aura/aura-asset|Aura Asset]] (6S, Swiss Franc futures), used as a time-synchronized dollar reference. The full top-down application, cascading from quadrennial cycle down to a 5m entry trigger, is documented in [[concepts/aura/htf-ltf-application]].
+
+> **Divergence:** Aura deliberately uses a narrower PDA vocabulary than this library. Ranges, gaps, and the liquidity nested within them are the only structural elements dOoMeR names — order blocks, breaker blocks, and OTE are explicitly rejected as unnecessary ("all I'm looking for are expansive moves," per [[concepts/aura/ranges]]). This contrasts with this library's richer PDA set (FVG, OB, OTE, breaker, rejection block, CSD, etc. — see [[concepts/business-logic/ict-entry-models]]). Noted here rather than reconciled — the two vocabularies are not merged.
+
+See [[smt-confirmation-entry]] for the fully attributed, merged Sequential SMT entry mechanics (HTF cascade → iFVG entry → Sequential Skip fallback → cross-asset variant).
 
 ---
 

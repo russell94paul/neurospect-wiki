@@ -1,14 +1,16 @@
 ---
 tags: [concept, business-logic, ict, market-structure, neurospect]
-aliases: [ICT Market Structure, MSS, BOS, Market Structure Shift, CSD, STH, STL, ITH, ITL, LTH, LTL, Market Structure Fractality]
+aliases: [ICT Market Structure, MSS, BOS, Market Structure Shift, CSD, STH, STL, ITH, ITL, LTH, LTL, Market Structure Fractality, SMT-Qualified Swing Point]
 sources:
   - sources/neurospect/2026-04-18-vol3-class2-market-structure-fractality.md
   - sources/neurospect/2026-04-18-vol3-class4-market-structure-deviations.md
   - sources/neurospect/2026-04-18-vol3-class5-model-2022-ote-csd.md
   - sources/neurospect/2026-04-18-vol4-class1-htf-ltf-orderflow.md
   - sources/neurospect/2026-04-18-vol1-class4-notes.md
+  - sources/neurospect/aura/aura-06-swing-points.md
+  - sources/neurospect/aura/aura-11-ranges-and-sequential-smt.md
 created: 2026-04-18
-updated: 2026-04-20
+updated: 2026-07-16
 ---
 
 # ICT Market Structure
@@ -26,6 +28,21 @@ Price creates three orders of swing highs and swing lows. Each level requires sp
 | Long-Term High/Low | LTH / LTL | Intermediate-term high/low taken out by a subsequent move |
 
 **Key rule:** A STL is **suspect** — you cannot assume it will hold. Only once a STL has been violated and the resulting price leg fills or creates a gap does it become an ITL. The ITL is the price you must protect in your trade.
+
+## Aura (dOoMeR): Swing Points and SMT-Qualification
+
+**Convergence on the base pattern:** Aura's swing-point definition is the same 3-candle pivot used above — a swing low is a "lower low" into the pivot candle followed by a "higher low" out of it (mirrored for swing highs), with candle 2 as the pivot/swing point itself (aura-06). MrWitness-AXL and Aura (dOoMeR) independently teach the identical base 3-candle structure — the mentors agree on this atomic definition.
+
+**Divergent qualification filter:** the two mentors diverge on *which* swing points are significant enough to trust, using two different filters on top of the same base pattern:
+
+| | MrWitness-AXL (this page, above) | Aura (dOoMeR) |
+|---|---|---|
+| Filter | Gap qualification — a swing becomes ITH/ITL only when its price leg **fills or creates a FVG** | SMT qualification — a swing point is significant only when it is **SMT-qualified** (SMT divergence occurred between correlated assets in the triad at that swing) |
+| Unqualified swing | STH/STL — "suspect," not to be assumed to hold | Non-SMT swing point — weaker, more likely to be swept/invalidated |
+| Qualified swing | ITH/ITL — the level to protect in a trade | SMT-qualified swing point — a stronger anchor (e.g. for range extremes, see [[concepts/aura/ranges]]) |
+| Quote | "The ITL is the price you must protect in your trade." | "Swing points that have sequential or SMT within them have a higher chance of holding compared to sweet points that don't." (aura-11) |
+
+Both filters solve the same problem — not every swing point is worth trusting — but MrWitness-AXL filters by the swing's relationship to an FVG (a single-asset, price-structure test), while Aura filters by intermarket SMT divergence (a multi-asset, correlation test). These are presented as two different lenses on the same underlying question, not as a contradiction to be resolved. See [[concepts/aura/swing-points]] for Aura's full treatment, including the worked SMT example.
 
 ## Market Structure Fractality
 
@@ -106,3 +123,4 @@ Three ways a market trend reverses:
 - [[ict-entry-models]] — MSS and CSD as entry triggers (Model 2022 + OTE)
 - [[ict-smt]] — intermarket confirmation of structural moves
 - [[ict-deviations]] — measuring targets beyond the obvious liquidity level
+- [[concepts/aura/swing-points]] — Aura's 3-candle pivot (converges with the definition above) and SMT-qualification filter (diverges from gap-qualification)

@@ -5,7 +5,7 @@ updated: 2026-07-16
 last_fork: 2026-04-26-broker-integration-forked-from-journaling-ux
 last_build: 2026-04-26-phase4-deployment-complete
 last_design: 2026-04-24-phase4-coach-frontend-design
-last_ingest: 2026-07-16-aura-phase2-synthesis
+last_ingest: 2026-07-16-aura-phase3-reconciliation
 ---
 
 # Neurospect Wiki Index
@@ -115,10 +115,13 @@ Forward-looking product roadmap (horizons: Now / Next / Later / Strategic / Rese
 - [[concepts/entry-models/daily-bias-model]] — HTF FVG + opening price prerequisite filter; integrates with all other models; YAML block (Vol 2 Cls 4)
 - [[concepts/entry-models/smt-confirmation-entry]] — NQ/ES/YM divergence at manipulation leg; Price SMT + PDR SMT; trust-the-program; YAML block (Vol 4 Cls 2)
 
-### Aura Framework (second mentor corpus — standalone, pre-reconciliation)
+### Aura Framework (second mentor corpus)
 
-Independent ICT/SMC corpus by [[entities/people/doomer]], captured on its own terms before being
-reconciled into the canonical `ict-*` pages (Phase 3). See [[processes/distributed-workflow/active/aura-ingest]].
+Independent ICT/SMC corpus by [[entities/people/doomer]], captured on its own terms in `concepts/aura/`.
+**Phase 3 reconciliation complete (2026-07-16):** attributed Aura content has been merged into the
+canonical `ict-*` pages (SMT, liquidity, market-structure, order-flow), the entry-models library,
+`trade-schema.md` (new `missed_trades` table), and the roadmap ideas — agreements and divergences
+flagged, never silently merged, with two-way cross-refs. See [[processes/distributed-workflow/active/aura-ingest]].
 
 - [[concepts/aura/README]] — Aura framework overview, at-a-glance table, learning path
 - [[concepts/aura/psychology-foundations]] — why traders fail; systems > goals; 142-student survey (aura-01)
@@ -155,7 +158,7 @@ _None yet._
 - [[processes/distributed-workflow/active/broker-integration]] — Tradovate REST integration, broker credentials, active-trade soft singleton, `/settings/broker`. Phase 1 spec approved 2026-04-26.
 - [[processes/distributed-workflow/active/monorepo-migration]] — consolidate `neurospect-wiki` + `neurospect-api` + `neurospect-app` into one `neurospect` monorepo. Phase 0 (scoping).
 
-- [[processes/distributed-workflow/active/aura-ingest]] — transcribe + synthesize the second mentor corpus (Aura / dOoMeR); reconcile into existing notes. Phase 0+1 complete (30 transcripts); Phase 2 (synthesis) next.
+- [[processes/distributed-workflow/active/aura-ingest]] — transcribe + synthesize the second mentor corpus (Aura / dOoMeR); reconcile into existing notes. Phases 0–3 complete (30 transcripts, 14 concept pages, reconciled into ict-*/entry-models/schema/roadmap); Phase 4 close-out.
 
 #### Zeus OS (Product Suite)
 

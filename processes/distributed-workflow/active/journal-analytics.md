@@ -677,9 +677,19 @@ Paul handles git commits — never run git commit.
 - wiki: created `concepts/architecture/phase3-frontend-structure.md` (canonical frontend doc), updated `entities/projects/neurospect.md` (Phase 3 implemented), updated `index.md`, appended to `log.md`.
 - **Phase 3 is COMPLETE.** All three sessions done. Full trade journal MVP: auth, trade CRUD, screenshots, analytics dashboard.
 
+### 2026-07-16 — `missed_trades` table added to spec (Aura ingest Phase 3)
+
+- context: the Aura corpus ([[concepts/aura/journaling-system]], aura-05, mentor dOoMeR) treats missed/canceled trades as a distinct high-value journaling category — Tom Dante's biggest edge surfaced only from tracking his *canceled* orders. The current `trades` schema models executed trades only.
+- decided (Paul, 2026-07-16): model missed/canceled trades in a **separate lightweight `missed_trades` table**, NOT on `trades`, so executed-trade analytics (win rate, avg R, MAE/MFE) are never diluted by trades that were never taken.
+- did: specced the table in [[concepts/architecture/trade-schema]] §Missed Trades — fields (date/session/setup, `miss_type` = almost_took|hesitated|canceled, `hesitation_tags`, planned entry/stop/target, `hypothetical_outcome`, `hypothetical_r`, screenshot child table), full DDL (2 new ENUMs, 2 tables, 4 indexes, trigger), REST API (`/api/missed-trades`), and 3 analytics endpoints. The headline analytic is opportunity cost: forgone R on missed winners vs. R saved by canceling losers.
+- status: **designed, not yet implemented.** A future backend session adds migration `000X_missed_trades` + routers + a "Missed Trades" frontend surface. Analytics pair with the existing `mistake_tags` layer and feed [[concepts/roadmap/ideas/mistake-driven-action-items]].
+- next: implement when the journal module gets its next build cycle; no code written this session.
+
 ## See Also
 
 - [[concepts/roadmap/README]] — strategic context (journal data is the substrate for Next/Later horizons)
 - [[processes/distributed-workflow/active/ai-coach]] — sister module (shares backend)
 - [[processes/distributed-workflow/active/course-and-kb]] — strategy definitions inform the setup_type field
+- [[concepts/aura/journaling-system]] — Aura (dOoMeR) journaling method; provenance of the `missed_trades` decision
+- [[processes/distributed-workflow/active/aura-ingest]] — the ingest workstream that surfaced the missed-trade gap
 - [[entities/projects/neurospect]] — full roadmap and architecture

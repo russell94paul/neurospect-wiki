@@ -106,7 +106,7 @@ Fan out to specialized subagents per content block:
 Each page: cite source file(s), extract rules/definitions/examples, apply an ICT glossary to
 correct any caption mis-hearings. Build `concepts/aura/README.md` framework overview.
 
-### Phase 3 — Reconciliation
+### Phase 3 — Reconciliation ✅ (2026-07-16)
 Enrich canonical pages with attributed Aura content (additive only; flag contradictions):
 - `ict-smt` ← sequential-smt / sequential-skip / triads
 - `ict-liquidity` ← ranges, gaps · `ict-market-structure` ← swing-points
@@ -189,6 +189,47 @@ Update `index.md` (Aura concept section + sources), append `log.md` per phase, l
   - Patch: `ranges.md`/`gaps.md` cross-ref "cracking correlation" (documented in sequential-smt.md;
     `structure` agent dropped it as garbled — it is a real term).
   - Deepen `entities/people/doomer.md` from the now-synthesized pages.
+
+### 2026-07-16 — Phase 3 (reconciliation)
+
+- did:
+  - Reviewed the 4 canonical `ict-*` targets + all 14 `concepts/aura/` sources; wrote precise per-target
+    subagent lanes. Fanned out **4 parallel Sonnet subagents** on non-overlapping write lanes; Opus main
+    session wrote the decided-spec pieces and **reviewed every merge via git diff** before finalizing.
+  - **`ict-smt.md`** ← Sequential SMT (time-cycle nesting), Sequential Skip, math-first Pearson triad
+    selection (5 triads), Aura Asset (6S, flagged wholly-new dollar-proxy material). Convergence callout
+    (YM's diverging role, independently derived) + primary-vs-confluence divergence callout.
+  - **`ict-liquidity` / `ict-market-structure` / `ict-order-flow`** ← Aura ranges (discount/EQ/premium),
+    gaps + "what lies within", 3-candle swing pivot w/ SMT-qualification, HTF→LTF if-then cascade. Two
+    required divergence callouts flagged: quadrants (order-flow 0.25/0.75 vs Aura's 3-zone-only) and
+    order-block vocabulary (Aura rejects the term).
+  - **entry-models** `README` + `smt-confirmation-entry` ← Aura Sequential SMT entry model (iFVG-first in
+    range discount, Sequential Skip fallback, cross-asset variant), minimal-PDA divergence callout.
+  - **4 roadmap ideas** ← attributed Aura evidence (reduce-journaling-friction, trader-psychology-profiler,
+    overtrading-risk-limits, mistake-driven-action-items).
+  - **`trade-schema.md`** — specced the decided lightweight **`missed_trades`** table (separate from
+    `trades`): fields per the Phase-2 "next" block (miss_type almost_took/hesitated/canceled, hesitation_tags,
+    planned entry/stop/target, hypothetical_outcome + hypothetical_r, screenshot child table), full DDL
+    (2 ENUMs, 2 tables, 4 indexes, trigger), REST API, 3 analytics endpoints (headline: opportunity cost —
+    forgone R vs R-saved-by-canceling). Noted in `journal-analytics.md`. Fixed a pre-existing duplicate
+    `sources:` frontmatter key. Status: **designed, not implemented** (no code written).
+  - **`entities/people/doomer.md`** deepened from the 14 synthesized pages.
+  - Patched `concepts/aura/ranges.md` + `gaps.md` with "cracking correlation" cross-refs (real term the
+    Phase-2 structure agent dropped as garbled) and added reverse aura→ict links across 7 aura pages.
+  - Updated `index.md`, `log.md`, this tracker.
+- verified:
+  - Additive-only confirmed via git: all 20 deletions across the 11 agent-edited files were frontmatter
+    lines (`aliases:`/`updated:`/`sources:`) replaced by expanded versions — **zero body content removed**.
+  - Every merged Aura claim attributed ("Aura (dOoMeR): …" + `aura-NN` cite); direct parallels use
+    "MrWitness-AXL: X; Aura (dOoMeR): Y"; contradictions/divergences flagged in blockquote callouts.
+  - Isolation rule held — no ALDC references introduced by any lane.
+- decided:
+  - Subagents produced the merges but **edited verified notes directly**; Opus reviewed all diffs before
+    sign-off (per the boot prompt's "review each merge" instruction) rather than a proposal-then-apply loop.
+  - Aura-page patches (cracking-correlation + reverse links) done by the main session *after* subagents
+    finished, to avoid a read/write race on those files.
+- next: Phase 4 close-out is effectively folded into this session (index/log/tracker updated, lint run).
+  Ask Paul before committing. The `missed_trades` table awaits a future backend build cycle.
 
 ## Next Session Boot Prompt (Phase 3 — reconciliation)
 

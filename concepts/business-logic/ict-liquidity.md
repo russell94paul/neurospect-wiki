@@ -1,13 +1,16 @@
 ---
 tags: [concept, business-logic, ict, liquidity, neurospect]
-aliases: [ICT Liquidity, Draw on Liquidity, DOL, BSL, SSL, Buy-Side Liquidity, Sell-Side Liquidity, BISI, SIBI]
+aliases: [ICT Liquidity, Draw on Liquidity, DOL, BSL, SSL, Buy-Side Liquidity, Sell-Side Liquidity, BISI, SIBI, Equilibrium, What Lies Within]
 sources:
   - sources/neurospect/2026-04-18-vol1-class1-pt1-liquidity-and-inefficiency.md
   - sources/neurospect/2026-04-18-vol1-class1-pt2-liquidity-and-inefficiency.md
   - sources/neurospect/2026-04-18-vol1-class1-notes.md
   - sources/neurospect/2026-04-22-youtube-first-week-march-2026-03-07.md
+  - sources/neurospect/aura/aura-08-ranges.md
+  - sources/neurospect/aura/aura-09-gaps-what-lies-within.md
+  - sources/neurospect/aura/aura-11-ranges-and-sequential-smt.md
 created: 2026-04-18
-updated: 2026-04-22
+updated: 2026-07-16
 ---
 
 # ICT Liquidity
@@ -47,6 +50,19 @@ The DOL is the specific liquidity pool that price is currently gravitating towar
 - The DOL is always a single price, not a zone
 - Once a DOL is taken, look for the next DOL in the same direction, or a gap (inefficiency) before reversing
 
+## Aura (dOoMeR): Ranges
+
+Aura's central structural concept is the **range** — the price territory between a swing high and a swing low, identified from expansive moves between HTF swing points rather than time-based blocks (aura-08). This is a distinct but complementary framing to the swing-high/swing-low and DOL vocabulary above: both mentors use the same 3-candle swing definition (see [[ict-market-structure]]), but Aura organizes the space *between* swings as a first-class object that price is described as continuously ranging within, from the daily chart down to the 5-minute chart.
+
+- **New range trigger:** a new range is created when price expands above a prior significant high (bullish range) or below a prior significant low (bearish range). If price does not retrace into the discount of the current range, keep extending the range rather than drawing a new one (aura-08).
+- **Close-not-wick invalidation:** a range remains valid until a candle **closes** through its boundary — a wick through the level does not break it: "There was not price that closed below it" (aura-08). This close-vs-wick discipline parallels the MSS/BOS closing-basis logic in [[ict-market-structure]] and [[ict-order-flow]].
+- **Fallback when the range isn't obvious:** anchor to the most recent low and most prominent high, and zoom out until the pair becomes visually unambiguous (aura-08).
+- **Fractal nesting:** a smaller range can sit entirely inside a larger one, and its key level (typically the low, in a bullish HTF range) remains a meaningful reversal/attraction level after price has moved on to the larger range (aura-08).
+
+> **Divergence — order-block vocabulary:** MrWitness-AXL uses PDA/order-block terminology throughout this wiki (see "Premium and Discount" below, and [[ict-entry-models]]). Aura (dOoMeR) explicitly rejects "order block" as a term — "I don't use order block, right? I'm not looking for order block. All I'm looking for are expansive moves" (aura-08) — and instead calls the same level simply the range's discount/premium. This is a **framing divergence, not a factual contradiction**: both mentors are pointing at the same price level (the origin of an expansive move that price later returns to test), they just don't share vocabulary for it.
+
+See [[concepts/aura/ranges]] for the full treatment, including the SMT-qualified-anchor refinement (aura-11) that determines which swing points make valid range extremes.
+
 ## Inefficiency (Fair Value Gap / FVG)
 
 An inefficiency is left in price when the market **displaces** — moves rapidly in one direction. It is a void or gap in price action (not a zone).
@@ -75,6 +91,19 @@ The first FVG left by a displacement move. If price returns to the gap but **doe
 
 If price does not return to the first FVG at all, the gap is classified as a breakaway gap. Market structure fractality (Vol 3) provides the framework for identifying when an FVG will be a BAG.
 
+### Aura (dOoMeR): Gap Types and "What Lies Within"
+
+Aura's gap vocabulary aligns with the FVG concept above and extends it: dOoMeR names exactly four gap types he trades — **fair value gap (FVG)**, **inverse fair value gap (iFVG)**, **new week opening gap (NWOG)**, and **new day opening gap (NDOG)** — all standard ICT/SMC terminology, not Aura-specific vocabulary (aura-09).
+
+His refinement on top of the shared FVG concept: price is drawn not just to a gap, but specifically to whatever **liquidity (a swing high or low) is nested inside the gap** — "what lies within" (aura-09). This nested liquidity is a more precise target than the gap boundary alone:
+
+1. Mark the current range's discount (short bias) or premium (long bias) — see [[concepts/aura/ranges]].
+2. Identify gaps sitting within that discount/premium.
+3. Look **inside** the gap for a swing high/low — this is the precise target.
+4. If no liquidity is visible inside the gap: **look left** (check for a resting untaken level at a similar price) or **zoom in** (drop to a lower timeframe within the same gap until a swing point appears) (aura-09).
+
+Overlapping gaps (e.g. a NWOG/NDOG overlapping a FVG) and liquidity to the left of the gap stack as additive confluence (aura-09). See [[concepts/aura/gaps]] for the full treatment.
+
 ## Premium and Discount
 
 After any expansion leg, split the range (swing low → swing high) at 50%:
@@ -82,6 +111,12 @@ After any expansion leg, split the range (swing low → swing high) at 50%:
 - **Premium** (> 0.5): above the 50% — preferred entry zone for shorts
 
 Valid PDA arrays (FVGs, order blocks) should be **at or below** the 50% when looking for longs, and at or above the 50% for shorts.
+
+### Aura (dOoMeR): Discount / Equilibrium / Premium
+
+Aura uses the same three-way split of a range — **discount**, **equilibrium (EQ)**, **premium** — as the reference zones for targeting (aura-08). This framing converges with the discount/premium split above; Aura simply names the 50% point "equilibrium" rather than leaving it as an unlabeled midpoint.
+
+> **Divergence — quadrant subdivision:** [[ict-order-flow]] further subdivides a dealing range into **quadrant levels** (0.25 / 0.5 / 0.75) where PDA arrays are expected to form (see that page's "Quadrant Levels" section) — this is MrWitness-AXL vocabulary. Aura (dOoMeR) explicitly does **not** use a quadrant subdivision — his material references only the three-part discount/equilibrium/premium framing, with no 0.25/0.75 levels mentioned anywhere in the corpus (aura-08). This is a framing divergence between the two mentors, not a resolved contradiction — also flagged on [[ict-order-flow]].
 
 ## Equal Highs / Equal Lows
 
@@ -129,3 +164,5 @@ Source: `sources/neurospect/2026-04-22-youtube-first-week-march-2026-03-07.md`
 - [[ict-smt]] — intermarket divergence confirming liquidity-driven moves
 - [[ict-deviations]] — measuring how far beyond a liquidity level price will run
 - [[ict-live-commentary]] — live HOD/LOD calling using these liquidity concepts; liquidity void in practice
+- [[concepts/aura/ranges]] — Aura's range concept; discount/equilibrium/premium targeting; quadrant divergence
+- [[concepts/aura/gaps]] — Aura's gap types (FVG/iFVG/NWOG/NDOG) and the nested-liquidity ("what lies within") refinement

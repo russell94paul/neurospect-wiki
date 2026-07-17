@@ -1,9 +1,9 @@
 ---
 tags: [roadmap-idea, neurospect, next]
 aliases: []
-sources: []
+sources: [concepts/aura/journaling-system.md]
 created: 2026-04-25
-updated: 2026-04-26
+updated: 2026-07-16
 horizon: next
 status: in-progress
 ---
@@ -100,6 +100,13 @@ Tracked in [[concepts/architecture/tradingview-connector]] §8 Open items.
 
 - Default templates per setup type (FVG entry vs. OTE vs. raid-on-stops) — derive from [[concepts/entry-models/README]]?
 - Mobile capture path — is the Chrome extension enough, or do we need a thin mobile companion?
+
+## Aura (dOoMeR) — supporting evidence
+
+Independent, non-Neurospect validation that friction (not motivation) is the real adoption blocker:
+
+- dOoMeR's own 142/survey-adjacent poll found **50% of traders don't journal consistently**, and he frames all three stated reasons as **instruction problems, not motivation problems**: "I don't know what to track," "I don't see the value," "I don't know what to learn from it" (aura-05, [[concepts/aura/journaling-system]]). That maps directly onto this idea's core bet — reduce the *cost* of entry and the app closes gap #1 for free.
+- Tom Dante's line, quoted by dOoMeR: **"there is a huge difference between recording and analyzing your trades"** — a record never revisited "is worthless." This is the argument for Phase 2/3 (pre-fill, voice) mattering as much as Phase 1's field reduction: friction reduction only pays off if it also gets the trader to a state that's reviewable, not just recordable (aura-05, [[concepts/aura/journaling-system]]).
 
 ## See Also
 

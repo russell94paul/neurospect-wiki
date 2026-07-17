@@ -1,10 +1,12 @@
 ---
 tags: [concept, business-logic, ict, order-flow, htf-ltf, closing-basis, quadrants, neurospect]
-aliases: [ICT Order Flow, HTF LTF Order Flow, Closing Basis, Quadrant Levels, LRLR, HRLR, Low Resistance, High Resistance]
+aliases: [ICT Order Flow, HTF LTF Order Flow, Closing Basis, Quadrant Levels, LRLR, HRLR, Low Resistance, High Resistance, If-Then Cascade, HTF to LTF Application]
 sources:
   - sources/neurospect/2026-04-18-vol4-class1-htf-ltf-orderflow.md
+  - sources/neurospect/aura/aura-08-ranges.md
+  - sources/neurospect/aura/aura-17-using-the-aura-asset-htf-to-ltf.md
 created: 2026-04-18
-updated: 2026-04-20
+updated: 2026-07-16
 ---
 
 # ICT Order Flow (HTF/LTF)
@@ -55,6 +57,8 @@ Divide any dealing range (significant swing low → swing high) into four equal 
 Useful for identifying where order blocks and FVGs will naturally form during a directional move — without guessing.
 
 **Deviation from quadrants:** The -0.25 level below the range low is a common first target beyond the range, calculated the same way.
+
+> **Divergence — quadrant subdivision vs. discount/EQ/premium only:** Aura (dOoMeR) explicitly does not subdivide a range into quadrant levels. His material uses only a three-part **discount / equilibrium / premium** split (see [[concepts/aura/ranges]]) — no 0.25/0.75 levels appear anywhere in the corpus (aura-08). This is a framing divergence between the two mentors, not a resolved contradiction — also flagged on [[ict-liquidity]] (Premium and Discount section).
 
 ---
 
@@ -134,6 +138,28 @@ Levels created during holiday sessions (e.g., Thursday holiday close) are target
 
 ---
 
+## Aura (dOoMeR): Cascading HTF→LTF If-Then Workflow
+
+Aura (dOoMeR) reads order flow top-down as an explicit **if-then decision chain**, modeled on algorithmic/institutional logic to remove emotional interpretation — "there is no emotion within an algorithm... for the most part it is an if-then statement" (aura-17). This is an attributed parallel to the HTF/LTF closing-basis order-flow read above: both approaches step down from a higher timeframe to a lower one before entry, but Aura's version is framed as a strict cascade with an explicit trigger at each step, rather than closing-basis confirmation alone.
+
+The cascade, step by step (aura-17):
+
+| If... | ...then look for |
+|---|---|
+| Quadrennial cycle | Yearly or Quarterly |
+| Yearly | Quarterly or Monthly |
+| Quarterly | Monthly or Weekly |
+| Monthly | Daily or Weekly (Weekly preferred first) |
+| Weekly | Daily or Session cycle (confirmed by the day's price action or the NY session) |
+| Daily / Session cycle | 4H SMT |
+| 4H / entry timeframe | 15m → 5m (preferred) or 3m trigger |
+
+Each step down is confirmed by a **nested SMT or gap reaction** before proceeding to the next-lower cycle, cascading to a final 3–5m iFVG/FVG trigger (aura-17) — see [[concepts/aura/htf-ltf-application]] for the full worked trade reviews. Target selection follows the same top-down logic: target the extreme of the timeframe being played, with active trailing-stop management expected as price develops new ranges and SMT along the way rather than running cleanly to target.
+
+**Discipline note:** when an expected trigger fails to appear at a given step (e.g. an expected bearish 5m FVG doesn't form and a bullish one appears instead), Aura treats that as an explicit invalidation signal requiring a zoom-out and bias re-check, not a reason to keep waiting (aura-17) — conceptually similar to the "stop trading" rule above when order flow is indeterminate.
+
+---
+
 ## See Also
 
 - [[ict-market-structure]] — ITH/ITL structure that defines the dealing ranges
@@ -142,3 +168,5 @@ Levels created during holiday sessions (e.g., Thursday holiday close) are target
 - [[ict-entry-models]] — order blocks and FVGs as order flow entry signals
 - [[ict-smt]] — SMT divergence as an intermarket order flow signal
 - [[ict-deviations]] — quadrant 0.25 extension as deviation target
+- [[concepts/aura/htf-ltf-application]] — Aura's cascading HTF→LTF if-then workflow, an attributed parallel to closing-basis order flow above
+- [[concepts/aura/ranges]] — quadrant levels vs. Aura's discount/equilibrium/premium-only framing (divergence)

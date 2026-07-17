@@ -63,5 +63,6 @@ This same "mark 50, then refine" two-pass homework structure recurs for ranges (
 
 - [[concepts/aura/ranges]] — ranges are anchored on swing points, refined further by SMT qualification
 - [[concepts/aura/sequential-smt]] — the mechanics of Sequential SMT referenced here as the qualification signal
+- [[concepts/business-logic/ict-market-structure]] — canonical structure note; Aura's 3-candle pivot + SMT-qualification filter reconciled into it (Phase 3)
 - [[entities/people/doomer]]
 - [[concepts/aura/README]]

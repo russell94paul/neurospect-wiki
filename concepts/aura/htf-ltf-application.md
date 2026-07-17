@@ -122,3 +122,4 @@ survive... manage our risk."
 - [[concepts/aura/sequential-smt]]
 - [[concepts/aura/risk-management]]
 - [[concepts/aura/ranges]]
+- [[concepts/business-logic/ict-order-flow]] — canonical HTF/LTF order-flow note; Aura's if-then cascade reconciled into it (Phase 3)

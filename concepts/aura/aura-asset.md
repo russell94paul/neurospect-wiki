@@ -155,3 +155,4 @@ his reasoning process, separate from the quantitative triad-selection work.
 - [[concepts/aura/htf-ltf-application]]
 - [[concepts/aura/triads-asset-selection]]
 - [[concepts/aura/sequential-smt]]
+- [[concepts/business-logic/ict-smt]] — canonical SMT note; the Aura Asset (6S) reconciled into it (Phase 3) as wholly new dollar-proxy material

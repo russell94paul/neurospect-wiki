@@ -1,10 +1,9 @@
 ---
 tags: [architecture, schema, journal, analytics, neurospect]
-aliases: [Trade Schema, ICT Trade Data Model, Journal Schema]
-sources: [processes/distributed-workflow/active/journal-analytics.md]
+aliases: [Trade Schema, ICT Trade Data Model, Journal Schema, Missed Trades Schema]
+sources: [processes/distributed-workflow/active/journal-analytics.md, processes/distributed-workflow/active/broker-integration.md, concepts/aura/journaling-system.md]
 created: 2026-04-22
-updated: 2026-04-26
-sources: [processes/distributed-workflow/active/journal-analytics.md, processes/distributed-workflow/active/broker-integration.md]
+updated: 2026-07-16
 ---
 
 # Trade Schema
@@ -341,6 +340,130 @@ All analytics endpoints return data scoped to the authenticated user. All exclud
 | `GET` | `/api/analytics/mistakes` | Mistake tag frequency (unnest + count). |
 | `GET` | `/api/analytics/r-distribution` | R-multiple histogram data (bucketed). |
 
+## Missed Trades (`missed_trades`)
+
+> **Status: designed, not yet implemented.** Added 2026-07-16 as a Phase 3 reconciliation decision from the Aura ingest. Paul's decision (2026-07-16): model missed/canceled trades in a **separate lightweight table**, not on `trades`, so that executed-trade analytics (win rate, avg R, MAE/MFE) are never diluted by trades that were never taken.
+
+### Rationale (Aura provenance)
+
+The Aura corpus ([[concepts/aura/journaling-system]], aura-05, by dOoMeR) treats missed and canceled trades as a **distinct, high-value journaling category** — separate from executed winners/losers. Its strongest single anecdote: Tom Dante discovered one of his biggest edges only because a student was tracking his **canceled** orders — he was consistently pulling working orders when the market went vertical into his levels and didn't realize it until the data showed him. dOoMeR's framing: this is "data visible to you right now that might contain your biggest breakthrough." The existing `trades` table only models executed trades; this closes that gap.
+
+The point of the table is not record-keeping for its own sake but a specific analytic: **how much is hesitation costing you?** Logging what you *would* have made (or lost) on trades you skipped turns a vague feeling ("I keep missing runners") into an R-denominated opportunity-cost number — and, per Dante, sometimes reveals that your instinct to cancel was actually *protective* (the canceled ones would have lost).
+
+### Field Definitions
+
+| Field | Type | Constraint | Purpose |
+|-------|------|------------|---------|
+| `id` | UUID | PK | Internal identifier |
+| `user_id` | UUID | FK → users, NOT NULL | Multi-tenant key |
+| `trade_date` | DATE | NOT NULL | The day the setup appeared |
+| `instrument` | VARCHAR(20) | | Futures contract the setup was on |
+| `session` | `session_type` ENUM | | Reused from `trades` — which macro session |
+| `setup_type` | `setup_type` ENUM | | Reused from `trades` — which ICT/Aura model the missed setup was |
+| `miss_type` | `miss_type` ENUM | NOT NULL | `almost_took` (considered, never entered), `hesitated` (planned it, froze at the trigger), or `canceled` (had a working order and pulled it — Dante's category) |
+| `reason` | TEXT | | Freetext: why it was missed or canceled |
+| `hesitation_tags` | TEXT[] | GIN indexed | Structured hesitation reasons. Common values: `fear_of_loss`, `unclear_bias`, `distracted`, `size_fear`, `rules_freeze`, `left_desk`, `pulled_on_spike`. Mirrors the `mistake_tags` pattern — freeform, not an ENUM |
+| `planned_entry` | DECIMAL(12,4) | | The entry you had in mind / had working |
+| `planned_stop` | DECIMAL(12,4) | | The stop that plan implied |
+| `planned_target` | DECIMAL(12,4) | | The target that plan implied |
+| `hypothetical_outcome` | `hypothetical_outcome` ENUM | | `would_win`, `would_lose`, `would_breakeven`, or `unknown` — resolved after watching what price did |
+| `hypothetical_r` | DECIMAL(6,2) | | Price outcome vs. the plan, in R. Positive = a missed winner; negative = a hesitation that saved you. This is the opportunity-cost signal |
+| `narrative` | TEXT | | What you saw pre-miss — the thesis you didn't act on |
+| `notes` | TEXT | | Post-review reflection |
+| `created_at` | TIMESTAMPTZ | DEFAULT now() | Row creation time |
+| `updated_at` | TIMESTAMPTZ | DEFAULT now() | Trigger-maintained |
+| `is_deleted` | BOOLEAN | DEFAULT false | Soft delete flag |
+| `deleted_at` | TIMESTAMPTZ | | Timestamp of soft delete |
+
+No `status` lifecycle — a missed trade is logged once, post-hoc. Screenshots use a dedicated `missed_trade_screenshots` child table (below) rather than the `trade_screenshots` table, keeping the two record types fully separate.
+
+### DDL
+
+```sql
+-- added in migration 000X_missed_trades:
+CREATE TYPE miss_type AS ENUM ('almost_took', 'hesitated', 'canceled');
+CREATE TYPE hypothetical_outcome AS ENUM ('would_win', 'would_lose', 'would_breakeven', 'unknown');
+
+CREATE TABLE missed_trades (
+    id                    UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id               UUID NOT NULL REFERENCES users(id),
+
+    trade_date            DATE NOT NULL,
+    instrument            VARCHAR(20),
+    session               session_type,
+    setup_type            setup_type,
+
+    miss_type             miss_type NOT NULL,
+    reason                TEXT,
+    hesitation_tags       TEXT[],
+
+    planned_entry         DECIMAL(12,4),
+    planned_stop          DECIMAL(12,4),
+    planned_target        DECIMAL(12,4),
+
+    hypothetical_outcome  hypothetical_outcome,
+    hypothetical_r        DECIMAL(6,2),
+
+    narrative             TEXT,
+    notes                 TEXT,
+
+    created_at            TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at            TIMESTAMPTZ NOT NULL DEFAULT now(),
+    is_deleted            BOOLEAN NOT NULL DEFAULT false,
+    deleted_at            TIMESTAMPTZ
+);
+
+CREATE TABLE missed_trade_screenshots (
+    id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    missed_trade_id   UUID NOT NULL REFERENCES missed_trades(id),
+    user_id           UUID NOT NULL REFERENCES users(id),
+    storage_key       VARCHAR(512) NOT NULL,
+    original_filename VARCHAR(256),
+    content_type      VARCHAR(64),
+    uploaded_at       TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- Indexes
+CREATE INDEX ix_missed_trades_user_date ON missed_trades (user_id, trade_date DESC);
+CREATE INDEX ix_missed_trades_user_setup ON missed_trades (user_id, setup_type) WHERE NOT is_deleted;
+CREATE INDEX ix_missed_trades_user_miss_type ON missed_trades (user_id, miss_type) WHERE NOT is_deleted;
+CREATE INDEX ix_missed_trades_hesitation_tags ON missed_trades USING GIN (hesitation_tags) WHERE NOT is_deleted;
+CREATE INDEX ix_missed_screenshots_missed_trade ON missed_trade_screenshots (missed_trade_id);
+
+-- Reuses update_updated_at() defined above
+CREATE TRIGGER trg_missed_trades_updated_at
+    BEFORE UPDATE ON missed_trades
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at();
+```
+
+The R2 storage-key pattern for `missed_trade_screenshots` follows the same convention as `trade_screenshots` but namespaced to avoid collisions: `{user_id}/missed/{missed_trade_id}/{uuid4()}.{ext}` (no `phase` segment — missed trades have no entry/exit lifecycle).
+
+### REST API
+
+Prefix `/api/missed-trades`. All endpoints Discord-OAuth scoped to `user_id`, all exclude soft-deleted rows.
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/api/missed-trades` | Log a missed/canceled trade |
+| `GET` | `/api/missed-trades` | List. Filters: `date_start`, `date_end`, `instrument`, `session`, `setup_type`, `miss_type`, `hypothetical_outcome`. Paginated |
+| `GET` | `/api/missed-trades/{id}` | Single record |
+| `PATCH` | `/api/missed-trades/{id}` | Partial update (e.g. fill in `hypothetical_outcome` / `hypothetical_r` after watching price) |
+| `DELETE` | `/api/missed-trades/{id}` | Soft delete |
+| `POST` | `/api/missed-trades/{id}/screenshots` | Upload chart screenshot (multipart) |
+| `GET` | `/api/missed-trades/{id}/screenshots` | List screenshots (metadata + signed URLs) |
+| `DELETE` | `/api/missed-trades/{id}/screenshots/{sid}` | Delete a screenshot |
+
+### Analytics
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/api/analytics/missed-summary` | Count of missed trades; how many `would_win` vs `would_lose`; **total forgone R** (sum of positive `hypothetical_r`) vs **R saved by canceling** (sum of negative `hypothetical_r` on `canceled`/`hesitated`). The opportunity-cost dashboard tile |
+| `GET` | `/api/analytics/missed-by-reason` | Frequency of `hesitation_tags` (unnest + count), ranked — surfaces the recurring hesitation to attack first |
+| `GET` | `/api/analytics/missed-by-setup` | Missed-trade count + forgone R per `setup_type` — which setups you most often fail to pull the trigger on |
+
+These feed the "reduce hesitation" side of the coaching loop and pair naturally with the executed-trade `mistake_tags` analytics — see [[processes/distributed-workflow/active/journal-analytics]] and [[concepts/roadmap/ideas/mistake-driven-action-items]].
+
 ## Schema Conventions
 
 1. **UUIDs everywhere.** All primary keys are UUID v4 (`gen_random_uuid()`). No auto-increment integers — avoids enumeration attacks and simplifies multi-tenant queries.
@@ -410,4 +533,6 @@ The AI coach operates at session granularity (`london`, `ny_am`, `ny_pm`) matchi
 - [[concepts/ai-coach/strategies.json]] — strategy library (strategy IDs mapped in § AI Coach ↔ Journal Mapping)
 - [[concepts/ai-coach/system-prompt-template]] — Claude system prompt (consumes strategy library, outputs Layer 3 response)
 - [[processes/distributed-workflow/active/ai-coach]] — sister module (consumes this schema)
+- [[concepts/aura/journaling-system]] — Aura (dOoMeR) journaling method; provenance of the `missed_trades` table (Dante's canceled-order edge)
+- [[concepts/roadmap/ideas/mistake-driven-action-items]] — consumes missed-trade + mistake-tag analytics
 - [[entities/projects/neurospect]] — full project roadmap

@@ -223,3 +223,4 @@ than silently resolved.
 - [[concepts/aura/swing-points]]
 - [[concepts/aura/aura-asset]]
 - [[concepts/aura/risk-management]]
+- [[concepts/business-logic/ict-smt]] — canonical SMT note; Sequential SMT / Sequential Skip / math-first triads / Aura Asset reconciled into it (Phase 3)

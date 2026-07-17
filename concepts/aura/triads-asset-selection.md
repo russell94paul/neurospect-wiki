@@ -154,3 +154,4 @@ scope for this page, covered in its own.
 - [[concepts/aura/sequential-smt]]
 - [[concepts/aura/aura-asset]]
 - [[concepts/aura/time-sum]]
+- [[concepts/business-logic/ict-smt]] — canonical SMT note; math-first triad selection reconciled into it (Phase 3)

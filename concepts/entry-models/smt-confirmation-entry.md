@@ -1,12 +1,18 @@
 ---
 tags: [entry-model, smt, intermarket, divergence, confirmation, neurospect]
-aliases: [SMT Entry, SMT Divergence Entry, Cracking Correlation Entry, SMT Confirmation]
+aliases: [SMT Entry, SMT Divergence Entry, Cracking Correlation Entry, SMT Confirmation, Aura Sequential SMT Entry]
 sources:
   - sources/neurospect/2026-04-18-vol4-class2-smt-divergence.md
   - sources/neurospect/2026-04-18-vol1-class2-consolidation-model.md
   - sources/neurospect/2026-04-22-youtube-1000-points-nq-2026-03-04.md
+  - sources/neurospect/aura/aura-07-sequential-smt.md
+  - sources/neurospect/aura/aura-08-ranges.md
+  - sources/neurospect/aura/aura-09-gaps-what-lies-within.md
+  - sources/neurospect/aura/aura-11-ranges-and-sequential-smt.md
+  - sources/neurospect/aura/aura-12-confirming-sequential-smt-and-framing-trades.md
+  - sources/neurospect/aura/aura-14-sequential-skip.md
 created: 2026-04-22
-updated: 2026-04-22
+updated: 2026-07-16
 ---
 
 # Entry Model: SMT Confirmation Entry
@@ -166,6 +172,28 @@ Near futures contract rollover (quarterly), the expiring contract starts "cracki
 | Trading SMT outside kill zones | SMT during lunch or off-hours has much lower follow-through |
 | Not switching contracts at rollover | Stale contract = false SMT; buying/selling against a phantom signal |
 | Using SMT as a trend-following signal | SMT is a reversal confluence tool, not a continuation signal |
+
+---
+
+## Aura (dOoMeR): Sequential SMT Entry Model
+
+**Attribution:** This section documents a parallel entry model from a second mentor corpus, Aura (dOoMeR) — distinct from the MrWitness-AXL material above. Full source pages: [[concepts/aura/sequential-smt]], [[concepts/aura/ranges]], [[concepts/aura/gaps]], [[concepts/aura/htf-ltf-application]], [[concepts/aura/aura-asset]].
+
+Aura (dOoMeR) confirms SMT divergence through **time-cycle nesting** rather than same-timeframe triad divergence alone: a swing point only carries real weight when SMT shows up in a fractal, sequenced relationship across two or more adjacent time cycles (e.g. a weekly swing point also carrying nested daily-cycle SMT) — see [[concepts/aura/sequential-smt]] for the full mechanic and its confirmation methods (cross-cycle, gap "SMT fill/fail", candle-level, Sequential Skip).
+
+**Aura (dOoMeR): entry sequence — "playing the range" (aura-12):**
+
+1. Establish HTF bias top-down via the [[concepts/aura/htf-ltf-application|if-then cascade]] (quadrennial → yearly → quarterly → monthly → weekly → daily/session → 4H → entry TF), confirmed by nested Sequential SMT at each level.
+2. Once the HTF level is trusted through that stack, it anchors a new, lower-timeframe range (see [[concepts/aura/ranges]]).
+3. **Drop to the 3–5 minute chart.** Preferred entry is the formation of an **inverse fair value gap (iFVG)** in the discount (long) or premium (short) of that range — a plain FVG is the fallback if no iFVG forms. See [[concepts/aura/gaps]]: the actual target is liquidity resting *within* that gap, not the discount/premium level or the gap boundary alone.
+4. dOoMeR prefers to wait for a **session-cycle (or micro-cycle) Sequential SMT to confirm within that discount/premium** before entering — a stricter, lower-frequency filter, explicitly trading fewer signals for higher-quality ones (which requires disciplined risk management, since it produces more misses).
+5. **Premium vs. discount R:R:** entering while price is still in premium of the range means targeting a *lower* risk-to-reward, since price may retrace to equilibrium and stop the trade out before a larger target is reached. Discount (long) / premium (short) entries are the higher-quality entries.
+
+> **Divergence from the MrWitness-AXL entry above:** MrWitness confirms the manipulation leg with same-timeframe triad divergence (NQ/ES/YM at a single swing) and enters on an inversion FVG, rejection block, or OTE block. Aura (dOoMeR) instead requires SMT to confirm *across nested time cycles* before the level is even trusted, and narrows the entry PDA set to iFVG/FVG only — Aura deliberately rejects order block, breaker block, and OTE vocabulary ("all I'm looking for are expansive moves," aura-08 — see [[concepts/aura/ranges]]). These are two distinct confirmation philosophies documented side by side, not reconciled into one checklist.
+
+**Sequential Skip — fallback entry path (aura-14):** when the clean HTF→adjacent-cycle relationship isn't present (e.g. a weekly SMT with monthly-cycle support but no daily-cycle confirmation), a cycle further down the stack — e.g. a session-cycle SMT confirmed against the prior hourly candle — can confirm the HTF bias directly, skipping the missing intermediate link. Entry is still the preferred 5-minute inverse FVG, either off the gap's formation or after waiting for the 9:30 NY open; dOoMeR recommends waiting for the 9:30 open specifically for traders prone to forcing a pre-9:30 entry out of urgency.
+
+**Cross-asset variant (aura-14):** if the primary triad asset doesn't offer a clean entry (e.g. it gaps too far to chase at the open), take the same setup — candle-level SMT confirmation + iFVG — on a different triad member that is moving in the same overall bias direction instead.
 
 ---
 
