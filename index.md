@@ -1,11 +1,11 @@
 ---
 tags: [index, navigation]
 created: 2026-04-18
-updated: 2026-04-26
+updated: 2026-07-16
 last_fork: 2026-04-26-broker-integration-forked-from-journaling-ux
 last_build: 2026-04-26-phase4-deployment-complete
 last_design: 2026-04-24-phase4-coach-frontend-design
-last_ingest: 2026-04-22
+last_ingest: 2026-07-16-aura-phase2-synthesis
 ---
 
 # Neurospect Wiki Index
@@ -25,6 +25,7 @@ Master catalog of all Neurospect wiki pages.
 ### People
 
 - [[entities/people/mrwitness-axl]] — MrWitness and Axel (AXL), the two instructors delivering the mentorship curriculum
+- [[entities/people/doomer]] — dOoMeR, instructor of the second "Aura" mentorship corpus (ICT/SMC, psychology-first)
 
 ### Tools
 
@@ -114,6 +115,27 @@ Forward-looking product roadmap (horizons: Now / Next / Later / Strategic / Rese
 - [[concepts/entry-models/daily-bias-model]] — HTF FVG + opening price prerequisite filter; integrates with all other models; YAML block (Vol 2 Cls 4)
 - [[concepts/entry-models/smt-confirmation-entry]] — NQ/ES/YM divergence at manipulation leg; Price SMT + PDR SMT; trust-the-program; YAML block (Vol 4 Cls 2)
 
+### Aura Framework (second mentor corpus — standalone, pre-reconciliation)
+
+Independent ICT/SMC corpus by [[entities/people/doomer]], captured on its own terms before being
+reconciled into the canonical `ict-*` pages (Phase 3). See [[processes/distributed-workflow/active/aura-ingest]].
+
+- [[concepts/aura/README]] — Aura framework overview, at-a-glance table, learning path
+- [[concepts/aura/psychology-foundations]] — why traders fail; systems > goals; 142-student survey (aura-01)
+- [[concepts/aura/mind-and-emotional-control]] — self-image theory; the "four killers"; circuit-breaker rules (aura-02, 03)
+- [[concepts/aura/discipline-systems]] — pre/post-market routines + environment design that force discipline (aura-04)
+- [[concepts/aura/journaling-system]] — Aura journaling method; essentials + psychological fields; missed-trade tracking (aura-05)
+- [[concepts/aura/swing-points]] — 3-candle pivot; SMT-qualification rule (aura-06)
+- [[concepts/aura/ranges]] — expansive-move ranges; discount/EQ/premium; close-not-wick validity (aura-08, 11)
+- [[concepts/aura/gaps]] — FVG/iFVG/NWOG/NDOG; liquidity within the gap (aura-09)
+- [[concepts/aura/triads-asset-selection]] — Pearson-correlation triad selection; the 5 triads (aura-10)
+- [[concepts/aura/sequential-smt]] — Sequential SMT (time-cycle nesting) + Sequential Skip (aura-07, 11, 12, 14)
+- [[concepts/aura/aura-asset]] — the signature concept: Swiss Franc futures (6S) as universal 4th triad leg (aura-15)
+- [[concepts/aura/time-sum]] — digital-root "369" check (dOoMeR de-emphasizes it); Aura Asset usage (aura-16)
+- [[concepts/aura/htf-ltf-application]] — cascading HTF→LTF if-then workflow to a 5m trigger (aura-17)
+- [[concepts/aura/risk-management]] — Dante "Blueprint": sizing, daily stop, 10R circuit-breaker, expectancy (aura-13)
+- [[concepts/aura/trade-reviews]] — 13 consolidated worked examples (aura-18…30)
+
 ### Patterns
 
 _None yet._
@@ -132,6 +154,12 @@ _None yet._
 - [[processes/distributed-workflow/active/journaling-ux]] — Trade form tab redesign + field reduction + R2 wiring. Phases 1 & 2 complete.
 - [[processes/distributed-workflow/active/broker-integration]] — Tradovate REST integration, broker credentials, active-trade soft singleton, `/settings/broker`. Phase 1 spec approved 2026-04-26.
 - [[processes/distributed-workflow/active/monorepo-migration]] — consolidate `neurospect-wiki` + `neurospect-api` + `neurospect-app` into one `neurospect` monorepo. Phase 0 (scoping).
+
+- [[processes/distributed-workflow/active/aura-ingest]] — transcribe + synthesize the second mentor corpus (Aura / dOoMeR); reconcile into existing notes. Phase 0+1 complete (30 transcripts); Phase 2 (synthesis) next.
+
+#### Zeus OS (Product Suite)
+
+- [[processes/distributed-workflow/active/zeus-memory]] — Zeus-Memory hybrid architecture research + implementation. Phase 1 design complete, implementation kickoff pending.
 
 Pattern docs are in the ALDC wiki and consumed by absolute path:
 
@@ -198,6 +226,11 @@ _None yet._
 ### YouTube Transcripts (2026-04-22)
 - `sources/neurospect/2026-04-22-youtube-1000-points-nq-2026-03-04.md` — YouTube weekly review (+1000 pts NQ, March 4 2026)
 - `sources/neurospect/2026-04-22-youtube-first-week-march-2026-03-07.md` — YouTube weekly review (first week of March, March 7 2026)
+
+### Aura Playlist — dOoMeR (2026-07-16)
+30 auto-caption transcripts in `sources/neurospect/aura/` (`aura-01`…`aura-30`). Second mentor
+corpus. Manifest + per-video titles in [[processes/distributed-workflow/active/aura-ingest]].
+Sections: psychology (1–5), technical framework (6–17), trade/market reviews (18–30).
 
 ---
 
