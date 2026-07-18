@@ -11,28 +11,55 @@ The **WHERE** layer of the frontier stack: a non-discretionary way to *rank* dra
 algorithmic "reach." Extends — does not restate — the canonical liquidity page
 [[concepts/business-logic/ict-liquidity]] (BSL/SSL/DOL), adding a lookback-range method that page lacks.
 
-## IPDA 20/40/60-day data ranges — **ESTABLISHED (Tier 2, unanimous)**
+## IPDA 20/40/60-day data ranges — **windows & trading-day count ESTABLISHED (Tier 1); ranking still Tier-3**
 
 IPDA (Interbank Price Delivery Algorithm) is ICT's *conceptual* model for how the interbank market delivers
 price — **not a literal disclosed algorithm.** Its most-corroborated mechanic (the single most
-cross-source-consistent figure in the whole Phase-3 pass):
+cross-source-consistent figure in the whole Phase-3 pass), now **Tier-1 verbatim** for the core structure:
 
-- **Three nested daily-chart lookback windows: 20, 40, 60 days.** From the first trading day of the month
-  (or a confirmed daily structure shift), count back 20/40/60 days; each window's highest-high / lowest-low
-  forms a nested range.
+- **Three nested daily-chart lookback windows: 20, 40, 60 days — Tier 1 (verbatim).** From the first trading
+  day of the month (or a confirmed daily structure shift), count back 20/40/60 *trading* days; each window's
+  highest-high / lowest-low forms a nested range cast forward. *Verbatim (ICT): "you have a 20 day, look back
+  and cast forward range … a 40 day, look back and cast forward range … a 60 day look back and cast forward
+  range"* (Month 5, "Using IPDA Data Ranges"); *"a 20 day range, a 40 day range and a 60 day range added to
+  the right"* (Month 5, "Quarterly Shifts and IPDA Data Ranges").
+- **Anchor = first trading day of the most recent month — Tier 1 (verbatim).** *Verbatim (ICT): "you want to
+  be using that first trading day of that month, put a vertical line on your chart … And then I would look 60
+  trading days, to the left."* The *anchor* is a calendar date; the *count* is in trading days.
 - **Two purposes:** (a) locate resting **BSL/SSL** above/below those old highs/lows (the draw on liquidity);
   (b) locate **imbalances/FVGs** due to rebalance.
-- **Ranking (the actual edge):** 20-day = nearest / most-probable objective; 40-day = escalation if the
-  20-day doesn't halt the move; 60-day = outer / rare objective. New pools reportedly re-form ~every 20 days.
-- **Attribution:** ICT 2022 Mentorship Core Content (Months 5, 7, 8). Videos not transcript-fetchable → rests
-  on two independent Tier-2 note sets (ICT Sharks forum + innercircletrader.net) that agree closely.
+- **Ranking (the *claimed* edge) — still Tier-3, UNVERIFIED.** The community framing (20-day = nearest /
+  most-probable objective; 40-day = escalation; 60-day = outer / rare) was **searched for and NOT found
+  verbatim** in the two Month-5 lectures — ICT states the nested 20/40/60 structure and that "the algorithm's
+  going to anticipate doing a shift in the marketplace, in that range between 60 and 20 days," but gives **no
+  probabilistic 20>40>60 ranking language**. Treat the ranking as community inference (Tier-3), not settled;
+  Month-7 "Blending IPDA Data Ranges & PD Arrays" (unchecked this pass) is the next place to look.
+- **Attribution (Tier-1, 2026-07-18 pass):** ICT **2016 Premium Mentorship Core Content, Month 5** — Lecture
+  **#39 "Quarterly Shifts and IPDA Data Ranges"** and Lecture **#41 "Using IPDA Data Ranges."** Verbatim
+  transcripts fetched from the quagmyre archive of ICT's own recorded audio; lecture numbers/titles
+  independently corroborated against the quagmyre XWiki lecture index. (Month 7 "Blending IPDA Data Ranges &
+  PD Arrays" remains a Tier-2 reference — not fetched this pass.) *Provenance caveat: transcript hosted on a
+  third-party archive (quagmyre.com) of ICT's own audio; the corroborating index is the same archivist's
+  XWiki catalog, so this is Tier-1-with-single-archive-corroboration.*
 
 **Failure mode:** marking all three ranges then retroactively declaring whichever "worked" as the target
-(unfalsifiable unless fixed in the plan first). **Trading-days vs. calendar-days is ambiguous** — 60 trading
-days ≈ 12 weeks vs. 60 calendar days ≈ 8.5 weeks; pick one, hold it constant. *(This distinction, and a
-20→40→60 "redirect cascade" rule, are single-sourced Tier-3 — **UNVERIFIED**; don't treat as settled.)*
+(unfalsifiable unless fixed in the plan first). **Trading-days vs. calendar-days — RESOLVED (Tier 1):** the
+count is in **trading days**, verbatim — *"60 trading days 40 trading days and 20 trading days" … "the 60 to
+40 and the 20 trading days left of the most recent calendar month."* The prior "favoured, pending verbatim"
+caveat is now settled. The 20→40→60 "redirect cascade" ranking, by contrast, remains single-sourced
+community inference (Tier-3, **UNVERIFIED** — see above); don't treat as settled.
 
-Citations: <https://forum.ictsharks.com/t/ict-mentorship-core-content-month-5-using-ipda-data-ranges/69> ·
+> **⚠ Misattribution caution (2026-07-17 pass).** A widely-surfaced X/rattibha thread titled "IPDA DATA
+> RANGES. 20 40 60 DAYS" that *tags* @I_Am_The_ICT is **not** ICT's own writing — it was authored by a
+> different community user (@FlawInTheMatrix) applying the concept to a personal chart. Do **not** cite it as
+> Tier-1; it is at best single-author Tier-3. Flagged so future sessions don't mistake the tag for authorship.
+
+Citations: **Tier-1 primary (verbatim, quagmyre archive of ICT's own audio):** Month 5 #39 "Quarterly Shifts
+and IPDA Data Ranges" — <https://files.quagmyre.com/files/ICTStudies/ICT-2016-Premium-Mentorship-Core-Content/srt/39-ICT%20Mentorship%20Core%20Content%20-%20Month%205%20-%20Quarterly%20Shifts%20and%20IPDA%20Data%20Ranges.srt>
+· Month 5 #41 "Using IPDA Data Ranges" — <https://files.quagmyre.com/files/ICTStudies/ICT-2016-Premium-Mentorship-Core-Content/srt/41-ICT%20Mentorship%20Core%20Content%20-%20Month%205%20-%20Using%20IPDA%20Data%20Ranges.srt>
+· lecture index (corroboration) <https://info.quagmyre.com/xwiki/bin/view/Forex/The-Inner-Circle-Trader/ICT-2016-Premium-Mentorship-Core-Content-Lectures/> ·
+YouTube originals (un-fetchable 402/403): <https://www.youtube.com/watch?v=n7SPAK_tpN8> · <https://www.youtube.com/watch?v=LRKtiysz4nA>.
+**Tier-2/3 (ranking + secondary):** <https://forum.ictsharks.com/t/ict-mentorship-core-content-month-5-using-ipda-data-ranges/69> ·
 <https://innercircletrader.net/tutorials/ict-ipda/> · <https://www.tradingview.com/script/rTJEJb5v-ICT-IPDA-Look-Back/>.
 
 ## "Liquidity Matrix" — **SPECULATIVE-or-FRINGE as an ICT term**

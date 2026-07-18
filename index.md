@@ -6,7 +6,7 @@ last_fork: 2026-04-26-broker-integration-forked-from-journaling-ux
 last_build: 2026-04-26-phase4-deployment-complete
 last_design: 2026-04-24-phase4-coach-frontend-design
 last_ingest: 2026-07-16-aura-phase3-reconciliation
-last_research: 2026-07-17-mastery-phase3-unified-model-and-frontier-ict
+last_research: 2026-07-18-mastery-phase4b-tier1-ipda-silverbullet-asianrange
 ---
 
 # Neurospect Wiki Index
@@ -143,7 +143,8 @@ flagged, never silently merged, with two-way cross-refs. See [[processes/distrib
 ### Mastery (Learn-to-Execute)
 
 The learn-to-execute layer: turning the models into live-trading skill, with drills and evidence-based
-readiness tracking. Two parallel tracks (Aura + ICT-course, both built); a unified model is deferred.
+readiness tracking. Two parallel tracks (Aura + ICT-course) plus a Unified track that reconciles both into
+one graded roadmap — all built.
 
 - [[concepts/mastery/README]] — mastery hub: the 4-stage ladder, confidence scale, and Readiness-to-Live Gate
 - **Aura (dOoMeR) track:**
@@ -157,17 +158,19 @@ readiness tracking. Two parallel tracks (Aura + ICT-course, both built); a unifi
   - [[concepts/mastery/ict-course/exercises]] — drills index + gap-fill (Module 2 + M4.3-4.4) + tape-reading drills from the 11 stream + 2 YouTube transcripts
   - [[concepts/mastery/ict-course/tracker]] — per-lesson + per-entry-model ladder/confidence/reps + backtest-expectancy + AXL readiness gate
   - *(no separate learning-path/checklist — reuses [[concepts/course/README]] and the entry-model YAML)*
-- **Unified track (Phase 3 — reconciles both):**
+- **Unified track (Phase 3–4 — reconciles both, then grades):**
   - [[concepts/mastery/unified/README]] — the Unified Playbook: one 5-layer sequence (psychology → structural primitives → nested-SMT confirmation → execution → risk) + one-glance decision flow
   - [[concepts/mastery/unified/divergence-rulings]] — 8 cited rulings (R1–R8) reconciling every flagged AXL↔Aura divergence; two new EMERGING confluences (nested SMT stack; double-qualified swing)
+  - [[concepts/mastery/unified/learning-path]] — the graded roadmap (Phase 4): U0 psychology → U1 primitives → U2 nested SMT → U3 execution → U4 risk → U5 frontier stacking (study-and-watch) → U6 readiness gate; folds both per-track paths in by reference
+  - [[concepts/mastery/unified/tracker]] — living per-concept + per-frontier progress grid (ladder/confidence/reps by U-stage) + Readiness-to-Live Gate
 
 ### Advanced / Frontier (Phase 3 deep research)
 
 Deep, less-common ICT concepts researched from the wider body of knowledge to extend the unified playbook — every page source-tiered and labelled ESTABLISHED / EMERGING / SPECULATIVE-or-FRINGE.
 
 - [[concepts/advanced/README]] — frontier hub: source-quality rubric + the cross-cutting WHERE/WHEN/DIRECTION/CONFIRM confluence stack + the unfalsifiability critique
-- [[concepts/advanced/ict-macros-and-silver-bullet]] — ICT Macros, killzone micro-structure / Judas swing, Silver Bullet (one model at three zoom levels)
-- [[concepts/advanced/ipda-data-ranges]] — IPDA 20/40/60-day ranges + IRL/ERL; "liquidity matrix" debunked → PD Array Matrix
+- [[concepts/advanced/ict-macros-and-silver-bullet]] — ICT Macros, killzone micro-structure / Judas swing, Silver Bullet (one model at three zoom levels; SB windows + mechanics **Tier-1** from ICT's own 2023 video)
+- [[concepts/advanced/ipda-data-ranges]] — IPDA 20/40/60-day ranges + IRL/ERL (windows + trading-day count **Tier-1**; ranking Tier-3); "liquidity matrix" debunked → PD Array Matrix
 - [[concepts/advanced/quarterly-theory]] — Quarterly Theory / 90-min cycles / True-Day-Open disambiguation (community — Trader Daye, not ICT)
 - [[concepts/advanced/cbdr-and-sd-projections]] — CBDR / Asian range / flout + standard-deviation projections (SD ≠ Fibonacci disambiguation)
 
@@ -191,7 +194,7 @@ _None yet._
 - [[processes/distributed-workflow/active/monorepo-migration]] — consolidate `neurospect-wiki` + `neurospect-api` + `neurospect-app` into one `neurospect` monorepo. Phase 0 (scoping).
 
 - [[processes/distributed-workflow/active/aura-ingest]] — transcribe + synthesize the second mentor corpus (Aura / dOoMeR); reconcile into existing notes. **Complete** — all phases done (30 transcripts, 14 concept pages, reconciled into ict-*/entry-models/schema/roadmap).
-- [[processes/distributed-workflow/active/mastery-layer]] — learn-to-execute layer (rules/checklist/learning-path/exercises/tracker per model). **Phases 1–2 done** (mastery system + Aura track + ICT-course track); Phase 3 (unified model) deferred.
+- [[processes/distributed-workflow/active/mastery-layer]] — learn-to-execute layer (rules/checklist/learning-path/exercises/tracker per model). **Phases 1–4 done** (mastery system + Aura track + ICT-course track + unified model & frontier ICT + graded learning roadmap & progress tracker). Tier-1 upgrade pass **complete** (Phase 4b, 2026-07-18): CBDR + Midnight Open (Phase 4) → IPDA windows/trading-days, Silver Bullet windows/mechanics, and Asian-range hours (20:00–00:00 ET) all upgraded to Tier-1. Only open item: the IPDA 20→40→60 *ranking* (still Tier-3, unverified).
 
 #### Zeus OS (Product Suite)
 

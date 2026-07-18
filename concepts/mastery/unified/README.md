@@ -134,6 +134,8 @@ Any "no" at 2–6 → no trade. The edge is in the *stack*, not any single signa
 
 ## See Also
 
+- [[concepts/mastery/unified/learning-path]] — the graded, sequenced curriculum over this playbook (U0→U6)
+- [[concepts/mastery/unified/tracker]] — the living per-concept progress grid (ladder / confidence / reps)
 - [[concepts/mastery/unified/divergence-rulings]] — the reconciliation decisions (R1–R8) behind this playbook
 - [[concepts/mastery/README]] — the mastery hub (ladder + Readiness-to-Live Gate)
 - [[concepts/mastery/aura/rules]] · [[concepts/mastery/ict-course/rules]] — the two source rulebooks

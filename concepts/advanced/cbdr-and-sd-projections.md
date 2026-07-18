@@ -13,28 +13,58 @@ It complements (does not restate) the canonical Fibonacci-deviation page
 "standard deviation" is arithmetic range-multiplication, not statistical std-dev, and not Fibonacci** (see
 the disambiguation below).
 
-> **Source caveat:** no Tier-1 verbatim source was captured; everything here is **corroborated Tier 2**
-> unless marked. Confidence labels reflect that.
+> **Source caveat (updated 2026-07-18 Tier-1 pass):** the CBDR window, the body-vs-wick measurement, the
+> pip-size filter, the flout window, and now the **Asian-range hours (20:00–00:00 ET)** are all **Tier-1** —
+> sourced to verbatim transcript of ICT's own 2016 Premium Mentorship Core Content (Month 8 #74 "Defining The
+> Daily Range" / #75 "Central Bank Dealers Range" / Month 9 #82 "Filling The Numbers"). Remaining items (SD
+> multiple *sets*, index-futures calibration) stay **corroborated Tier 2 / EMERGING** as marked. Transcripts
+> hosted on a third-party archive (quagmyre.com) of ICT's own recorded audio — lecture titles/numbers
+> corroborated against the quagmyre XWiki lecture index; cited with the archive URLs + the YouTube video IDs
+> as a hedge.
 
-## CBDR (Central Bank Dealers Range) — **ESTABLISHED (Tier 2)**
+## CBDR (Central Bank Dealers Range) — **ESTABLISHED (Tier 1)**
 
-- **Definition:** the high/low of price during **14:00–20:00 ET** (2pm–8pm, a 6-hr window).
+- **Definition:** the high/low of price during **14:00–20:00 ET** (2pm–8pm, a 6-hr window). *Verbatim (ICT):
+  "The time period that frames the central bank dealers range is 2pm to 8pm New York time."*
 - **Validity filter (not just a measurement):** ideal size **< 40 pips-equivalent**, preferably 20–30. An
-  oversized CBDR **invalidates** the day's projection — the model has a built-in no-go.
-- **Measurement — UNRESOLVED (flagged, not smoothed):** most Tier-2 sources say ICT prefers candle **bodies**
-  ("wicks vary by broker"); one AI summary of an actual ICT video says **wicks** (for cross-broker
-  consistency). Present both; do not silently pick one.
+  oversized CBDR **invalidates** the day's projection — the model has a built-in no-go. *Verbatim (ICT):
+  "The ideal range is less than 40 pips, preferably the range should be no more than 20 to 30 pips in total
+  range."* **Rationale (his own):** the daily candle's average daily range is "typically around 100 pips,"
+  and ⅓ of that ≈ 33 pips — which is why 20–30 is the target and 40 the ceiling.
+- **Measurement — RESOLVED (Tier-1): use candle BODIES.** *Verbatim (ICT): "I like to use the bodies
+  predominantly because the wicks are always going to show erroneous price because of your dealing spread
+  through your broker."* The prior "one AI summary says wicks" reading is contradicted by this direct primary
+  quote and should be treated as an outlier — measure the CBDR on bodies.
 
-## Asian Range & "Flout" — **ESTABLISHED (Tier 2)**
+> **Tier-1 citation:** ICT, 2016 Premium Mentorship Core Content, **Month 8 — "Central Bank Dealers Range"
+> (Lecture 75)**, verbatim transcript — <https://files.quagmyre.com/files/ICTStudies/ICT-2016-Premium-Mentorship-Core-Content/srt/75-ICT%20Mentorship%20Core%20Content%20-%20Month%208%20-%20Central%20Bank%20Dealers%20Range.srt>
+> (third-party archive of ICT's own audio; YouTube video ID `nI1AMOC1pro`). Re-verified independently this session.
 
-- **Asian range:** high/low during **19:00–00:00 ET** (7pm–midnight), ideal 20–30 pips-equiv; used as a
+## Asian Range & "Flout" — **flout ESTABLISHED (Tier 1); Asian-range hours RESOLVED (Tier 1)**
+
+- **Asian range: 20:00–00:00 ET (8pm–midnight, 4 hr) — Tier 1 (verbatim).** Ideal 20–30 pips-equiv; used as a
   manipulation/liquidity reference (London/NY expected to sweep one side before reversing).
-- **Flout:** a **genuine ICT-derived term** (adversarially checked — real, not a mishearing). It is the
-  combined CBDR+Asian window (~15:00–24:00 ET), used as a **fallback range** when neither CBDR nor Asian range
-  individually passes its size filter. Traced to ICT's **PA Model 5 / Mentorship "Month 9 — Filling The
-  Numbers"** ("Michael recommends using central pivot, CBDR, Asian range, and flout altogether"), corroborated
-  across multiple independent sources + dedicated TradingView indicators. Absent from ICT's general glossary →
-  a PA-Model-5-specific term, not core vocabulary. Cite as ICT-derived, Tier 2.
+  > **✅ Contradiction RESOLVED (2026-07-18 Tier-1 pass).** The window is **20:00–00:00 ET**, not the
+  > 19:00–00:00 (7pm start) this page previously carried. Settled from ICT's own definitional statement in
+  > **Month 8, Lecture #74 "Defining The Daily Range"**: *"…at 8pm eastern standard time in New York time.
+  > This begins the Asian range. Every day at midnight Eastern Standard Time New York ends the Asian range."*
+  > This is fully consistent with the Month-8 CBDR lecture's applied fragment (*"At 8pm, starting the Asian
+  > range, project that range that we created for central bank dealers range"*): the CBDR closes at 8pm and
+  > 8pm is also the Asian-range start, running to midnight ET. The old 7pm-start reading is dropped.
+  > *Provenance caveat: transcript + corroborating lecture index both hosted on the quagmyre archive (same
+  > archivist, different subsystems) → Tier-1-with-single-archive-corroboration.*
+  > **Tier-1 citation:** ICT, 2016 Premium Mentorship Core Content, Month 8 #74 "Defining The Daily Range",
+  > verbatim transcript — <https://files.quagmyre.com/files/ICTStudies/ICT-2016-Premium-Mentorship-Core-Content/srt/74-ICT%20Mentorship%20Core%20Content%20-%20Month%208%20-%20Defining%20The%20Daily%20Range.srt>
+- **Flout — Tier 1.** A **genuine ICT-derived term** (adversarially checked — real, not a mishearing). The
+  combined CBDR+Asian window, used as a **fallback range** when neither CBDR nor Asian range individually
+  passes its size filter. *Verbatim (ICT): "the range from 3pm to midnight, New York time"* → exactly
+  **15:00–24:00 ET** (tightened from the prior "~"). Its equilibrium-to-high and equilibrium-to-low are each
+  counted as 1 standard deviation for projection. From ICT's **Mentorship "Month 9 — Filling The Numbers"
+  (Lecture 82)**; absent from ICT's general glossary → a PA-Model-specific term, not core vocabulary.
+  > **Tier-1 citation:** ICT, 2016 Premium Mentorship Core Content, Month 9 "Filling The Numbers" (Lecture
+  > 82), verbatim transcript — <https://files.quagmyre.com/files/ICTStudies/ICT-2016-Premium-Mentorship-Core-Content/srt/82-ICT%20Mentorship%20Core%20Content%20-%20Month%209%20-%20Filling%20The%20Numbers.srt>
+  > (third-party archive of ICT's own audio; YouTube video ID `zanmou0ic5U`). *Flout window re-verified via
+  > the subagent's dual-path fetch; not independently re-fetched by the main session this pass.*
 
 ## Standard-Deviation Projections — **ESTABLISHED method / EMERGING canonical multiples**
 

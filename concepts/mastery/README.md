@@ -111,7 +111,7 @@ size up.
 
 - **Aura track:** [[concepts/mastery/aura/rules]] · [[concepts/mastery/aura/checklist]] · [[concepts/mastery/aura/learning-path]] · [[concepts/mastery/aura/exercises]] · [[concepts/mastery/aura/tracker]]
 - **ICT-course track:** [[concepts/mastery/ict-course/rules]] · [[concepts/mastery/ict-course/exercises]] · [[concepts/mastery/ict-course/tracker]] *(learning-path + checklist reuse [[concepts/course/README]] and the entry-model YAML — not duplicated here)*
-- **Unified track:** [[concepts/mastery/unified/README]] (the playbook) · [[concepts/mastery/unified/divergence-rulings]] (the reconciliation) · [[concepts/advanced/README]] (frontier ICT that extends it)
+- **Unified track:** [[concepts/mastery/unified/README]] (the playbook) · [[concepts/mastery/unified/divergence-rulings]] (the reconciliation) · [[concepts/mastery/unified/learning-path]] (the graded roadmap, U0→U6) · [[concepts/mastery/unified/tracker]] (the progress grid) · [[concepts/advanced/README]] (frontier ICT that extends it)
 - [[concepts/aura/README]] — the Aura concept KB this track builds on
 - [[concepts/course/README]] — the ICT-course learning path (Track 2 will build on it)
 - [[concepts/entry-models/README]] — per-strategy execution checklists (canonical; the ICT track links here)

@@ -26,10 +26,23 @@ and confirmation layers, but that neither MrWitness-AXL nor dOoMeR taught in the
 | **Tier 2** | Reputable community documentation faithfully transcribing ICT, cross-checked across ≥2 independent authors. |
 | **Tier 3** | General SEO / vendor / single-source community content — treated as unverified until corroborated. |
 
-> **Honesty note:** the Phase-3 web pass captured almost **no Tier-1 verbatim** sources (YouTube transcripts
-> and X threads were largely un-fetchable — 402/403). Most claims below rest on **corroborated Tier 2**.
-> Where that is the case it is stated. Upgrading key claims to Tier 1 (by pulling actual ICT video
-> transcripts) is the highest-value follow-up.
+> **Honesty note (updated 2026-07-18 after the Phase-4b Tier-1 pass — mostly cleared):** the original Phase-3
+> web pass captured almost **no Tier-1 verbatim** (YouTube/X largely un-fetchable — 402/403). Two follow-up
+> passes then landed genuine Tier-1 archives (quagmyre.com, ICT's own recorded audio) that upgraded most of it:
+> - **CBDR** — window, body-vs-wick, size filter, flout window: **Tier-1** (Month 8/9 transcripts, re-verified).
+> - **Asian-range hours** — the flagged 19:00-vs-20:00 contradiction is **RESOLVED to 20:00–00:00 ET, Tier-1**
+>   (Month 8 #74 "Defining The Daily Range," verbatim).
+> - **IPDA 20/40/60** — the nested windows **and** the trading-day count are now **Tier-1 verbatim** (Month 5
+>   #39/#41). The 20→40→60 probabilistic **ranking** was searched for and **not found** verbatim → stays
+>   **Tier-3, UNVERIFIED**.
+> - **Silver Bullet** — the three windows and the core sweep→MSS→FVG→retrace→entry→stop→target sequence are
+>   **Tier-1 verbatim** from ICT's own **2023** Mentorship video (not the 2022 imitator uploads previously
+>   cited — corrected). The exact **1–3-min MSS timeframe** and **1:3 R:R** remain **Tier-3** (never stated by
+>   ICT in the primary). Marketing win-rates stay SPECULATIVE.
+> - **Midnight Open** — "beginning of true day," **Tier-1 with a provenance caveat** (unchanged from Phase 4).
+>
+> **Remaining open item:** the IPDA 20→40→60 *ranking* (Month-7 "Blending IPDA Data Ranges & PD Arrays"
+> unchecked). All Phase-4b provenance rests on the single quagmyre archive → Tier-1-with-single-archive-corroboration.
 
 **Confidence label** (how solid the idea is):
 
@@ -41,10 +54,10 @@ and confirmation layers, but that neither MrWitness-AXL nor dOoMeR taught in the
 
 | Page | Axis it sharpens | Headline label |
 |---|---|---|
-| [[concepts/advanced/ict-macros-and-silver-bullet]] | **WHEN** (intraday micro-timing) | Silver Bullet ESTABLISHED; macro table community-reconstructed |
-| [[concepts/advanced/ipda-data-ranges]] | **WHERE** (ranked liquidity targets) | 20/40/60-day ESTABLISHED; "liquidity matrix" SPECULATIVE |
+| [[concepts/advanced/ict-macros-and-silver-bullet]] | **WHEN** (intraday micro-timing) | Silver Bullet windows + mechanics ESTABLISHED (**Tier-1**); macro table community-reconstructed |
+| [[concepts/advanced/ipda-data-ranges]] | **WHERE** (ranked liquidity targets) | 20/40/60-day windows + trading-day count ESTABLISHED (**Tier-1**); ranking Tier-3; "liquidity matrix" SPECULATIVE |
 | [[concepts/advanced/quarterly-theory]] | **WHEN** (macro time-model) | EMERGING — community (Trader Daye), not ICT |
-| [[concepts/advanced/cbdr-and-sd-projections]] | **WHERE** (bounded target zones) | CBDR/flout ESTABLISHED; canonical multiples EMERGING |
+| [[concepts/advanced/cbdr-and-sd-projections]] | **WHERE** (bounded target zones) | CBDR/flout ESTABLISHED (**Tier-1**); canonical SD multiples EMERGING |
 
 ## The cross-cutting confluence stack ⭐
 

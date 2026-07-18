@@ -25,8 +25,10 @@ positive expectancy → go live.*
    deep / unique / frontier ICT content that accelerates the path to mastery. A course-content
    deep-research session (Phase 3). Backtesting is **out of scope** (reframe 2026-07-17). ✅ (2026-07-17)
 5. **Graded learning roadmap + progress tracker** — sequence the unified playbook + frontier content into
-   one ordered path graded on the existing ladder/confidence/gate; plus a bounded Tier-1 upgrade pass on the
-   frontier pages (Phase 4). Backtesting remains out of scope. ⏭ **NEXT.**
+   one ordered path graded on the existing ladder/confidence/gate (Phase 4). Backtesting remains out of
+   scope. ✅ (2026-07-17). Bounded Tier-1 upgrade pass ✅ **complete** (Phase 4b, 2026-07-18): CBDR + Midnight
+   Open + IPDA windows/trading-days + Silver Bullet windows/mechanics + Asian-range hours all Tier-1; only the
+   IPDA 20→40→60 ranking remains Tier-3.
 
 ## Lane
 
@@ -73,12 +75,14 @@ Reframed 2026-07-17 (see Decisions amendment): backtest gate **dropped**. A deep
 — cited, source-quality-vetted, pedagogically organized. A later session builds the graded learning
 roadmap + tracker over the result. Boot prompt provided to Paul 2026-07-17 (see chat/handoff).
 
-### Phase 4 — Graded learning roadmap + progress tracker (+ Tier-1 upgrade) ⏭ NEXT
-Sequence the [[concepts/mastery/unified/README|Unified Playbook]] and `concepts/advanced/*` into ONE ordered
-curriculum graded on the **existing** ladder/confidence/Readiness-to-Live Gate (reuse, don't reinvent):
+### Phase 4 — Graded learning roadmap + progress tracker (+ Tier-1 upgrade) ✅ (2026-07-17)
+Sequenced the [[concepts/mastery/unified/README|Unified Playbook]] and `concepts/advanced/*` into ONE ordered
+curriculum graded on the **existing** ladder/confidence/Readiness-to-Live Gate (reused, not reinvented):
 `concepts/mastery/unified/learning-path.md` (the sequenced spine, folding in the two per-track paths by
 reference) + `concepts/mastery/unified/tracker.md` (the living per-concept progress grid). Second thrust
-(context permitting): a bounded **Tier-1 upgrade pass** on the frontier pages. Boot prompt below.
+(the bounded **Tier-1 upgrade pass**) **partially executed** same session (CBDR → Tier-1; Midnight Open
+partial); **finished in Phase 4b (2026-07-18)** — IPDA windows/trading-days, Silver Bullet windows/mechanics,
+and Asian-range hours all upgraded to Tier-1 (only the IPDA ranking left at Tier-3). See session logs.
 
 ## Session Log
 
@@ -153,7 +157,143 @@ reference) + `concepts/mastery/unified/tracker.md` (the living per-concept progr
 - next: **graded learning roadmap + progress tracker** over the unified playbook + frontier pages (following
   session, per amendment). Optional: Tier-1 upgrade pass on the frontier pages; later, backtesting (separate workstream).
 
-## Next Session Boot Prompt (Phase 4 — graded learning roadmap + Tier-1 upgrade) ⏭ ACTIVE
+### 2026-07-17 — Phase 4 (graded learning roadmap + progress tracker)
+- approach: Opus main session. Surveyed the full Phase-3 output + both existing tracks' learning-path/
+  exercises/tracker + all 4 frontier pages (to mirror shape, capture exact tiers/labels, and sequence
+  without duplicating). Presented a short plan; Paul approved (write A + B then bookkeeping; Tier-1 pass not
+  requested this session).
+- did (Deliverable A — `concepts/mastery/unified/learning-path.md`): ONE sequenced spine over the 5 playbook
+  layers → stages **U0 psychology → U1 structural primitives → U2 nested SMT stack ⭐ → U3 execution → U4
+  risk → U5 frontier confluence-stacking → U6 readiness arc**. Each stage lists concepts (LINK to unified
+  README layer + canonical pages), drills (LINK to aura/ict-course exercise libraries — never forked), and a
+  ladder-stage exit bar; stages are explicitly gated (earlier gates later). Frontier (`concepts/advanced/*`)
+  slots in at **U5, deliberately last** (depends on U1–U4), grouped by WHERE/WHEN/DIRECTION/CONFIRM, each
+  concept keeping its exact TIER + ESTABLISHED/EMERGING/SPECULATIVE label and marked **study-and-watch, never
+  trade-live-on**. U6 references the two per-track backtest/live/journal stages + the Readiness-to-Live Gate
+  by link — **backtesting stays out of scope** (no new backtest content authored).
+- did (Deliverable B — `concepts/mastery/unified/tracker.md`): living per-concept grid mirroring the two
+  existing trackers, grouped by U-stage (ladder 1–4 / confidence 1–5 / reps / target / notes); a U5 frontier
+  block with every `advanced/*` concept tagged by tier+label and capped at ≤Can-mark (observation); U0–U6
+  stage-status table; Readiness-to-Live Gate copied **by reference** from mastery/README with an explicit
+  rule that **no frontier concept counts toward "core at Backtested+"**; backtest-sample table is a target
+  reference pointing to the two per-track trackers (math not forked).
+- flagged (per Rule #6): (a) **drill-library gap** — the frontier pages ship no dedicated exercise library;
+  U5 practice is observation overlays on existing session/liquidity drills, and authoring dedicated frontier
+  drills is left as a future gap, not invented. (b) two **stale index.md lines** ("a unified model is
+  deferred"; "Phase 3 … deferred") corrected — Phase 3–4 are built.
+- bookkeeping: additive See Also on `unified/README` + `mastery/README` (Unified track → learning-path +
+  tracker); `index.md` Unified track lines extended + Phase-1–4 status + 2 stale lines fixed; `log.md`
+  appended; Goal #5 + Phase 4 plan marked ✅; this session-log entry added.
+- second thrust — **Tier-1 upgrade pass (PARTIALLY done same session, at Paul's request "apply wins, boot-prompt
+  the rest").** 4 parallel Sonnet research agents (adversarial verify → tier), main session re-verified the
+  headline claim. Results:
+  - **CBDR → Tier 1 (clean win).** ICT's own 2016 Mentorship Month 8/9 transcripts (quagmyre archive,
+    dual-path-verified + main-session re-fetch of Month 8). Resolved **bodies-vs-wicks → BODIES** (verbatim),
+    confirmed 14:00–20:00 ET window + <40/20–30-pip filter (+ his ⅓-ADR rationale), tightened flout to exact
+    15:00–24:00. **Flagged (Rule #6) an Asian-range-hours contradiction** (page 19:00–00:00 vs ICT-implied
+    20:00 start) — unresolved, next-session item.
+  - **Midnight Open → Tier 1 partial (caveated).** Verbatim "midnight… beginning of true day" (ICT 2024
+    Lecture 03, quagmyre; provenance-caveated). 15:00-close + bias-pivot wording stay Tier 2; 18:00-debunk
+    reinforced with ICT's own NDOG quote.
+  - **IPDA → no verbatim upgrade** (Month-5 videos located but un-fetchable). Corrected attribution 5,7,8→5,7,
+    favoured trading-days (pending verbatim), flagged an @FlawInTheMatrix misattribution trap.
+  - **Silver Bullet → no upgrade** (transcripts un-fetchable; strategy Tier-1 by titles, mechanics Tier-3;
+    win-rate marketing reaffirmed SPECULATIVE).
+  - Edited the 4 advanced pages + advanced/README honesty note + synced unified/learning-path + tracker
+    frontier labels. **Remaining Tier-1 work handed to the boot prompt below.**
+- verified: isolation clean (no ALDC refs); no-drift honored (LINK, never restate the mastery model,
+  playbook, rulings, concept pages, entry-model YAML, or exercise libraries); frontier labels carried through
+  verbatim; new intra-wiki wikilinks target real pages; every Tier-upgrade cited, contradictions surfaced not smoothed.
+- next: finish the Tier-1 pass (boot prompt below — IPDA verbatim, Silver Bullet mechanics, Asian-range
+  hours); later, backtesting (separate workstream).
+
+### 2026-07-18 — Phase 4b (finish the Tier-1 upgrade pass)
+- approach: Opus main session. 3 parallel Sonnet general-purpose agents (one per remaining item), each fetch →
+  adversarial verify → tier. The predicted unlock held: the **quagmyre.com** archive of ICT's own recorded
+  audio (raw SRT transcripts + the XWiki lecture index for title/number corroboration) was fetchable where
+  YouTube/X were not.
+- did (all 3 items closed):
+  - **IPDA → Tier-1 (partial win).** Month 5 **#39 "Quarterly Shifts and IPDA Data Ranges"** + **#41 "Using
+    IPDA Data Ranges"** verbatim: the 20/40/60 nested "look back and cast forward" windows CONFIRMED; the count
+    is in **trading days** CONFIRMED verbatim ("60 trading days 40 trading days and 20 trading days") →
+    resolves the prior calendar-vs-trading caveat. The probabilistic **20→40→60 ranking** was explicitly
+    searched for and **NOT found** → left at **Tier-3 UNVERIFIED** (honesty preserved; Month-7 "Blending IPDA
+    Data Ranges & PD Arrays" is the next place to look). Upgraded ipda-data-ranges.md header + bullets +
+    citations.
+  - **Silver Bullet → Tier-1 (mechanics) + attribution CORRECTION.** The real primary is ICT's own **2023**
+    Mentorship "ICT Silver Bullet Time Based Trading Model" (YT `tRq1hyGGtl4`, quagmyre XWiki; provenance
+    corroborated via ictsharks + a tweet tagging @I_Am_The_ICT + Glasp) — **not** the three 2022 IDs
+    (`kG19mCUNdCc`/`V5iQOKY1J74`/`RqoMI4wD4lk`) the page previously cited as "ICT's own titled videos," which
+    are **third-party derivatives** (demoted). Three windows (3–4am/10–11am/2–3pm ET) + the core
+    sweep→MSS→FVG→retrace(body-inside)→entry→stop-beyond-FVG→target-next-pool sequence CONFIRMED verbatim. The
+    **1–3-min MSS timeframe** + **1:3 R:R** were NOT stated by ICT → kept **Tier-3**; win-rates stay
+    SPECULATIVE. Rewrote the Silver Bullet section + citations of ict-macros-and-silver-bullet.md.
+  - **Asian-range hours → RESOLVED (Tier-1).** Month 8 **#74 "Defining The Daily Range"** verbatim: *"at 8pm
+    eastern standard time… This begins the Asian range. Every day at midnight… ends the Asian range"* →
+    **20:00–00:00 ET (4 hr)**, refuting the old 19:00 start and consistent with #75's 8pm-start fragment.
+    Flipped the flagged contradiction in cbdr-and-sd-projections.md from CONTESTED → RESOLVED + added the #74
+    citation + updated the page's source caveat.
+- bookkeeping: advanced/README honesty note rewritten (pass "mostly cleared"; per-item status list) + the two
+  frontier-table headline labels updated; re-synced the frontier labels in unified/learning-path.md (WHERE IPDA
+  + CBDR/Asian rows, WHEN Silver Bullet row) and unified/tracker.md (IPDA + CBDR rows); index.md last_research +
+  the two Advanced lines + the Mastery workstream status line updated; log.md appended; this entry added.
+- honesty note: **all Phase-4b provenance rests on the single quagmyre archive** (transcript + corroborating
+  index are the same archivist's two subsystems) → labelled **Tier-1-with-single-archive-corroboration**
+  throughout, not fully-independent Tier-1. Only genuinely-open item remaining: the IPDA 20→40→60 ranking.
+- verified: isolation clean (no ALDC refs); no-drift honored (LINK, never restate the mastery model, playbook,
+  rulings, concept pages, entry-model YAML, or exercise libraries); every upgrade cited to a fetchable URL;
+  contradictions surfaced/resolved, not smoothed; caveats not softened where a verbatim quote was absent.
+- next: **Tier-1 upgrade pass is complete.** Optional future item: chase the IPDA ranking in Month-7. Later,
+  backtesting (separate workstream, still out of scope).
+
+## Next Session Boot Prompt (Phase 4b — finish the Tier-1 upgrade pass) — ✅ EXECUTED 2026-07-18
+
+Recommended launch: **Sonnet**. The blocker last pass was YouTube/X transcripts returning 402/403; the
+unlock is a **transcript-capable fetch** — the **quagmyre.com xwiki/SRT archive** of ICT's own recorded
+mentorship audio proved fetchable (it delivered the CBDR Tier-1 win). Working dir:
+`C:\Users\PaulRussell\repos\neurospect-wiki`. Paste:
+
+```
+Neurospect wiki — Phase 4b: FINISH the bounded Tier-1 upgrade pass on concepts/advanced/*.
+Working dir: C:\Users\PaulRussell\repos\neurospect-wiki
+
+BOOT / CONTEXT
+1. Read CLAUDE.md IN FULL — obey Isolation Rule (Neurospect lane only; NO ALDC content/refs), no-drift
+   (LINK, never restate), Page Format, Rules #3 (index.md), #4 (log.md), #6 (flag contradictions), #7 (cite
+   every claim). Paul handles git commits — NEVER commit.
+2. Read processes/distributed-workflow/active/mastery-layer.md — the Phase 4 session log (the CBDR/Midnight
+   Open wins already applied) so you neither redo nor contradict them.
+3. Skim the 3 target pages' current state: concepts/advanced/{ipda-data-ranges, ict-macros-and-silver-bullet,
+   cbdr-and-sd-projections}.md, and concepts/advanced/README.md §Honesty note.
+
+TIER RULE (unchanged): Tier 1 = ICT's OWN primary teaching, directly evidenced (fetchable verbatim transcript
+of his own video / his own X post). A third-party ARCHIVE of ICT's own recorded audio (e.g. quagmyre.com)
+counts as Tier-1 with a provenance note IF the lecture title/number is independently corroborated. Community
+rewrites/notes are Tier-2/3. Update tier labels + citations ONLY where a genuine primary source is found. Do
+NOT soften honesty caveats, inflate confidence, or accept marketing win-rates. Bounded — no rabbit-holing.
+
+THREE REMAINING ITEMS (ranked):
+  1. IPDA 20/40/60 verbatim → Tier 1. Pull the transcript of ICT's own Month-5 videos
+     youtube.com/watch?v=n7SPAK_tpN8 ("Quarterly Shifts & IPDA Data Ranges") and
+     youtube.com/watch?v=LRKtiysz4nA ("Using IPDA Data Ranges") — try the quagmyre archive first
+     (files.quagmyre.com/.../ICT-2016-Premium-Mentorship-Core-Content/ + info.quagmyre.com xwiki), matching
+     by lecture title. Goal: verbatim confirmation of the 20/40/60 *trading-day* lookback + the 20→40→60
+     ranking. Upgrade ipda-data-ranges.md if found.
+  2. Silver Bullet step-by-step → Tier 1. Find a fetchable verbatim transcript of ICT's own AM/PM/London
+     Silver Bullet 2022 Mentorship videos (kG19mCUNdCc / V5iQOKY1J74 / RqoMI4wD4lk) to upgrade the *mechanics*
+     (3 one-hour windows + sweep→MSS→FVG→retrace→entry→stop→target) from Tier-3. Try quagmyre / other archives.
+     If still un-fetchable, record the attempt and LEAVE mechanics at Tier-3 (valid outcome).
+  3. Asian-range hours contradiction (flagged in cbdr-and-sd-projections.md). Resolve 19:00–00:00 vs
+     20:00–00:00 ET from an ICT-primary Asian-range passage (likely the same Month-8/9 CBDR lectures already
+     cited — fetch the Asian-range segment verbatim). Fix the window + cite, or leave the flag if unresolved.
+
+WORKFLOW: apply upgrades surgically to the advanced pages ONLY where a genuine primary source is found;
+re-sync any changed labels into concepts/mastery/unified/{learning-path,tracker}.md + advanced/README honesty
+note; update index.md last_research; append log.md; add a Phase 4b entry to this tracker. Surface any new
+contradictions. OUT OF SCOPE: backtesting, app integration. Paul handles git — never commit.
+```
+
+## Next Session Boot Prompt (Phase 4 — graded learning roadmap + Tier-1 upgrade) — ✅ EXECUTED 2026-07-17 (A+B done; Tier-1 pass deferred)
 
 Recommended launch: **Sonnet** (aggregation/sequencing that mirrors the two existing tracks; escalate to
 `opus` only if the cross-track sequencing gets genuinely hard). For the Tier-1 thrust the `/deep-research`

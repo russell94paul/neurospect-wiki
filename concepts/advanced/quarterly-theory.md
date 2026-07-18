@@ -55,15 +55,27 @@ Citations: <https://time-price-research-astrofin.blogspot.com/2024/01/the-quarte
 
 A disambiguation footnote worth keeping, because "true day open" is used for at least four different things:
 
-1. **ICT's IPDA True Day — ESTABLISHED (Tier 2).** A 24-hr interbank day opening at **midnight (00:00 ET)**,
-   closing at **15:00 ET** ("IPDA True Day Close" — this is what "New York Close" means in ICT's material, not
-   the 16:00 equity close). The **Midnight Open** is ICT's primary daily-bias pivot (price above/below =
-   bullish/bearish lean); an *independent* backtest (not ICT's) found 60–67% retracement-to-midnight-open on YM.
+1. **ICT's IPDA True Day.** A 24-hr interbank day opening at **midnight (00:00 ET)**, closing at **15:00 ET**
+   ("IPDA True Day Close" — this is what "New York Close" means in ICT's material, not the 16:00 equity close).
+   The **Midnight Open** is ICT's primary daily-bias pivot (price above/below = bullish/bearish lean); an
+   *independent* backtest (not ICT's) found 60–67% retracement-to-midnight-open on YM.
+   - **00:00 ET = "beginning of true day" — Tier-1 (with provenance caveat).** *Verbatim (ICT): "midnight,
+     New York local time. That is the beginning of true day. That's the beginning of the real true day in
+     financial markets. So the algorithm likes to refer back to that time."* — ICT 2024 Mentorship Lecture 03
+     transcript (quagmyre.com archive; transcriber a community volunteer and the exact source-video URL was
+     not chain-of-custody-confirmed this pass, so treat the *attribution* as strong-but-not-airtight).
+   - **The 15:00 ET "IPDA True Day Close" and the explicit "above/below midnight = bullish/bearish" pivot
+     wording stay Tier 2** — every source for them is paraphrased student notes; no ICT-primary verbatim was found.
 2. **The community "18:00 ET = true day open" claim — SPECULATIVE-or-FRINGE.** A documentable **conflation**
    of two real-but-different things: ICT's **New Day Opening Gap (NDOG)** — a literal ES/NQ/YM price gap from
    the CME 17:00–18:00 ET maintenance halt — and CME Globex's convention that an 18:00 session start counts
    toward the *next* trade date. **Neither is ICT teaching 18:00 as the daily-bias open.** One Tier-3 source
    uses "Midnight Open" (00:00) and "True Day Open" (18:00) *in the same article* — term-conflation, not doctrine.
+   **Reinforced (Tier-1, 2026-07-17 pass):** the same ICT 2024 Lecture 03 transcript describes the NDOG as its
+   own distinct mechanic — *verbatim: "New Day opening gap… at 5pm the market closes. It stops and it pauses
+   for an hour, and then it resumes at 6pm Eastern Standard Time"* — confirming, in ICT's own words, that
+   17:00/18:00 (NDOG) and 00:00 (true-day-open) are **separate** mechanics. The "18:00 = true day open" claim
+   stays SPECULATIVE.
 3. **Quarterly-Theory True Opens (Daye).** Daily True Open = midnight; Weekly True Open = Monday 18:00 — these
    answer **different questions** (daily vs. weekly anchor), not rival candidates for the same point.
 

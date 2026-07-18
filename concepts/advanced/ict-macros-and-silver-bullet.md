@@ -18,27 +18,50 @@ Killzone  (hour-scale window)  → contains Macro(s) (~20-min sub-windows)
       → Silver Bullet = the FVG-retracement entry rule for that reversal, bounded to a set hour
 ```
 
-## Silver Bullet — **ESTABLISHED (Tier 1)**
+## Silver Bullet — **strategy + core mechanics ESTABLISHED (Tier 1)**
 
-The strongest-attribution item in the whole Phase-3 pass: ICT taught it **by name** inside his own 2022
-Mentorship (video titles "ICT AM/PM/London Silver Bullet | 2022 Mentorship Model" exist on his channel).
+The strongest-attribution item in the whole Phase-3 pass: ICT taught it **by name** and walked the mechanics
+step by step in his own **2023 Mentorship** video *"2023 ICT Mentorship — ICT Silver Bullet Time Based Trading
+Model"* (self-referential in-transcript: "I taught for free on this YouTube channel"), with a follow-up live
+trade-management example a week later.
 
-- **Three one-hour windows (ET):** London **03:00–04:00**, NY AM **10:00–11:00**, NY PM **02:00–03:00**.
-- **Mechanic:** liquidity sweep → **Market Structure Shift** (MSS) on 1–3 min → displacement leaves an
-  **FVG** → wait for retracement into that FVG → enter in the MSS direction, stop beyond the displacement
-  candle, target the next liquidity pool (commonly cited ~1:3 R:R).
-- **Edge / why it matters:** a complete, structurally-coherent setup built on Tier-1 primitives (sweep →
-  displacement → FVG → MSS). The strict window *is* the discipline — "if it doesn't appear in the hour, you
-  don't take it."
-- **Failure mode:** chasing the displacement leg instead of waiting for the FVG retracement; trading outside
-  the one-hour window.
+> **⚠ Attribution correction (2026-07-18 Tier-1 pass).** The named Silver Bullet mechanics lecture is **2023**,
+> not 2022 (2022 is referenced *inside* it only as prior FVG/OTE teaching). And the three YouTube IDs this page
+> previously cited as "ICT's own titled videos" (`kG19mCUNdCc` / `V5iQOKY1J74` / `RqoMI4wD4lk`, "…| 2022
+> Mentorship Model") are **NOT ICT's channel** — they are third-party uploads *applying* his model, bearing his
+> terminology in the title. Title-match ≠ same source. Those IDs are demoted; the real primary is below.
+
+- **Three one-hour windows (ET) — Tier 1 (verbatim):** London **03:00–04:00**, NY AM **10:00–11:00**, NY PM
+  **02:00–03:00**. *Verbatim (ICT): "First setup time is 3am to 4am… This is the London Open silver bullet";
+  "the am session… focusing on at 10am to 11am"; "framed on 2pm to 3pm New York local time… the pm session."*
+- **Core mechanic — Tier 1 (verbatim):** identify a resting **liquidity pool** → **shift in market structure**
+  → the displacement leaves a **fair value gap** → wait for a retracement whose **body stays inside** that FVG
+  → enter in the MSS direction → **stop beyond the FVG** → target the next liquidity pool. *Verbatim (ICT):
+  "there's an obvious sell side liquidity pool resting below that old swing low… the market created a fair
+  value gap. We had a shift in market structure below this low… the body staying inside that gap… we will be
+  aiming for this low and the sell side liquidity resting below it"* and *"I'll just put the stop loss right
+  above your [FVG]."*
+- **Still Tier-3 / community convention (NOT verbatim in the primary):** the specific **"1–3 minute" MSS
+  timeframe** and the **~1:3 R:R** figure were searched for and **not stated** by ICT in this lecture — he
+  frames targets in handles/pips (min 10 handles / 15 pips; aim 5–12 handles) and scales out in partial exits,
+  never a ratio. The words **"displacement"** and **"sweep"** are also not his in these walkthroughs (he says
+  "the fair value gap has taken the throne" / "raided"). Keep those specifics labelled community shorthand.
+- **Edge / why it matters:** a complete, structurally-coherent setup built on Tier-1 primitives (liquidity
+  raid → MSS → FVG → retracement). The strict window *is* the discipline — "if it doesn't appear in the hour,
+  you don't take it."
+- **Failure mode:** chasing the initial leg instead of waiting for the FVG retracement; trading outside the
+  one-hour window.
 - **Do NOT repeat as fact:** community "71% win rate on qualified setups" and "55–65%" figures are unsourced
   marketing (SPECULATIVE). The one independent backtest found (15 trades, 45 days) self-flagged as too small
   to claim edge. Treat Silver Bullet as a *disciplined recipe*, not a proven-edge number.
 
-Citations: <https://www.youtube.com/watch?v=kG19mCUNdCc> · <https://www.youtube.com/watch?v=V5iQOKY1J74> ·
-<https://m.youtube.com/watch?v=RqoMI4wD4lk> (ICT's own titled videos, Tier 1) ·
-<https://innercircletrader.net/tutorials/ict-silver-bullet-strategy/> (Tier 3, mechanics only).
+Citations: **Tier-1 primary (verbatim, quagmyre archive of ICT's own 2023 video `tRq1hyGGtl4`; provenance
+corroborated via forum.ictsharks.com + a tweet tagging @I_Am_The_ICT + Glasp):**
+<https://info.quagmyre.com/xwiki/bin/view/Forex/The-Inner-Circle-Trader/ICT-Youtube-Series-2023/ICT-YT-2023-05-15-ICT-Mentorship-ICT-Silver-Bullet-Time-Based-Trading-Model/?xpage=print>
+· live-example follow-up <https://info.quagmyre.com/xwiki/bin/view/Forex/The-Inner-Circle-Trader/ICT-Youtube-Series-2023/ICT-YT-2023-05-22-ICT-Mentorship-2023-Evolving-ICT-Silver-Bullet-Example/?xpage=print>.
+**Demoted (NOT ICT's channel — third-party derivatives):** <https://www.youtube.com/watch?v=kG19mCUNdCc> ·
+<https://www.youtube.com/watch?v=V5iQOKY1J74> · <https://m.youtube.com/watch?v=RqoMI4wD4lk>.
+**Tier 3 (mechanics only):** <https://innercircletrader.net/tutorials/ict-silver-bullet-strategy/>.
 
 ## ICT Macros — **ESTABLISHED concept / community-reconstructed table (Tier 2–3)**
 
