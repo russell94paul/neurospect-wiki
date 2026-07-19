@@ -515,8 +515,17 @@ the entry-model YAML). Vocabulary caution: the streams/youtube are ICT (MrWitnes
 out of the Aura track. Paul handles git commits — never commit.
 ```
 
+## Status — content workstream COMPLETE → UI hand-off
+
+Goals 1–5 are ✅ and the Tier-1 upgrade pass is finished (Phase 4b, 2026-07-18). The **content** is done. Paul's
+chosen next phase (2026-07-18) is a **Learning Platform UI** — a **new app** (integrating features from
+`neurospect-app` as needed) surfacing all course content + tracking progress across learning exercises /
+backtesting / live trading, graded on this workstream's ladder + Readiness-to-Live Gate. That work has its own tracker:
+[[processes/distributed-workflow/active/learning-platform-ui]] (Phase 5a design boot prompt lives there).
+
 ## See Also
 
+- [[processes/distributed-workflow/active/learning-platform-ui]] — Phase 5: the UI that delivers this content
 - [[concepts/mastery/README]] — the mastery model (ladder + readiness gate)
 - [[concepts/mastery/aura/rules]] — the completed Aura track (the pattern to mirror)
 - [[processes/distributed-workflow/active/aura-ingest]] — the ingest that produced the Aura KB

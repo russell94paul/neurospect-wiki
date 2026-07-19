@@ -173,3 +173,4 @@ Backend must be running at `localhost:8000` with `DEBUG=true` in `.env`.
 - [[concepts/architecture/trade-schema]] — ICT trade data model and REST API surface
 - [[concepts/architecture/phase2-project-structure]] — backend project layout
 - [[processes/distributed-workflow/active/journal-analytics]] — implementation tracker with all session logs and decisions
+- [[concepts/architecture/learning-platform]] — the new `neurospect-learn` sibling app that lifts this frontend spine (see its §Contradiction flag re: shipped stack versions)

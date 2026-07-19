@@ -140,4 +140,5 @@ Any "no" at 2–6 → no trade. The edge is in the *stack*, not any single signa
 - [[concepts/mastery/README]] — the mastery hub (ladder + Readiness-to-Live Gate)
 - [[concepts/mastery/aura/rules]] · [[concepts/mastery/ict-course/rules]] — the two source rulebooks
 - [[concepts/advanced/README]] — frontier ICT content that extends the execution/confirmation layers
+- [[concepts/architecture/learning-platform]] — the Learning Platform app whose journal fields trace to this playbook
 - [[entities/projects/neurospect]] — full project context

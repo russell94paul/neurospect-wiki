@@ -116,4 +116,5 @@ size up.
 - [[concepts/course/README]] — the ICT-course learning path (Track 2 will build on it)
 - [[concepts/entry-models/README]] — per-strategy execution checklists (canonical; the ICT track links here)
 - [[concepts/architecture/trade-schema]] — the journal data model the tracking/journaling drills map onto
+- [[concepts/architecture/learning-platform]] — the Learning Platform app that visualizes this ladder/gate + tracks progress
 - [[entities/projects/neurospect]] — full project context
