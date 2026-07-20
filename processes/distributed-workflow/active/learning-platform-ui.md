@@ -25,6 +25,27 @@ Turn the static markdown roadmap + per-concept trackers into a **living, interac
    win rate, avg R, expectancy) — the empirical proof-of-edge loop.
 4. **See gate status** — a clear "cleared to live?" signal per model driven by the Readiness-to-Live Gate.
 
+## North Star (Paul, 2026-07-20) — read before designing ANY feature
+
+**Discipline & accountability by design — not by choice.** Every feature must *structurally enforce* the
+disciplined process and remove the user's ability to shortcut it. The platform is **opinionated and prescriptive**,
+not a menu of optional tools. This is the differentiator that makes it one of the best ICT trading learning tools
+ever built — most courses hand you content and let you cheat yourself; this one won't let you.
+
+Concretely, features should default to enforcement over opt-in:
+- **Gated progression** — you cannot open a stage / mark a concept advanced / be "cleared to live" until the
+  objective bar is met (stage exit-bars, required backtest sample + positive expectancy, watch-only frontier never
+  gate-eligible). No manual override of the gate.
+- **Prescriptive, not optional** — the study planner tells you what to do *today*; the journal requires every
+  trade **including misses**; rep targets must actually be met, not self-declared done.
+- **Accountability surfaced** — streaks, adherence, skipped days, and honesty checks (e.g. journaling habit,
+  precommitted risk, circuit-breaker) are visible and factored in, not hideable.
+- **Guardrails the user can't switch off** where they protect the process (loss-limit precommitment, set-and-forget,
+  no live-eligibility on unbacktested/EMERGING/SPECULATIVE concepts).
+
+When a design choice is "let the user decide" vs "enforce the disciplined path," **default to enforce** and justify
+any exception. Every phase's design + the plan-mode design session must be checked against this north star.
+
 ## Lane
 
 - **This wiki** produces the DESIGN artifacts + this tracker only: `concepts/architecture/*` (a new canonical
@@ -44,6 +65,21 @@ Turn the static markdown roadmap + per-concept trackers into a **living, interac
 - **Build it as a NEW app** (its own repo), then **integrate features from the existing `neurospect-app` as
   needed** — cleaner than bolting a module onto the journal app. Reuse the proven stack + lift components /
   schema / API patterns selectively rather than inheriting the whole app's coupling.
+
+## Decisions (Paul, 2026-07-20)
+
+- **Study Planner elevated to a headline feature.** An **adaptive daily/weekly study-schedule generator** — the
+  user inputs availability (hours/slots), and the platform generates a concrete daily routine from the U0→U6
+  curriculum sequence + rep targets + drills, **gated by progress** and re-planning as progress updates, with a
+  Today view + calendar and spaced review of weak concepts. This is the platform's key differentiator ("tell me
+  exactly what to do today"), net-new to the 5a design.
+- **Planner sits on top of the progress layer (5e).** A smart scheduler needs current ladder position + stage
+  gates + rep targets, so it depends on `concept_progress` (5e). Decision: **design the planner AND the minimal
+  5e progress layer it needs together, shipping as one** (not planner-before-progress). The 5e build boot prompt
+  written 2026-07-20 is therefore **superseded** — the design session below re-scopes it.
+- **Next session is a PLAN-MODE design session** for the Study Planner + folded-in progress layer (the plan is
+  the artifact; no code). Design-heavy: availability model, scheduling algorithm, adaptivity/spaced-repetition,
+  data model, calendar UX, and the revised implementation split.
 
 ## Plan
 
@@ -75,8 +111,13 @@ remark-gfm, wikilink resolver, TIER/label + watch-only badges, search). Chose th
 (Paul's request). Verified end-to-end. Code is ground truth — [[concepts/architecture/learning-platform]]
 §Content delivery + §5d as-built record the decisions.
 
-### Phase 5e — Progress tracker
-`/path` + `/path/:stage` + concept-progress editing (ladder/confidence/reps) + `/drills`.
+### Phase 5e — Progress tracker + Study Planner (REDEFINED 2026-07-20 — design session next)
+Was: `/path` + `/path/:stage` + concept-progress editing + `/drills`. **Now expanded:** the progress layer
+(ladder/confidence/reps editing + stage exit-bars + `/drills`) is designed **together with the Study Planner**
+(availability input → adaptive, gate-aware daily/weekly schedule + Today view + calendar + spaced review) and
+they ship as one. The **next session is a plan-mode DESIGN session** (see the ⏭ ACTIVE boot prompt) that produces
+the design + a revised buildable split; subsequent build sessions execute it. The standalone 5e build boot prompt
+below is **superseded** by that design.
 
 ### Phase 5f — Journal + expectancy
 Model-aligned `/journal` (backtest|live) + `/expectancy` dashboard (per-model, backtest vs live).
@@ -203,7 +244,106 @@ Model-aligned `/journal` (backtest|live) + `/expectancy` dashboard (per-model, b
 - next: Phase 5e — progress tracker (`/path` + `/path/:stage` + concept-progress editing + `/drills`); write its
   boot prompt when 5e starts.
 
-## Next Session Boot Prompt (Phase 5e — progress tracker) ⏭ ACTIVE
+## Next Session Boot Prompt (Study Planner + progress layer — PLAN-MODE DESIGN) ⏭ ACTIVE
+
+Recommended launch: `claude --model opus[1m]`, then `/effort high`, in **plan mode** — this is a design session
+and the plan is the load-bearing artifact. Working dir: `C:\Users\PaulRussell\repos\neurospect-wiki` (the design
+doc lives here; the app to design against is `C:\Users\PaulRussell\repos\neurospect-learn`, code = ground truth).
+No code this session. Paste:
+
+````
+Neurospect — DESIGN (plan mode) the STUDY PLANNER — an adaptive daily/weekly study-schedule generator — for `neurospect-learn`, together with the minimal PROGRESS layer (the redefined Phase 5e) it depends on, so they ship as one. Goal: the platform tells me exactly what to study/drill each day, driven by my availability + the U0→U6 curriculum + my current progress, gated + adaptive. This is the platform's key differentiator — design it to be elite.
+Working dir: C:\Users\PaulRussell\repos\neurospect-wiki  |  App to design against (code = ground truth): C:\Users\PaulRussell\repos\neurospect-learn
+
+BOOT / CONTEXT
+1. Read the wiki CLAUDE.md IN FULL — Isolation Rule (Neurospect ONLY; NO ALDC), Architecture Doc Integrity (code
+   in neurospect-learn is ground truth; write ONE canonical design — extend learning-platform.md, do NOT restate
+   content; LINK it), plan-mode discipline (present the plan for approval BEFORE writing any page; no app code),
+   Rules #3 (index.md) #4 (log.md) #6 (flag contradictions). Paul handles git — commit only if he asks.
+2. Read the tracker processes/distributed-workflow/active/learning-platform-ui.md IN FULL — the Goal, the Decisions
+   (esp. 2026-07-20: Study Planner elevated; planner sits on the 5e progress layer; design them together), and the
+   superseded standalone 5e build boot prompt below (its scope — concept_progress editing, stage exit-bars,
+   /drills — is the progress layer to FOLD IN, now re-scoped by this design).
+3. Read learning-platform.md IN FULL — esp. §Progress + journal data model (the concept_progress part), §Route/
+   page taxonomy (/path, /path/:stage, /drills, the reader track panel), §Component/API surface, §5c + §5d as-built
+   (CODE is ground truth: concepts + concept_progress + content_pages already exist and are seeded/ingested).
+4. Read the CURRICULUM the planner schedules against (VISUALIZE/CONSUME, do NOT restate or fork): mastery/README
+   (ladder Learned→Can-mark→Backtested→Live-ready = 1–4, confidence 1–5, rep counters, Readiness-to-Live Gate) +
+   mastery/unified/learning-path.md (U0→U6 ordered stages, each with an explicit exit-bar + rep target; earlier
+   gates later) + tracker.md (the per-concept grid) + the drill libraries mastery/{aura,ict-course}/exercises.md
+   (✋ hand-mark / 🛠 tool variants). concepts.drill_refs holds soft refs like "aura D2-c"; rep_target is freetext.
+5. Skim the live code so the design is buildable against it: api/app/models/{concept,concept_progress}.py,
+   api/alembic/versions/0002_learning_progress.py, api/app/routers/content.py (the auth-gated router idiom),
+   app/src/App.tsx (the /path,/path/:stage,/drills STUBS + the /concepts reader), app/src/lib/content.ts (hooks +
+   TanStack Query), app/src/components/{content,ui}/*. Note: recharts + react-day-picker were dropped in 5b (re-add
+   if the planner UI needs a calendar/date lib) — and the app's `dark:` variant is media-based while the theme is
+   class-based (flagged in learning-platform.md §5d as-built — account for it in any new themed UI).
+
+OBJECTIVE
+Design (a) a minimal PROGRESS layer — per-user concept_progress editing (ladder/confidence/reps), the DERIVED
+stage exit-bars, and /drills — and (b) the STUDY PLANNER that consumes it: input availability → generate a
+concrete, dated study routine from the curriculum, gate-aware, rep-target-driven, adaptive (re-plan on progress
+change + slippage), with spaced review of weak/stale concepts, a Today view + a calendar. Design them as ONE
+coherent feature that ships together.
+
+Decide and justify, in the plan, at least:
+  0. SCOPE + SEQUENCING — how the progress layer and the planner split into buildable sub-phases that ship together
+     (e.g. progress foundation → planner data+algorithm → planner UI). Each a boot-promptable unit.
+  1. AVAILABILITY / PREFERENCES MODEL — how the user enters availability (recurring weekly slots? hours-per-day?
+     days-per-week? session length? blackout dates? target go-live date?) + the data model for it.
+  2. SCHEDULING ALGORITHM — the core. Map the curriculum GRAPH (U0→U6 ordered + gated; per-concept ladder targets +
+     rep targets; drills ✋/🛠) + current concept_progress + availability → a dated plan. Must: respect stage gates
+     (never schedule a locked stage's work), never schedule "go-live" on a watch-only/EMERGING/SPECULATIVE frontier
+     concept, allocate reps toward targets, order within a stage, size each day to available time, INTERLEAVE spaced
+     review (resurface concepts by confidence + last_practiced for retention), and RE-PLAN on progress change or a
+     missed day. Deterministic + re-runnable. Decide horizon (rolling N weeks vs to-go-live) + slippage handling.
+  3. DATA MODEL — new tables (e.g. study_plan / plan_items [scheduled_date, ref to concept/drill, activity type,
+     target, status], availability/preferences); relation to concepts + concept_progress + drills; regenerate-vs-
+     persist (is the plan stored, or computed on read + only completions stored?). Show DDL sketch + enums; reuse
+     trade-schema.md conventions (UUID/TIMESTAMPTZ/updated_at trigger/user-scoped/soft-delete) — new Alembic 0004+.
+  4. PROGRESS LAYER (folded in) — concept_progress lifecycle (per-user lazy upsert), the stage exit-bar derivation
+     (computed, never stored; rules LINKED from unified/learning-path), /drills + drill progress. The learning
+     endpoints (concepts/progress/stages/drills).
+  5. ROUTES / UI — the planner section (Today view; Week/Calendar view; availability/preferences setup; "regenerate")
+     + how it ties into /path, /path/:stage, /drills + the reader track panel. Marking a plan item done feeds
+     concept_progress reps. New components. Calendar approach (lightweight custom vs a lib — mind CSP/deps).
+  6. API SURFACE — endpoints (generate/get plan, get Today, mark item done → progress, availability CRUD) + the
+     progress endpoints from (4). Auth-gated, user-scoped, mirroring the content router idiom.
+
+QUALITY BAR
+- NORTH STAR (read the tracker's ## North Star section — it governs EVERY design choice): discipline &
+  accountability BY DESIGN, not by choice. The planner + progress layer must STRUCTURALLY ENFORCE the disciplined
+  path, not offer it as an option — prescriptive daily plan (not a menu), gated progression (no manual gate
+  override), rep targets that must actually be met, adherence/streaks/skipped-days surfaced, guardrails the user
+  can't switch off where they protect the process. When a choice is "let the user decide" vs "enforce," DEFAULT TO
+  ENFORCE and justify any exception. Call out in the plan exactly how each feature enforces discipline.
+- No-drift: the planner SCHEDULES the existing curriculum (learning-path sequence, rep targets, drills, gates) — it
+  CONSUMES/LINKS them, it does not restate or fork them. If it needs data the wiki/app lacks, flag it; don't invent.
+- Preserve every frontier TIER + ESTABLISHED/EMERGING/SPECULATIVE label + watch-only rule; NEVER schedule a
+  frontier concept as trade-live-eligible (study-and-watch only).
+- ELITE bar: adaptive, gate-aware, retention-aware (spaced review), respects real availability, actionable every
+  day. This is the differentiator — design for it, and call out what makes it best-in-class vs a static syllabus.
+- Reuse the proven stack + the 5b–5d idioms (auth-gated routers, Pydantic schemas, SQLAlchemy 2.0 + raw-SQL
+  Alembic, TanStack Query hooks, shadcn primitives). Cite the canonical docs; surface any contradiction with code.
+
+WORKFLOW / OUTPUT
+- FIRST present the PLAN in plan mode for approval: scope/sequencing, availability model, scheduling algorithm,
+  data-model sketch, routes/UI, API surface, and the revised implementation split. Do NOT write pages or code until
+  approved.
+- THEN on approval: extend the ONE canonical doc concepts/architecture/learning-platform.md (add a §Study Planner
+  section + fold the redefined 5e into §Progress data model + §Route taxonomy + §Component/API surface + revise the
+  implementation split); update this tracker (redefined phases + a session-log entry); additive cross-links from
+  mastery/README + unified/learning-path; update index.md; append log.md.
+- OUT OF SCOPE this session: writing app code (design only); the 5f journal/expectancy + 5g gate internals (except
+  where the planner reads progress); backtesting methodology; ALDC anything. Paul handles git — commit only if asked.
+````
+
+## Next Session Boot Prompt (Phase 5e — progress tracker) — ⛔ SUPERSEDED 2026-07-20 (folded into the Study Planner design session above)
+
+> **Superseded.** The standalone 5e progress-tracker build is now designed *together with* the Study Planner (see
+> the plan-mode design boot prompt above and the 2026-07-20 Decisions). Keep this prompt as the reference for the
+> progress-layer scope (concept_progress editing, stage exit-bars, `/drills`) the design session folds in; do not
+> execute it standalone.
 
 Recommended launch: **Sonnet** (`claude --model sonnet[1m]`), `/effort high` for the three design-heavy seams —
 the **per-user `concept_progress` lifecycle**, the **stage exit-bar derivation** (computed, never stored), and the
