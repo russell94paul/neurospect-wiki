@@ -1,9 +1,9 @@
 ---
 tags: [index, navigation]
 created: 2026-04-18
-updated: 2026-07-18
+updated: 2026-07-19
 last_fork: 2026-04-26-broker-integration-forked-from-journaling-ux
-last_build: 2026-04-26-phase4-deployment-complete
+last_build: 2026-07-20-learning-platform-phase5d-content-api
 last_design: 2026-07-18-learning-platform-phase5a-design
 last_ingest: 2026-07-16-aura-phase3-reconciliation
 last_research: 2026-07-18-mastery-phase4b-tier1-ipda-silverbullet-asianrange
@@ -65,7 +65,7 @@ Forward-looking product roadmap (horizons: Now / Next / Later / Strategic / Rese
 - [[concepts/architecture/transcript-pipeline]] — transcript ingestion decision doc (manual + Whisper)
 - [[concepts/architecture/phase3-frontend-structure]] — **canonical frontend doc**: React 19 + TS + Vite project layout, route map, key patterns (auth, trade form, screenshot upload, analytics hooks), env vars
 - [[concepts/architecture/phase4-coach-frontend]] — AI Coach frontend: routes, hooks, component tree, polling strategy, TV token UX, Pine asset sync
-- [[concepts/architecture/learning-platform]] — **canonical doc** for the new `neurospect-learn` app (Phase 5a design): separate backend, model-aligned journal, content API, U0–U6 route taxonomy, 5b–5g split
+- [[concepts/architecture/learning-platform]] — **canonical doc** for the new `neurospect-learn` app: separate backend, model-aligned journal, content API, U0–U6 route taxonomy, 5b–5g split. **Phase 5b scaffold ✅ + 5c data model ✅ (2026-07-19) + 5d content API/ingest/library-reader ✅ (2026-07-20)** (`C:\Users\PaulRussell\repos\neurospect-learn`; code is now ground truth — see §5b/§5c/§5d as-built: 4 tables + 8 enums + Alembic 0002/0003 + 41-concept seed + 67-page content ingest + `/library`/`/concepts` reader + Playwright harness); 5e (progress tracker) next
 
 ### AI Coach
 
@@ -196,7 +196,7 @@ _None yet._
 
 - [[processes/distributed-workflow/active/aura-ingest]] — transcribe + synthesize the second mentor corpus (Aura / dOoMeR); reconcile into existing notes. **Complete** — all phases done (30 transcripts, 14 concept pages, reconciled into ict-*/entry-models/schema/roadmap).
 - [[processes/distributed-workflow/active/mastery-layer]] — learn-to-execute layer (rules/checklist/learning-path/exercises/tracker per model). **Phases 1–4 done** (mastery system + Aura track + ICT-course track + unified model & frontier ICT + graded learning roadmap & progress tracker). Tier-1 upgrade pass **complete** (Phase 4b, 2026-07-18): CBDR + Midnight Open (Phase 4) → IPDA windows/trading-days, Silver Bullet windows/mechanics, and Asian-range hours (20:00–00:00 ET) all upgraded to Tier-1. Only open item: the IPDA 20→40→60 *ranking* (still Tier-3, unverified). **Content workstream complete → UI hand-off.**
-- [[processes/distributed-workflow/active/learning-platform-ui]] — **Phase 5: Learning Platform UI** — a **new app** (integrating features from `neurospect-app` as needed) surfacing all course content + tracking progress across learning exercises / backtesting / live trading, graded on the mastery ladder + Readiness-to-Live Gate. Phase 5a (frontend design) boot prompt ready.
+- [[processes/distributed-workflow/active/learning-platform-ui]] — **Phase 5: Learning Platform UI** — a **new app** (integrating features from `neurospect-app` as needed) surfacing all course content + tracking progress across learning exercises / backtesting / live trading, graded on the mastery ladder + Readiness-to-Live Gate. Phase 5a design ✅ + 5b scaffold ✅ + 5c data model + migrations ✅ (2026-07-19) + 5d content API + ingest + library/reader ✅ (2026-07-20); 5e (progress tracker) next.
 
 #### Zeus OS (Product Suite)
 
