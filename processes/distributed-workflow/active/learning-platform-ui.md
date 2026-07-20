@@ -81,6 +81,22 @@ any exception. Every phase's design + the plan-mode design session must be check
   the artifact; no code). Design-heavy: availability model, scheduling algorithm, adaptivity/spaced-repetition,
   data model, calendar UX, and the revised implementation split.
 
+## Decisions (Paul, 2026-07-20 — post-5e-1: multi-track path)
+
+After reviewing the shipped 5e-1 `/path`, Paul redefined the path layer (this **supersedes the single unified
+path** in the 5a design; captured in [[concepts/architecture/learning-platform]] §Multi-track path redefinition):
+
+- **Three first-class graded tracks, not one:** an **Aura** track, an **AXL/MrWitness** track, and the **Unified**
+  track (the reconciliation, reframed as the advanced track). A track switcher on `/path`.
+- **Per-track progress (separate), not a shared spine.** A concept taught by both mentors is **duplicated on
+  purpose** — repeating it is *more reps*, and a second explanation in a different voice may resonate better.
+- **Cross-links between equivalent concepts** across tracks (soft refs) — "Also taught in: …" — so the user can
+  jump to another track's take for more reading, without merging progress.
+- **Each stage is a curriculum unit:** Read (content) → Drill (that track's drills) → Track (its concepts) → Gate.
+  The bare progress-grid stage was the "no value" complaint; this is the fix.
+- **Sequencing:** build this (**5e-1b**) *before* the Study Planner — the planner schedules whichever track is
+  active, so the track model must land first.
+
 ## Plan
 
 ### Phase 5a — Frontend/app design session ✅ (2026-07-18)
@@ -111,13 +127,34 @@ remark-gfm, wikilink resolver, TIER/label + watch-only badges, search). Chose th
 (Paul's request). Verified end-to-end. Code is ground truth — [[concepts/architecture/learning-platform]]
 §Content delivery + §5d as-built record the decisions.
 
-### Phase 5e — Progress tracker + Study Planner (REDEFINED 2026-07-20 — design session next)
-Was: `/path` + `/path/:stage` + concept-progress editing + `/drills`. **Now expanded:** the progress layer
-(ladder/confidence/reps editing + stage exit-bars + `/drills`) is designed **together with the Study Planner**
-(availability input → adaptive, gate-aware daily/weekly schedule + Today view + calendar + spaced review) and
-they ship as one. The **next session is a plan-mode DESIGN session** (see the ⏭ ACTIVE boot prompt) that produces
-the design + a revised buildable split; subsequent build sessions execute it. The standalone 5e build boot prompt
-below is **superseded** by that design.
+### Phase 5e — Progress layer + Study Planner (DESIGNED ✅ 2026-07-20 — three build sub-phases)
+The progress layer (ladder/confidence/reps editing + stage exit-bars + `/drills`) and the **Study Planner**
+(availability → adaptive, gate-aware, retention-aware daily/weekly schedule + Today view + calendar + spaced
+review) were **designed together** (plan-mode session 2026-07-20) and split into three boot-promptable build
+sessions that ship as the 5e arc. Design is canonical in [[concepts/architecture/learning-platform]] (§Study
+Planner + §Progress + journal data model "Study Planner + progress-editing" subsection + §Component/API surface).
+
+- **5e-1 — Progress foundation. ✅ Built 2026-07-20 (in `neurospect-learn`).** `concept_progress` lazy-upsert
+  lifecycle, the derived stage exit-bars service (+ the shared `rep_targets` parser), the `drills` catalog
+  (53 rows, seeded from the two `exercises.md` drill-map tables) + `drill_progress` (Alembic `0004`), the
+  `learning` endpoints; frontend `/path`, `/path/:stage`, `/drills`, `ConceptTrackPanel` on the reader. Code is
+  ground truth — [[concepts/architecture/learning-platform]] §5e-1 as-built records the decisions.
+- **5e-1b — Multi-track curriculum ⏭ NEXT (designed 2026-07-20; see Decisions 2026-07-20 post-5e-1).** Redefine
+  `/path` from one unified spine into **three graded tracks** (Aura · AXL/MrWitness · Unified) with a track
+  switcher; **per-track concepts** (own stages, own drills, own progress — a shared primitive is duplicated on
+  purpose for more reps + a second explanation) + **cross-links** between equivalents; `track_stages` seed +
+  `cross_refs` (Alembic `0005`); generalize `stages.py`; reshape `/path/:track/:stage` into a **curriculum unit**
+  (Read → Drill → Track → Gate). Ships **before** the planner (which schedules the chosen track). Design canonical
+  in [[concepts/architecture/learning-platform]] §Multi-track path redefinition. Boot prompt below.
+- **5e-2 — Planner engine.** `study_preferences` + `plan_items` (Alembic `0006`), the
+  deterministic `scheduler` service (reusing the 5e-1 `rep_targets` parser), and the planner API (preferences ·
+  today · calendar · regenerate · mark-item-done → progress). Backend-only; verified by scheduler unit tests +
+  API checks.
+- **5e-3 — Planner UI.** `/today` (prescriptive daily view), `/plan` (calendar), `/plan/setup` (availability
+  form); wire mark-done → progress; streak / adherence / pace surfaces.
+
+Write each sub-phase's build boot prompt when that sub-phase starts (5e-1 first). The standalone 5e build boot
+prompt below (⛔ SUPERSEDED) is folded into 5e-1's scope.
 
 ### Phase 5f — Journal + expectancy
 Model-aligned `/journal` (backtest|live) + `/expectancy` dashboard (per-model, backtest vs live).
@@ -244,7 +281,276 @@ Model-aligned `/journal` (backtest|live) + `/expectancy` dashboard (per-model, b
 - next: Phase 5e — progress tracker (`/path` + `/path/:stage` + concept-progress editing + `/drills`); write its
   boot prompt when 5e starts.
 
-## Next Session Boot Prompt (Study Planner + progress layer — PLAN-MODE DESIGN) ⏭ ACTIVE
+### 2026-07-20 — Phase 5e (Study Planner + progress layer) DESIGN ✅
+- approach: Opus main session, plan mode, `/effort high`. Read the wiki CLAUDE.md + this tracker + the design
+  doc [[concepts/architecture/learning-platform]] in full; read the curriculum the planner schedules against
+  ([[concepts/mastery/README]] ladder/confidence/gate, [[concepts/mastery/unified/learning-path]] U0→U6 stages +
+  exit bars, [[concepts/mastery/unified/tracker]] grid, both `exercises.md` drill libraries); ran two Explore
+  agents (Sonnet) over the live `neurospect-learn` `api/` + `app/` to pin the exact build-against idioms.
+- decided (put 3 product forks to Paul via AskUserQuestion): **(availability)** per-weekday minute budget +
+  max-session + timezone + blackout dates + optional target date; **(horizon)** plan to each stage gate with a
+  **pacing-only ETA** — a target go-live date never gates (the evidence-based Readiness Gate stands);
+  **(build split)** deferred to me → **3 sub-phases** 5e-1 progress foundation / 5e-2 planner engine / 5e-3
+  planner UI. Engineering calls I made: **hybrid persist-vs-compute** (future computed on read, past+today frozen
+  into `plan_items` for a real adherence record); a **deterministic gate-aware scheduler** (unlock → backlog →
+  rep-target parse → mandatory spaced review → daily packing → ETA projection → slippage carry-over); a `drills`
+  catalog **seeded from the two `exercises.md` drill-map tables**; a `rep_targets` freetext parser that defaults
+  conservatively and never invents targets.
+- did: extended the ONE canonical doc [[concepts/architecture/learning-platform]] — added §Study Planner
+  (availability, scheduler, hybrid persist/compute, ETA/pacing, north-star enforcement per feature), folded the
+  redefined 5e into §Progress + journal data model (new subsection: `concept_progress` lifecycle,
+  `study_preferences`/`plan_items`/`drill_progress`/`drills` DDL sketch + 3 enums, the stage exit-bar
+  derivation), §Route/page taxonomy (`/today`,`/plan`,`/plan/setup`), §Component/API surface (planner components
+  + `learning`+`planner` endpoints + the first-`useMutation` + `dark:`-fix infra notes), and revised the
+  §Implementation split (5e → 5e-1/5e-2/5e-3). Marked Phase 5e DESIGNED ✅ above; added additive cross-links from
+  [[concepts/mastery/README]] + [[concepts/mastery/unified/learning-path]]; updated index.md; appended log.md.
+- surfaced from the code survey (fed into the design): the planner introduces the **first `useMutation`** in the
+  app (5b–5d were read-only); `progress`/`calendar`/`slider` shadcn primitives + `recharts`/`react-day-picker`
+  are **not present** (calendar → lightweight custom CSS-grid + `date-fns`); the `dark:` media-vs-class mismatch
+  (§5d as-built) to fix in 5e-1.
+- flagged (integrity): the stage exit-bar rules live in code (`services/stages.py`) as *as-implemented* — reconcile
+  if learning-path changes; U0/U4 gates partly self-attested until 5f/5g; freetext `rep_target` → conservative
+  parser, optional future structured seed column recommended not required.
+- verified (design-session = doc integrity): isolation clean (no ALDC refs); no-drift honored (design LINKS the
+  curriculum + extends the single canonical doc, no competing doc, no restated curriculum); frontier watch-only /
+  never-live-eligible preserved; all 7 boot-prompt decision areas covered; no app code written.
+- next: Phase 5e-1 — progress foundation (write its build boot prompt when 5e-1 starts).
+
+### 2026-07-20 — Phase 5e-1 (progress foundation) ✅
+- approach: Opus main session executing the approved 5e-1 boot prompt. Read the design doc contract (§Progress
+  data model 5e subsection + §Route taxonomy + §Component/API surface), the grading model (mastery/README +
+  unified/learning-path stage gates + tracker) and both `exercises.md` drill-map tables, then the live 5b–5d
+  backend/frontend idioms, and built to the established pattern (raw-SQL Alembic mirroring 0002/0003; router +
+  schemas mirroring content; seed mirroring seed_concepts; frontend data-fetch mirroring lib/content.ts).
+- did: **migration** `0004_drills_progress` (raw-SQL, reversible) — `drill_variant` enum + `drills` (seed/content,
+  no soft-delete; `drill_ref` UNIQUE, `track` CHECK, `concept_slugs[]` + GIN) + `drill_progress` (user-scoped,
+  soft-deleted; `UNIQUE(user_id,drill_ref) WHERE NOT is_deleted`). **models** `drill.py`/`drill_progress.py`
+  (registered in `models/__init__.py` + `alembic/env.py`). **seed** `scripts/seed_drills.py` — parses the two
+  drill-map tables, expands compound refs (`D0-a…e`, `D4-a/b`, `T-01…14`, `Stage 7`→`S7`), `concept_slugs`
+  reverse-derived from the concept seed's `drill_refs`; **53 drills** (aura 16, ict_course 37), idempotent on
+  `drill_ref`. **services** `rep_targets.py` (pure freetext→(kind,count) parser — reps/days/sessions/qualitative/
+  habit; conservative, never invents a target) + `stages.py` (pure exit-bar service, computed never stored;
+  U0–U4 gates encoded as the as-implemented gate, U5 watch-only/never-gate-eligible, U6 = 5g placeholder).
+  **`learning` router** (`/api`, auth-gated, user-scoped): GET concepts/progress/stages/drills, PATCH progress
+  (lazy upsert + the ladder-advance enforcement + the frontier watch-only cap), PATCH drills; mounted in main.py.
+  **frontend**: `lib/learning.ts` (learningKeys + the FIRST `useMutation`s in the app); `types/api.ts` learning
+  types; components StagePath/StageNode (rings + locked/watch-only), ExitBarGate, LadderBadge, ConfidenceRating,
+  RepCounter, ConceptTrackPanel, DrillCard; pages `/path`, `/path/:stage`, `/drills` (replaced the stubs) + the
+  track panel on the reader; `shadcn add progress`; added `@custom-variant dark` (the §5d-flagged mismatch fix).
+- decided (the calls the design left open; recorded in [[concepts/architecture/learning-platform]] §5e-1 as-built):
+  `track` as a CHECK-VARCHAR (only `drill_variant` is an enum in 0004); compound drill-ref expansion so refs
+  match `concepts.drill_refs`; the 4 aura Stage-0 drills the aura map omits are reported as orphan refs (faithful,
+  not invented); PATCH builds its response from the committed values (not an ORM re-read — `expire_on_commit=False`
+  returns the stale row); `stages.py` splits `auto_met` (objective) from `met` (incl. self-attest) so U0/U4's
+  un-wired attestations don't hard-lock the curriculum; ExitBarGate shows the true bar status (lock shown
+  separately) so a met-but-locked stage still reads "met".
+- verified (evidence, not inference; local Postgres :5433 + wiki readable): `alembic upgrade head` 0001→0004 +
+  `downgrade 0003` and back up clean (reversible); seed_drills 53 rows, re-run idempotent (53/53 distinct).
+  **API 15/15** (self-written harness): lazy create; re-PATCH updates in place (unique partial index holds);
+  per-user isolation (2nd user sees none); CHECK/validation reject ladder=9/confidence=9; ladder-advance
+  enforcement rejects premature Can-mark (reps<target or no confidence); U1 gate flips met↔not on the 5-primitive
+  fixture; U5 watch_only + never_gate_eligible; drill mark persists; unknown concept 404; no-token 403.
+  `tsc -b` + `vite build` clean. **Playwright 10/10** (6 content + 4 new learning: path spine, reader edit-persist,
+  stage exit-bar flip, drill mark). Browser (claude-in-chrome, debug-login): `/path` U0→U6 spine with rings +
+  locked/unlocked + watch-only + attestation-pending; `/path/U1` exit-bar checklist reflecting concept_progress +
+  the editable ConceptTrackPanel; `/drills` cards with ✋/🛠 + rep counters + concept back-links; no console errors.
+  Two real fixes caught mid-verify: ON CONFLICT partial-index predicate (`IS false` ≠ `NOT is_deleted`) and the
+  stale-ORM-read on PATCH response. Dev servers/DB left running for the session; Paul handles git.
+- reconciled (mandatory): updated [[concepts/architecture/learning-platform]] §Progress data model (5e subsection)
+  + §Component/API surface to as-built + added §5e-1 as-built + marked 5e-1 ✅ in the split; did NOT touch
+  trade-schema.md or phase3-frontend-structure.md.
+- isolation: clean (Neurospect-only; no ALDC refs). git: untouched — Paul handles commits.
+- next: Phase 5e-2 — planner engine (`study_preferences` + `plan_items` / Alembic 0005 + the scheduler service +
+  planner API; reuses the 5e-1 `rep_targets` parser). Write its build boot prompt when 5e-2 starts.
+
+### 2026-07-20 — Phase 5e-1b (multi-track curriculum) DESIGN ✅ / build queued
+- trigger: on reviewing the shipped 5e-1 `/path`, Paul flagged it delivered little value — a bare progress grid,
+  not a curriculum (no read/drill affordance) — and wanted **per-track paths** (Aura / AXL / Unified), not one
+  unified spine. Design dialogue (2 AskUserQuestion rounds) settled it: **parallel tracks**, **separate per-track
+  progress** (duplicating a shared primitive is *more reps* + a second explanation that may resonate better), with
+  **cross-links** between equivalent concepts across tracks, and **fix the path before the planner**.
+- decided (see Decisions 2026-07-20 post-5e-1): three first-class graded tracks with a switcher; per-track
+  concepts/stages/drills/progress; `cross_refs` soft links; each stage a curriculum unit (Read → Drill → Track →
+  Gate). Engineering shape I set: `concepts` gains `track`/`stage_code`/`stage_order`/`cross_refs` + `u_stage`
+  nullable; new `track_stages` seed table; seed grows 41 → ~72 (author ~14 Aura + ~17 AXL rows faithfully from the
+  two per-track learning-path pages); `stages.py` generalizes to a data-driven per-stage gate; new `GET /api/tracks`
+  + `/path/:track/:stage`; Alembic `0005` (planner bumped to `0006`).
+- did (this session = wiki design only, no app code): extended the canonical doc [[concepts/architecture/learning-platform]]
+  — added §Multi-track path redefinition + §Multi-track data model, rewrote §Route taxonomy (switcher +
+  `/path/:track/:stage` curriculum unit), inserted **5e-1b** into §Implementation split (planner → 0006); added
+  the Decisions block + the 5e-1b Plan entry + the 5e-1b build boot prompt above; appended log.md; bumped index.md.
+- verified: read both per-track curricula (aura/learning-path.md, course/README.md) to confirm the seed mapping is
+  a faithful projection (no invention); isolation clean (no ALDC); no-drift (tracks CONSUME/LINK the wiki paths).
+- next: execute the 5e-1b build boot prompt (fresh session recommended — the current session already shipped 5e-1
+  end-to-end). Then 5e-2 planner.
+
+## Next Session Boot Prompt (Phase 5e-1b — multi-track curriculum) ⏭ ACTIVE
+
+Recommended launch: **Opus** (`claude --model opus[1m]`), `/effort high` for the per-track concept authoring +
+the `stages.py` generalization. No plan mode — this executes the approved [[concepts/architecture/learning-platform]]
+§Multi-track path redefinition. Working dir: `C:\Users\PaulRussell\repos\neurospect-learn` (code is ground truth),
+or start from the wiki to read the design + the two per-track curricula first. **Prereq:** the `neurospect-learn-db`
+container on :5433 with the 5c+5d+5e-1 schema/seed/ingest. If gone: `docker start neurospect-learn-db`, then
+`cd api && poetry run alembic upgrade head && poetry run python -m scripts.seed_concepts && poetry run python -m
+scripts.seed_drills && poetry run python -m scripts.ingest_content`. Paste:
+
+````
+GROUNDING: Neurospect is Paul's personal ICT / Smart-Money-Concepts trading-mastery project, and `neurospect-learn` is its standalone learn-to-execute app — a FastAPI + Postgres backend (`api/`) and a React 19 / Vite / TanStack Query SPA (`app/`) — that surfaces the wiki's course corpus and tracks his progress up the mastery ladder (learn → backtest → live) toward being cleared to trade live.
+
+Neurospect — Phase 5e-1b: MULTI-TRACK CURRICULUM for `neurospect-learn`. Redefine `/path` from ONE unified spine into THREE first-class graded tracks (Aura · AXL/MrWitness · Unified) with a track switcher; each track has its OWN graded concepts, OWN stages, OWN drills, OWN per-user progress (a shared primitive is DUPLICATED across tracks ON PURPOSE — more reps + a second explanation); equivalent concepts across tracks carry CROSS-LINKS ("Also taught in: …"). Reshape each stage into a CURRICULUM UNIT (Read → Drill → Track → Gate). This ships BEFORE the Study Planner.
+Design spec (READ FIRST — it is the contract): C:\Users\PaulRussell\repos\neurospect-wiki\concepts\architecture\learning-platform.md — §Multi-track path redefinition (the model + the data model), §Route/page taxonomy (the /path switcher + /path/:track/:stage curriculum unit), §5c + §5e-1 as-built (CODE is ground truth — concepts/concept_progress/drills/drill_progress/stages.py/learning router already exist).
+Per-track curricula to SEED FROM (consume/link, NEVER restate or fork): Aura → C:\Users\PaulRussell\repos\neurospect-wiki\concepts\mastery\aura\learning-path.md (Stages 0–6: concepts + drills + gate per stage) + \aura\exercises.md (drills/reps). AXL → C:\Users\PaulRussell\repos\neurospect-wiki\concepts\course\README.md (Modules 1–5) + \ict-course\exercises.md (Stage 0 discipline + M1–M5 drills + tape/backtest/journal). Unified → the EXISTING 41 concepts (mastery\unified\learning-path.md). Grading model (reuse, do NOT restate): mastery\README.md (ladder 1–4, confidence 1–5, reps, gate).
+Content slugs already ingested (5d): the concept KB pages (aura/*, course/module-*/*, entry-models/*, business-logic/ict-*) resolve via the 5d slug scheme — reuse `concepts.content_slug` lookups; do NOT re-derive.
+Repo: C:\Users\PaulRussell\repos\neurospect-learn (api/, app/). Wiki content source (READ-ONLY): C:\Users\PaulRussell\repos\neurospect-wiki\concepts\**.
+
+BOOT / CONTEXT
+1. Read the wiki CLAUDE.md — Isolation Rule (Neurospect ONLY; NO ALDC; READ-ONLY on the wiki content; never touch sources/ or vault/), Architecture Doc Integrity (CODE is ground truth — you MUST reconcile learning-platform.md + add a §5e-1b as-built before sign-off), "Paul handles git — NEVER commit".
+2. Read learning-platform.md §Multi-track path redefinition + §Multi-track data model + §Route taxonomy IN FULL, and §5e-1 as-built (the concept/stages/drills/router shapes you extend).
+3. Read the two per-track curricula (aura/learning-path.md + course/README.md) + both exercises.md to map, PER TRACK, each stage → its concepts (with content_slug + drill_refs + is_core + rep_target) → its gate. Derive rows faithfully; NEVER invent a concept/drill/target the source lacks — flag gaps.
+4. Skim the live code you extend: api/app/models/concept.py, api/scripts/seed_concepts.py (the seed idiom + the 41 unified rows), api/app/services/stages.py (generalize it), api/app/routers/learning.py + schemas/learning.py, api/scripts/seed_drills.py (drills carry track already), app/src/pages/{path,stage-detail}.tsx + components/progress/* + lib/learning.ts + types/api.ts.
+
+SCOPE — 5e-1b IS:
+  - MIGRATION alembic 0005_multi_track (raw-SQL, reversible, mirroring 0002–0004; reuse update_updated_at()): ALTER `concepts` ADD `track` VARCHAR(16) NOT NULL DEFAULT 'unified' + CHECK (track IN ('aura','ict_course','unified')), ADD `stage_code` VARCHAR(16), ADD `stage_order` SMALLINT, ADD `cross_refs` TEXT[]; ALTER `u_stage` DROP NOT NULL (unified-only henceforth). NEW seed table `track_stages` (no soft-delete): `track`, `stage_order`, `stage_code`, `title`, `summary`, `gate_text`, timestamps + trigger, UNIQUE (track, stage_code). (Planner tables move to 0006 — do NOT build them.)
+  - MODEL: extend concept.py (track/stage_code/stage_order/cross_refs; u_stage nullable) + new track_stage.py; register + import in env.py.
+  - SEED: extend seed_concepts.py — set track='unified' + backfill stage_code (='U'+n)/stage_order on the 41; ADD ~14 Aura + ~17 AXL concept rows (distinct slugs e.g. `aura-swing-points`, `ict-liquidity-swings`) with content_slug + drill_refs + is_core + rep_target + cross_refs (equivalent slugs in the other tracks). NEW seed_tracks.py → `track_stages` (Aura A0–A6, AXL M0–M8, Unified U0–U6: title + summary + gate_text from the learning-path pages). Re-point seed_drills.py `concept_slugs` to the same-track concept slugs. Report per-track counts; all seeds idempotent.
+  - SERVICE: generalize stages.py — a stage's gate computed from `track_stages.concept_slugs` + concept flags (is_core at Can-mark, conf≥3, reps≥parsed target where the page specifies); keep auto_met/met/locked + the unified U0–U4 exact rules as a special case; frontier U5 watch-only unchanged.
+  - ENDPOINTS (extend learning.py): GET /api/tracks (tracks + their stages from track_stages + per-stage progress rollup + gate), GET /api/progress?track= (filter), keep PATCH progress/drills; generalize GET /api/stages → per track. Add cross_refs to the concept/progress responses.
+  - FRONTEND: `/path` track switcher (Aura|AXL|Unified) → the selected track's StagePath; route `/path/:track/:stage`; reshape StageDetail into the CURRICULUM UNIT (Read = content links via content_slug; Drill = DrillCards for the stage's drill_refs; Track = ConceptTrackPanels for the stage's concepts; Gate = ExitBarGate/gate_text). Add "Also taught in: …" cross-links on the ConceptTrackPanel + reader. Update lib/learning.ts (useTracks) + types/api.ts.
+
+5e-1b IS NOT: the Study Planner (prefs/plan_items/scheduler/today/plan/setup — 5e-2/5e-3, Alembic 0006); journal/expectancy/gate (5f/5g); backtesting methodology; ALDC anything.
+
+VERIFY (evidence): alembic 0001→0005 up/down/up clean; seeds idempotent + per-track counts reported; GET /api/tracks returns 3 tracks with their stages; per-track progress isolation (marking Aura swings does NOT mark AXL/Unified swings); cross_refs resolve; stages.py gate flips per track on a fixture; tsc -b + vite build clean; Playwright extended (track switch, per-track stage unit, cross-link) green; browser (claude-in-chrome): switch tracks, a stage shows Read+Drill+Track+Gate, cross-link jumps tracks, no console errors.
+RECONCILE + BOOKKEEP (mandatory): update learning-platform.md §Multi-track data model + §Route taxonomy → as-built + add a §5e-1b as-built; mark 5e-1b ✅ in the split + tracker + a session-log entry (next=5e-2); append log.md; bump index.md. Do NOT edit trade-schema.md / phase3-frontend-structure.md. Paul handles git — NEVER commit.
+````
+
+## Next Session Boot Prompt (Phase 5e-1 — progress foundation) — ✅ EXECUTED 2026-07-20
+
+Recommended launch: **Sonnet** (`claude --model sonnet[1m]`), `/effort high` for the three design-heavy seams —
+the **per-user `concept_progress` lifecycle**, the **stage exit-bar derivation** (computed, never stored), and
+the **`drills` catalog parse + data model**. No plan mode — this executes the approved
+[[concepts/architecture/learning-platform]] design. Working dir: open at
+`C:\Users\PaulRussell\repos\neurospect-learn` (code is ground truth), or start from the wiki to read the design +
+grading model first. **Prereq:** local Postgres with the 5c schema + seed **and** the 5d content ingest (the
+`neurospect-learn-db` container on :5433, matching `api/.env`). If gone/stopped: `docker start
+neurospect-learn-db` (or re-create per the 5c prereq), then `cd api && poetry run alembic upgrade head && poetry
+run python -m scripts.seed_concepts && poetry run python -m scripts.ingest_content` (→ 41 concepts + 67 content
+pages). Frontend + backend both installable (5b–5d verified). Paste:
+
+````
+Neurospect — Phase 5e-1: PROGRESS FOUNDATION for `neurospect-learn` — the substrate the Study Planner (5e-2/5e-3) reads. Build: per-user `concept_progress` editing (ladder/confidence/reps) via a "track this" panel on the reader; the DERIVED stage exit-bars; a `drills` catalog + `drill_progress`; the `learning` endpoints; and the `/path` + `/path/:stage` + `/drills` frontend. VISUALIZE the existing mastery ladder/confidence/gate — do NOT reinvent it.
+Design spec (READ FIRST, it is the contract): C:\Users\PaulRussell\repos\neurospect-wiki\concepts\architecture\learning-platform.md — §Progress + journal data model (the "Study Planner + progress-editing (Phase 5e)" subsection: concept_progress lifecycle + `drills`/`drill_progress` DDL + the stage exit-bar derivation — the PLANNER tables study_preferences/plan_items are 5e-2, NOT this phase), §Route/page taxonomy (/path, /path/:stage, /drills; the ConceptTrackPanel on /concepts/:slug), §Component structure + API surface (the `learning` endpoints + the "first useMutation" + `dark:`-fix infra notes), §5c as-built (concept_progress shape — CODE is ground truth), §5d as-built (content API + reader + badges live).
+Grading model to VISUALIZE (reuse by reference, do NOT restate): C:\Users\PaulRussell\repos\neurospect-wiki\concepts\mastery\README.md §Per-concept mastery ladder (4 stages = ladder_stage 1–4) · §Confidence rating (1–5) · §Rep counters · §Readiness-to-Live Gate. Stage exit-bars + ordering: C:\Users\PaulRussell\repos\neurospect-wiki\concepts\mastery\unified\learning-path.md (each U0–U4 stage's "Stage gate"/"Exit bar"; earlier stages gate later) + \tracker.md (the grid). Drill libraries (✋ hand-mark / 🛠 tool) + the structured "Drill → concept → ladder-stage map" tables to SEED the catalog from: C:\Users\PaulRussell\repos\neurospect-wiki\concepts\mastery\{aura,ict-course}\exercises.md; concepts.drill_refs holds soft refs like "aura D2-c".
+Conventions (reuse, do NOT restate): trade-schema.md §Schema Conventions; the 5b–5d backend idiom (SQLAlchemy 2.0 `Mapped`/`mapped_column`; Pydantic schemas per app/schemas/{auth,content}.py; routers per app/routers/content.py — auth-gated via `dependencies=[Depends(get_current_user)]`, per-route `db: AsyncSession = Depends(get_db)`; raw-SQL Alembic mirroring 0002/0003, reuse `update_updated_at()`; seed per scripts/{seed_concepts,ingest_content}.py — `pg_insert().on_conflict_do_update`); the 5d frontend idiom (lib/content.ts hooks + TanStack Query hierarchical keys; shadcn primitives; MarkdownRenderer/badges already built).
+Repo: C:\Users\PaulRussell\repos\neurospect-learn (api/ backend, app/ frontend). Wiki content source (READ-ONLY): C:\Users\PaulRussell\repos\neurospect-wiki\concepts\**.
+
+PREREQ: local Postgres with the 5c schema + seed + the 5d content ingest. Dev container `neurospect-learn-db` on :5433 (matches api/.env). If gone/stopped: `docker start neurospect-learn-db` (or re-create per 5c prereq), then `cd api && poetry run alembic upgrade head && poetry run python -m scripts.seed_concepts && poetry run python -m scripts.ingest_content` (→ 41 concepts + 67 content pages).
+
+BOOT / CONTEXT
+1. Read the wiki CLAUDE.md — Isolation Rule (Neurospect ONLY; NO ALDC; READ-ONLY on the wiki, never write back,
+   never read sources/ or vault/), Architecture Doc Integrity (CODE is ground truth; finalizing the
+   concept_progress lifecycle + the stage-exit-bar service + the drills data model IS EXPECTED to diverge from
+   the sketch, so you MUST reconcile learning-platform.md + add a §5e-1 as-built before sign-off), "Paul handles
+   git — NEVER commit".
+2. Read learning-platform.md §Progress data model (the 5e subsection) + §Route/page taxonomy + §Component/API
+   surface IN FULL. `concepts` + `concept_progress` ALREADY EXIST (5c); `concept_progress` rows are created
+   per-user AT RUNTIME — that is THIS phase. Stage status is DERIVED, never stored. Read mastery/README +
+   unified/learning-path for the ladder + the per-stage exit-bar rules the /path/:stage gate visualizes.
+3. Skim the live code: backend — app/models/{concept,concept_progress}.py, app/models/{base,enums}.py,
+   app/routers/content.py + app/deps.py (get_current_user) + app/database.py (AsyncSessionLocal/get_db),
+   app/schemas/content.py, scripts/seed_concepts.py (the pg_insert on_conflict idiom), alembic/versions/
+   0002_learning_progress.py + 0003_journal_entries.py (raw-SQL DDL; `update_updated_at()` already exists —
+   reuse; the partial-unique `WHERE NOT is_deleted` idiom), alembic/env.py (import every new model). frontend —
+   app/src/App.tsx (the /path, /path/:stage, /drills STUB routes still live), lib/content.ts + lib/api.ts (the
+   ky client + TanStack Query pattern to mirror — NOTE there is NO useMutation yet; you establish it),
+   components/content/* + components/ui/*, pages/concept-reader.tsx (add the track panel here), e2e/ (extend the
+   Playwright harness).
+
+SCOPE — 5e-1 IS (and is ONLY):
+  - MIGRATION `alembic/versions/0004_drills_progress.py` (raw-SQL, reversible, mirroring 0002/0003; reuse
+    `update_updated_at()`; NEVER edit 0002/0003): the `drill_variant` enum (`hand|tool`); `drills` (SEED/content,
+    NO soft-delete like `concepts`): `drill_ref` UNIQUE, `track` (`aura|ict_course`), `stage_code`, `title`,
+    `advances_to`, `rep_target` (freetext), `concept_slugs` TEXT[] + timestamps + trigger; `drill_progress`
+    (user-scoped, soft-deleted): `user_id` FK, `drill_ref` TEXT (soft ref), `reps` (default 0), `hand_done` +
+    `tool_done` (bool), `last_practiced` DATE, `notes`, timestamps + trigger + `UNIQUE (user_id, drill_ref) WHERE
+    NOT is_deleted`. (study_preferences + plan_items are 5e-2 / Alembic 0005 — DO NOT build them.)
+  - MODELS `app/models/{drill,drill_progress}.py` (SQLAlchemy 2.0, mirroring concept.py/concept_progress.py);
+    register in models/__init__.py + import in alembic/env.py.
+  - SEED `scripts/seed_drills.py` (idempotent `pg_insert().on_conflict_do_update` on `drill_ref`, mirroring
+    seed_concepts.py) parsing the "Drill → concept → ladder-stage map" tables at the foot of BOTH
+    mastery/{aura,ict-course}/exercises.md → `drills` rows (drill_ref e.g. "aura D1-b" / "ict-course D3-b", track,
+    stage_code, title=Concept col, advances_to, rep_target, concept_slugs back-link). READ-ONLY on the wiki.
+    Report the drill count; re-run must be idempotent.
+  - SERVICES: `app/services/rep_targets.py` — a pure freetext→(kind,count) parser (reps=N | days=N | sessions=N |
+    qualitative | habit/none) per the design; defaults conservatively, NEVER invents a target. `app/services/
+    stages.py` — a pure exit-bar service computing each U0–U4 stage's gate "met?" from the user's concept_progress
+    against the rules in unified/learning-path §Stage gate (e.g. U1 = all five primitives ≥ Can-mark, conf ≥3,
+    reps ≥ parsed target). COMPUTED, never stored. LINK the rules; do not restate them in the wiki. U5 (frontier)
+    is watch-only — NEVER live-gate-eligible; U6 readiness is OUT OF SCOPE (that live gate is 5g). *Integrity:*
+    stages.py IS the as-implemented gate — record it in §5e-1 as-built.
+  - LEARNING endpoints (new `app/routers/learning.py`, prefix `/api`, `dependencies=[Depends(get_current_user)]`,
+    user-scoped; schemas in `app/schemas/learning.py`; mount in main.py): GET /api/concepts (list; optional
+    ?stage=U1), GET /api/progress (this user's grid — LEFT JOIN concepts × the user's concept_progress so
+    untracked concepts return null ladder/confidence), PATCH /api/progress (UPSERT one concept's
+    ladder/confidence/reps/notes/last_practiced for the current user — on_conflict on the unique partial index;
+    LAZY create, no bulk pre-seed; **ENFORCE: reject a ladder advance to Can-mark+ unless reps ≥ parsed target AND
+    confidence is set** — north-star gating, no self-declared skips), GET /api/stages (per U-stage: its concepts +
+    this user's progress + the DERIVED exit-bar status + locked/unlocked), GET /api/drills (catalog + this user's
+    drill_progress; ?track= / ?stage=), PATCH /api/drills (UPSERT one drill_progress: reps / hand_done / tool_done
+    / last_practiced).
+  - FRONTEND (replace the 5b stubs for /path, /path/:stage, /drills; add the track panel to /concepts/:slug):
+    components per the design — StagePath/StageNode (the U0→U6 spine with per-stage progress rings + gate state +
+    LOCKED styling), ExitBarGate, LadderBadge (1–4), ConfidenceRating (1–5), RepCounter, ConceptTrackPanel
+    (editable ladder/confidence/reps → PATCH /api/progress; surfaces the ladder-advance gate), DrillCard (✋/🛠 +
+    reps + mark-complete → PATCH /api/drills). Establish the FIRST mutation pattern (`<domain>Keys` +
+    `use<Domain>Mutation` with `onSuccess: queryClient.invalidateQueries`, mirroring `contentKeys` in
+    lib/content.ts) in new `lib/learning.ts`; add types to types/api.ts (comment-linked to app/schemas/learning.py).
+    `npx shadcn add progress` (rings/bars). FIX the `dark:` mismatch: add `@custom-variant dark (&:where(.dark,
+    .dark *))` to src/index.css (flagged in §5d as-built) so new `dark:` utilities fire on the class-based theme.
+    RHF+Zod only if a form gets non-trivial (the small edits can be controlled inputs).
+
+5e-1 IS NOT (build NONE — later phases): the Study Planner — study_preferences + plan_items (Alembic 0005), the
+  scheduler service, /today, /plan, /plan/setup, the planner API (5e-2/5e-3); the model-aligned journal + /journal
+  (5f); the /expectancy dashboard + recharts (5f — not re-added until then); the entry-model YAML→strategy parser
+  (5f); the /gate live readiness view + its computation (5g — 5e-1 does per-STAGE exit bars only, NOT the
+  live-eligibility gate); R2/screenshots; Claude; backtesting methodology; ALDC anything.
+
+EFFICIENT PATH: mirror the established idioms — router like app/routers/content.py, schemas like
+  app/schemas/content.py, DDL like alembic 0002/0003 (raw op.execute, reuse update_updated_at()), the drills parse
+  like scripts/ingest_content.py/seed_concepts.py, frontend data-fetch like lib/content.ts + TanStack Query. Keep
+  progress edits simple (invalidate-on-success or optimistic).
+
+VERIFY (evidence, not inference — needs the local Postgres + wiki):
+  - `alembic upgrade head` 0001→0004 clean + `downgrade` and back up clean (reversible). seed_drills → the parsed
+    drill count (report it), re-run idempotent (no dupes on drill_ref).
+  - PATCH /api/progress creates exactly one row for the CURRENT user; GET /api/progress returns the merged grid
+    with that value; re-PATCH updates in place (no dup — the unique partial index holds); a SECOND debug user sees
+    NONE of the first's rows (per-user isolation); CHECK constraints reject ladder=9 / confidence=9; the
+    ladder-advance ENFORCEMENT rejects a premature Can-mark (reps < target or confidence unset) — spot-check.
+  - GET /api/stages exit-bar status flips correctly against a hand-set concept_progress fixture (set U1's five core
+    primitives to Can-mark+conf3+reps ≥ target → U1 gate "met"; drop one → "not met"). U5 never counts toward a
+    live gate.
+  - /drills mark-complete + rep increment persist (reload). Endpoints require a Bearer token (401/403 without).
+    `tsc -b` + `vite build` clean.
+  - Browser (claude-in-chrome, debug-login): /path renders the U0→U6 spine with progress rings + locked/unlocked;
+    /path/:stage shows its concepts + the ExitBarGate reflecting concept_progress; the ConceptTrackPanel on
+    /concepts/:slug edits ladder/confidence/reps and persists on reload; /drills marks a drill + bumps reps. No
+    console errors. App boots (/health=200) with the learning router mounted.
+  - EXTEND the Playwright harness: add e2e specs for progress edit-persist, stage exit-bar flip, and a drill mark —
+    `npm run test:e2e` green. (global-setup already mints a per-user debug token.)
+
+RECONCILE + BOOKKEEP (mandatory per Architecture Doc Integrity):
+  - UPDATE learning-platform.md §Progress data model (the 5e subsection) + §Component/API surface to AS-BUILT
+    (concept_progress lifecycle, the stage exit-bar derivation + the rep_targets parser, the drills data model +
+    Alembic 0004, the learning endpoints) + add a §5e-1 as-built note (like §5d). Code is ground truth.
+  - Mark 5e-1 ✅ in the tracker Plan; add a 5e-1 session-log entry (did / verified / next=5e-2); append log.md;
+    bump index.md last_build. Write the 5e-2 boot prompt when 5e-2 starts (not now).
+  - Do NOT edit trade-schema.md or phase3-frontend-structure.md (other lanes).
+
+OUT OF SCOPE: the planner (prefs/plan_items/scheduler/today/calendar/setup), journal, expectancy, charts,
+strategy-YAML parsing, the live gate, R2, Claude, backtesting methodology, ALDC anything. Paul handles git — NEVER commit.
+````
+
+## Next Session Boot Prompt (Study Planner + progress layer — PLAN-MODE DESIGN) — ✅ EXECUTED 2026-07-20
 
 Recommended launch: `claude --model opus[1m]`, then `/effort high`, in **plan mode** — this is a design session
 and the plan is the load-bearing artifact. Working dir: `C:\Users\PaulRussell\repos\neurospect-wiki` (the design

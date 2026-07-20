@@ -213,3 +213,4 @@ is reachable only after U1–U4 — it stacks filters onto a setup you can alrea
 - [[concepts/mastery/README]] — the shared ladder, confidence scale, and Readiness-to-Live Gate
 - [[concepts/mastery/aura/learning-path]] · [[concepts/course/README]] — the two per-model paths folded in here
 - [[concepts/advanced/README]] — the frontier content U5 sequences (labels + confluence stack + critique)
+- [[concepts/architecture/learning-platform]] — the Learning Platform + **Study Planner** that schedules this path (consumes the stage order, exit bars, rep targets, and drills; never restates or forks them)

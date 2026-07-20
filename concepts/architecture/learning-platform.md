@@ -3,7 +3,7 @@ tags: [architecture, frontend, backend, learning-platform, mastery, neurospect, 
 aliases: [Learning Platform Architecture, neurospect-learn, Learn App, Learning Platform Frontend]
 sources: [processes/distributed-workflow/active/learning-platform-ui.md, concepts/mastery/README.md, concepts/mastery/unified/learning-path.md, concepts/mastery/unified/tracker.md, concepts/architecture/phase3-frontend-structure.md, concepts/architecture/phase2-project-structure.md, concepts/architecture/trade-schema.md]
 created: 2026-07-18
-updated: 2026-07-19
+updated: 2026-07-20
 ---
 
 # Learning Platform — Architecture (Phase 5a design)
@@ -16,8 +16,13 @@ scale / Readiness-to-Live Gate defined in [[concepts/mastery/README]]. It is the
 
 > **Code now exists (Phase 5b shipped 2026-07-19).** The scaffold lives at
 > `C:\Users\PaulRussell\repos\neurospect-learn` (`app/` + `api/`). Per [[CLAUDE]] §Architecture Doc Integrity
-> the **code is ground truth**; this doc describes it *as implemented* (see §5b as-built for divergences).
-> Remaining phases 5c–5g are sequenced in [[processes/distributed-workflow/active/learning-platform-ui]].
+> the **code is ground truth**; this doc describes it *as implemented* (see §5b/§5c/§5d/§5e-1 as-built for
+> divergences). **Phase 5e-1 (progress foundation) shipped 2026-07-20** — the `concept_progress` lifecycle, the
+> derived stage exit-bars, the `drills` catalog + `drill_progress`, the `learning` endpoints, and `/path`,
+> `/path/:stage`, `/drills` + the reader track panel are live (§5e-1 as-built). **The Study Planner (5e-2 engine +
+> 5e-3 UI) is designed but not yet built** — see §Study Planner and the `study_preferences`/`plan_items` parts of
+> §Progress + journal data model; those describe the *approved design*, not shipped code, until 5e-2/5e-3 land.
+> Remaining phases 5e-2–5g are sequenced in [[processes/distributed-workflow/active/learning-platform-ui]].
 
 > **No-drift.** This doc states *structure and decisions*. It does **not** restate the mastery model, the
 > playbook, the learning-path, the exercise libraries, the entry-model YAML, or any concept page — it **links**
@@ -83,17 +88,67 @@ Poetry. Mirror the [[concepts/architecture/phase2-project-structure]] skeleton (
 `auth`/`models`/`schemas`/`routers`/`services`) and its **raw-SQL-for-analytics** approach — as a *separate*
 project with its own DB and secrets. Screenshot storage (R2) is **optional/deferred** for 5a.
 
-## Route / page taxonomy (mapped to U0–U6)
+## Multi-track path redefinition (Paul, 2026-07-20 — supersedes the single-path §Route taxonomy)
 
-Maps to the stages of [[concepts/mastery/unified/learning-path]].
+> **Decision (post-5e-1).** The path is **three first-class graded tracks, not one** — an **Aura** track, an
+> **AXL/MrWitness (ict_course)** track, and the **Unified** track (the reconciliation, now framed as the advanced
+> track). Each has its **own** graded concepts, its **own** stages, its **own** drills, and its **own** per-user
+> progress; a concept taught by both mentors is **duplicated on purpose** (more reps + a second explanation in a
+> different voice). Equivalent concepts across tracks carry **cross-links** (soft refs), surfaced as "Also taught
+> in: …" so the user can jump to another track's take on the same idea. The 5e-1 `/path` becomes the Unified
+> track; **5e-1b** (see §Implementation split) adds the Aura + AXL tracks + the track switcher + reshapes each
+> stage into a **curriculum unit** (Read → Drill → Track → Gate). Rationale: the single unified spine read as a
+> bare progress grid with no read/drill affordance; per-track curricula match how the mentors actually teach and
+> how Paul wants to learn. The wiki's per-track paths ([[concepts/mastery/aura/learning-path]] +
+> [[concepts/course/README]]) are the seed source — **consumed/linked, never restated**.
 
-| Route | Page | Surfaces | U-stage |
-|---|---|---|---|
-| `/path` (home) | **Curriculum spine** — U0→U6 as a gated visual path with per-stage progress rings; the one-glance stage map | learning-path | whole spine |
-| `/path/:stage` | **Stage detail** — concepts in the stage + drills + the ladder-stage **exit-bar** gate status | learning-path + tracker | U0–U4 |
+### Multi-track data model (5e-1b design)
+
+Approach: **per-track concept rows** (no shared spine). Reuses the 5c/5e-1 conventions; extends `concepts`.
+
+- **`concepts` gains** `track` (VARCHAR CHECK `aura|ict_course|unified`; the 41 existing rows → `unified`),
+  `stage_code` (generic per-track stage, e.g. `A1`/`M2`/`U1`), `stage_order` (SMALLINT), and `cross_refs`
+  (TEXT[] — equivalent concept slugs in the *other* tracks). `u_stage` becomes **nullable** (unified-only; still
+  drives the frontier CHECK + `content_pages` + the unified exit bars). Per-track slugs are distinct
+  (`aura-swing-points` vs `ict-liquidity-swings` vs `u1-1-liquidity-draw`).
+- **`track_stages`** — new seed table (no soft-delete, like `concepts`/`drills`): `track`, `stage_order`,
+  `stage_code`, `title`, `summary`, `gate_text` (the descriptive exit bar from the learning-path page), UNIQUE
+  `(track, stage_code)`. Holds the stage metadata `/path` renders.
+- **Seed** grows 41 → ~72: keep the 41 unified (set `track='unified'`, backfill `stage_code`/`stage_order` from
+  `u_stage`); author ~14 Aura + ~17 AXL concepts from `aura/learning-path.md` + `course/README.md` (+ the two
+  `exercises.md` for drills), with `content_slug`/`drill_refs`/`is_core`/`rep_target`/`cross_refs` per row; author
+  `track_stages` (~7 Aura + ~9 AXL + 7 Unified). Drills re-point `concept_slugs` to their own track's concepts.
+- **`stages.py` generalizes**: a stage's gate = its `is_core` concepts at Can-mark (+ conf≥3, reps≥target where
+  the track's page specifies), computed from `track_stages.concept_slugs` + concept flags — **not** hardcoded per
+  U-stage. Unified keeps its exact U0–U4 rules; Aura/AXL use the generic rule + their `gate_text`. Still computed,
+  never stored; still `auto_met`/`met`/`locked`.
+- **Progress stays per-track** (separate `concept_progress` rows per track's concepts); the enforcement + the
+  watch-only cap are unchanged. Cross-links are display-only (never merge progress).
+
+## Route / page taxonomy
+
+> **Multi-track (see the redefinition above).** `/path` gains a track switcher; a stage lives at
+> `/path/:track/:stage`. The rows below show the post-5e-1b shape.
+
+| Route | Page | Surfaces |
+|---|---|---|
+| `/path` (home) | **Track switcher + the selected track's spine** — Aura · AXL · Unified; each an ordered, gated list of stages with per-stage progress rings | the three learning-paths |
+| `/path/:track/:stage` | **Stage curriculum unit** — Read (content links) → Drill (the stage's drills) → Track (its concepts' progress) → the stage's Gate | learning-path + tracker |
+| `/library` | **Content browser** — course modules · entry models · unified playbook · aura · frontier; searchable | all content |
+| `/concepts/:slug` | **Content reader** — rendered markdown + **TIER / label badge** + a "track this" panel + "Also taught in" cross-links | any content page |
+| `/drills` | **Exercise tracker** — the two drill libraries with ✋ hand-mark / 🛠 tool variants + rep counters + mark-complete | aura/ict-course exercises |
+| `/today` | **Study Planner — Today view** (the differentiator) — the prescriptive ordered daily card list + streak / adherence / days-behind + U0 habits; mark each item done → feeds progress | planner (new data) |
+| `/plan` | **Study Planner — calendar** — month/week grid: past frozen (done/skipped), today, future projected; "regenerate" | planner (new data) |
+| `/plan/setup` | **Availability & preferences** — per-weekday minute budget + max-session + timezone + blackout dates + optional (pacing-only) target go-live date | planner (new data) |
+| `/journal` · `/journal/new` · `/journal/:id` | **Model-aligned journal** — log entries with a `backtest \| live` mode toggle; list + filters | (new data) |
+| `/expectancy` | **Expectancy dashboard** — per-model win rate / avg R / expectancy / sample; backtest vs live (Recharts) | (new data) |
+| `/gate` | **Readiness view** — computed "cleared to live?" signal per model + the Gate checklist | mastery/README §Gate |
 | `/library` | **Content browser** — course modules · entry models · unified playbook · aura · frontier; searchable | all content | all |
 | `/concepts/:slug` | **Content reader** — rendered markdown + **TIER / label badge** + a "track this" panel (ladder position, edit) | any content page | all |
 | `/drills` | **Exercise tracker** — the two drill libraries with ✋ hand-mark / 🛠 tool variants + rep counters + mark-complete | aura/ict-course exercises | U0–U4 |
+| `/today` | **Study Planner — Today view** (the differentiator) — the prescriptive ordered daily card list + streak / adherence / days-behind + U0 habits; mark each item done → feeds progress | planner (new data) | current unlocked |
+| `/plan` | **Study Planner — calendar** — month/week grid: past frozen (done/skipped), today, future projected; "regenerate" | planner (new data) | current unlocked |
+| `/plan/setup` | **Availability & preferences** — per-weekday minute budget + max-session + timezone + blackout dates + optional (pacing-only) target go-live date | planner (new data) | — |
 | `/journal` · `/journal/new` · `/journal/:id` | **Model-aligned journal** — log entries with a `backtest \| live` mode toggle; list + filters | (new data) | U6 |
 | `/expectancy` | **Expectancy dashboard** — per-model win rate / avg R / expectancy / sample; backtest vs live (Recharts) | (new data) | U6 |
 | `/gate` | **Readiness view** — computed "cleared to live?" signal per model + the Gate checklist | mastery/README §Gate | U6 |
@@ -213,16 +268,172 @@ Gate text, which is canonical in [[concepts/mastery/README]] §Readiness-to-Live
 never "Backtested+" without the required sample; live-eligibility is gated on the established playbook (U1–U4),
 never on unbacktested confluence.
 
+### 4. Study Planner + progress-editing (Phase 5e)
+
+> **Split: 5e-1 is as-built; the planner (5e-2/5e-3) is design.** The `concept_progress` lifecycle, the `drills`
+> catalog, `drill_progress`, and the stage exit-bar derivation below **shipped in Phase 5e-1 (2026-07-20)** —
+> Alembic **`0004`** (`drills` + `drill_progress` + the `drill_variant` enum), models under `app/models/`, seed
+> `scripts/seed_drills.py`, services `app/services/{rep_targets,stages}.py`, router `app/routers/learning.py`.
+> **Code is ground truth** (see §5e-1 as-built for divergences). The `study_preferences` + `plan_items` tables
+> (Alembic **`0005`**, + the `plan_activity`/`plan_item_status` enums) remain **approved design, not yet built**
+> until 5e-2. Conventions reuse [[concepts/architecture/trade-schema]] §Schema Conventions (UUID PK · TIMESTAMPTZ ·
+> `updated_at` trigger · user-scoped · soft-delete + partial unique `WHERE NOT is_deleted`) exactly as
+> `concept_progress` (5c) does.
+
+The planner reads `concepts` + `concept_progress` (unchanged from 5c; **no columns added**). 5e-1 added two
+tables (`drills`, `drill_progress`) + the `drill_variant` enum; 5e-2 adds two more (`study_preferences`,
+`plan_items`) + the `plan_activity` (`learn|drill|review|observe|habit|backtest`) / `plan_item_status`
+(`pending|done|partial|skipped`) enums. New model files are registered in `app/models/__init__.py` **and**
+imported in `alembic/env.py`.
+
+- **`concept_progress` lifecycle (5e-1, as-built — the 5c seed populates `concepts` only).** Per-user **lazy
+  upsert**: `GET /api/progress` LEFT JOINs `concepts` × the user's rows (untracked → null ladder/confidence);
+  `PATCH /api/progress` inserts-or-updates one concept via `on_conflict` on the partial unique index (predicate
+  `NOT is_deleted`, matched textually) — **never** pre-seeds rows. Per-user isolation (a second user sees none of
+  the first's). Honors the DB `CHECK`s (ladder 1–4, confidence 1–5, enforced again by Pydantic `ge/le`) +
+  soft-delete. **Enforcement:** the API rejects a ladder advance to Can-mark+ unless the concept's reps ≥ its
+  parsed rep target **and** confidence is set (no self-declared skips); and a **watch-only (U5) concept is capped
+  at Can-mark** (observation-only, never live-gate-eligible).
+- **`drills` (5e-1, as-built)** — seed/content (no soft-delete, like `concepts`), the drill catalog: `drill_ref`
+  (UNIQUE, e.g. `"aura D1-b"`), `track` (a CHECK-constrained VARCHAR `aura|ict_course` — only `drill_variant` is
+  an enum in 0004), `stage_code`, `title`, `advances_to`, `rep_target` (freetext, canonical), `concept_slugs`
+  (TEXT[] back-link, GIN). Seeded by `scripts/seed_drills.py` parsing the **structured "Drill → concept →
+  ladder-stage map" tables** at the foot of [[concepts/mastery/aura/exercises]] +
+  [[concepts/mastery/ict-course/exercises]] → **53 drills** (compound refs like `D0-a…e`/`D4-a/b`/`T-01…14`/
+  `Stage 7`→`S7` expanded to atomic refs; `concept_slugs` reverse-derived from the concept seed's `drill_refs`).
+  Drill *definitions* stay canonical in the wiki; this is a projection of them.
+- **`drill_progress` (5e-1, as-built)** — user-scoped, soft-deleted: `drill_ref` (TEXT soft ref, matching the
+  `concepts.drill_refs` convention), `reps`, `hand_done` + `tool_done` (the ✋/🛠 variant marks),
+  `last_practiced`, `notes`. `UNIQUE (user_id, drill_ref) WHERE NOT is_deleted`.
+- **`study_preferences` (5e-2, design)** — user-scoped, soft-deleted, one active row/user (`UNIQUE (user_id) WHERE NOT
+  is_deleted`): `timezone` (IANA), `mon_minutes … sun_minutes` (7 `SMALLINT`, 0 = day off), `max_session_minutes`,
+  `blackout_dates` (`DATE[]`), `target_go_live_date` (nullable, **pacing-only**), `plan_version` (INT) +
+  `generated_at`.
+- **`plan_items` (5e-2, design)** — user-scoped, soft-deleted; the **frozen** past/today assignments (see §Study Planner
+  persist-vs-compute): `plan_version`, `scheduled_date`, `activity` (`plan_activity`), `concept_id` (nullable FK →
+  `concepts`), `drill_ref` (nullable soft ref), `drill_variant` (nullable), `target_qty` + `target_unit`
+  (nullable), `est_minutes`, `status` (`plan_item_status`), `done_qty`, `completed_at`, `sort_order`. Index
+  `(user_id, scheduled_date) WHERE NOT is_deleted`; partial-unique on `(user_id, scheduled_date, activity,
+  concept_id, drill_ref, drill_variant) WHERE NOT is_deleted` to keep daily materialization idempotent.
+
+**Stage exit-bar derivation (5e-1, as-built)** — a pure `app/services/stages.py`, **computed never stored**,
+encoding the exit bars from [[concepts/mastery/unified/learning-path]] §Stage gate (LINKED as canonical — the
+rules are *not* restated here): U0 = U0 concepts ≥ Can-mark + held-habit attest; U1 = all five primitives ≥
+Can-mark, conf ≥3, reps ≥ parsed target; U2 = triad + Sequential SMT ≥ Can-mark, conf ≥3; U3 = U3 core + entry
+models ≥ Can-mark; U4 = U4 concepts ≥ Can-mark + expectancy/risk-precommit attest. **U5 = observation-only,
+never live-gate-eligible; U6 = 5g placeholder.** The service exposes **`auto_met`** (objective, concept-based)
+distinct from **`met`** (fully cleared, incl. self-attest) and computes **`locked`** off the *auto_met* chain, so
+U0/U4's un-wired attestations don't permanently freeze the curriculum in 5e-1. The `reps ≥ target` check uses the
+shared **`app/services/rep_targets.py`** freetext parser (reps/days/sessions/qualitative/habit; conservative,
+never invents a target). *Integrity flag:* these rules live in code as the *as-implemented* gate — if
+learning-path changes, `stages.py` must be reconciled (per [[CLAUDE]] §Architecture Doc Integrity). U0/U4 are
+partly self-attested (held-habit, risk precommit, journal-derived expectancy) until the 5f journal + 5g gate
+integrate them — surfaced honestly, never hidden.
+
+## Study Planner
+
+> **Design (Phase 5e-2/5e-3), not yet built.** The platform's headline differentiator: an **adaptive, gate-aware,
+> retention-aware** daily/weekly study-schedule generator that tells Paul exactly what to study/drill *today*,
+> driven by his availability + the U0→U6 curriculum + his current progress. It **schedules the existing
+> curriculum — it never restates or forks it** (concepts, `drill_refs`, freetext rep targets, and the
+> learning-path stage gates are consumed/linked). Data model in §Progress + journal data model ("Study Planner
+> + progress-editing"). North star: **discipline & accountability by design** — every choice defaults to
+> *enforce the disciplined path* over *let the user decide*.
+
+### Availability / preferences
+
+Entered on `/plan/setup` → `study_preferences` (one active row/user): a **per-weekday minute budget**
+(`mon_minutes…sun_minutes`; 0 = off, weekends can be longer), a **max single-session** cap (splits a day's
+budget into blocks), **timezone** (load-bearing — "today" and day-of-week matter to the ICT curriculum),
+**blackout dates**, and an optional **target go-live date**. The target date is **pacing-only**: it drives the
+ETA projection and an on-pace/behind flag but **never advances a gate or unlocks a stage** — the
+Readiness-to-Live Gate stays evidence-based ([[concepts/mastery/README]] §Gate).
+
+### Scheduling algorithm (deterministic, gate-aware, retention-aware)
+
+A pure function `schedule(today, prefs, concepts, drills, concept_progress, drill_progress, past_items)` → dated
+`plan_items`, in `app/services/scheduler.py` (+ `stages.py`, `rep_targets.py`). **Deterministic + re-runnable**
+(strict ordering, no randomness; same inputs → same plan), unit-testable without a DB. Pipeline:
+
+1. **Unlock.** Via the exit-bar service, find the highest unlocked stage `S` (first stage whose gate is unmet).
+   **Schedulable concepts = stages ≤ S only;** later stages are locked and **never scheduled**. **U5 unlocks only
+   after U1–U4 met**, and its work is always observe-only (never "go-live"/backtest-toward-live) — enforced by
+   `watch_only`.
+2. **Backlog** (ordered by `u_stage`, `sort_order`). Per schedulable concept: untracked → a **Learn** task (read
+   `content_slug`); each drill in `drill_refs` below its parsed rep target → **Drill** tasks for the remaining
+   reps; `watch_only` (U5) → **Observe** only, capped at Can-mark; U0 concepts → recurring daily **Habit** tasks
+   until the U0 gate holds.
+3. **Rep-target parsing** (`rep_targets.py`). `rep_target` is freetext ("≥50 ranges", "10 days", "1 week",
+   "5 sessions", "score by hand", "—"). Normalize → `reps=N` (count-y) · `days=N` (longitudinal drills spread
+   **1 session/day** — the planner respects that daily-bias/PO3 drills are inherently longitudinal and won't cram
+   them) · `sessions=N` · `qualitative` (small default; gate on ladder+confidence, not reps) · `habit`/none (U0).
+   The freetext stays canonical in the seed; the parser **defaults conservatively and never invents a target**
+   (no-drift). *Flag:* an optional future additive seed column (`rep_target_count`/`unit`) would make this
+   explicit — recommended, not required.
+4. **Spaced review** (mandatory retention guardrail — no off switch). Concepts at ladder ≥ Can-mark get a due date
+   from `confidence` + `last_practiced` on a Leitner-style interval ladder (conf 3 ≈ 3d, 4 ≈ 7d, 5 ≈ 21d);
+   past-due → short **Review** tasks interleaved into daily plans.
+5. **Daily packing** (deterministic). Iterate dates from `today` in the user's tz; skip blackout dates + 0-budget
+   weekdays. Per day: budget = that weekday's minutes, each block ≤ `max_session_minutes`; fill order
+   (a) U0 habits, (b) due reviews, (c) current-focus backlog in curriculum order, (d) day-based drills get one
+   slot/day. Minutes estimated per activity type. Overflow rolls to the next eligible day.
+6. **Projection / ETA / pacing.** Continue packing hypothetically to estimate when each future gate (U1..U4)
+   clears at current pace → "projected U1 clear", "projected go-live"; compare to `target_go_live_date` if set
+   (on-pace/behind — pacing only). Horizon = open-ended to the next gate, coarse projection beyond.
+7. **Slippage / carry-over.** Past `plan_items` still `pending` are **re-queued** at the front of today's backlog;
+   "N items / N days behind" is surfaced (accountability, not hideable). Missed work is never silently dropped.
+
+### Persist vs compute — hybrid
+
+Preferences **persisted**; the **future schedule computed on read** (pure function of curriculum + progress +
+prefs + today); **past + today frozen** into `plan_items`. `GET /api/plan/today` materializes the current date's
+computed items once (idempotent via the partial unique index); future calendar days are computed/projected, not
+frozen, until their date arrives. Marking an item done/partial/skip updates the item **and** feeds
+`concept_progress`/`drill_progress` (reps + `last_practiced`). Net effect — **the past is a fixed accountability
+record; the future is always recomputed from current state** — is the elite adaptivity property. `POST
+/api/plan/regenerate` bumps `plan_version` and recomputes; frozen past items keep their original version.
+
+### How the planner enforces the north star (per feature)
+
+- **Prescriptive Today** — ordered, not a menu; skipping is logged as a **skip** (hurts adherence), never hidden.
+- **Gated progression** — locked stages never scheduled; ladder-advance blocked until reps ≥ target + confidence
+  set; no manual gate override; U5 never live-eligible.
+- **Rep targets enforced** — tracked in `drill_progress`/`concept_progress`; the gate checks reps ≥ parsed target.
+- **Accountability surfaced** — streak, adherence %, days-behind, carried-over items: visible, not hideable.
+- **Spaced review mandatory** — no off switch. **U0 habits recur daily** until the held-habit gate (prerequisite
+  to size). **Missed work re-queued**, never dropped. **Frontier watch-only** enforced in the scheduler.
+  **Target date pacing-only** — never advances the evidence gate.
+
 ## Component structure + API surface
 
-- **New components:** `StagePath`/`StageNode`, `LadderBadge` (1–4), `ConfidenceRating` (1–5), `RepCounter`,
-  `ExitBarGate`, `TierBadge`, `LabelBadge`, `MarkdownRenderer`, `SearchCommand`, `DrillCard` (✋/🛠),
-  `ConceptTrackPanel`, `JournalForm` (tabbed, RHF+Zod, `mode` toggle — lifts the `trade-form` recipe),
-  `JournalCard`/`JournalFilters`, `ExpectancyChart`, `BacktestVsLiveChart`, `GateChecklist`, `GateSignal`.
+- **Progress components (5e-1, as-built):** `StagePath`/`StageNode` (SVG progress ring + locked/watch-only),
+  `ExitBarGate`, `LadderBadge` (1–4), `ConfidenceRating` (1–5), `RepCounter`, `ConceptTrackPanel` (on the reader
+  + on `/path/:stage`), `DrillCard` (✋/🛠). Under `components/{progress,drills}/`. Plus the already-built
+  `TierBadge`/`LabelBadge`/`MarkdownRenderer` (5d).
+- **New components (planner, 5e-3):** `TodayList`/`PlanItemCard`, `StudyCalendar` (a **lightweight custom
+  CSS-grid calendar** using `date-fns` — *not* `react-day-picker`, which was never added; it's a date picker,
+  not a content calendar, and this keeps the CSP surface minimal), `AvailabilityForm` (RHF+Zod),
+  `StreakBadge`/`AdherenceMeter`/`PaceProjection`.
+- **New components (journal/gate, 5f/5g):** `JournalForm` (tabbed, RHF+Zod, `mode` toggle — lifts the
+  `trade-form` recipe), `JournalCard`/`JournalFilters`, `ExpectancyChart`, `BacktestVsLiveChart`,
+  `GateChecklist`, `GateSignal`.
+- **Infra note (5e-1, as-built):** the progress/drill mutations are the **first `useMutation`s in this codebase**
+  (5b–5d were read-only) — `lib/learning.ts` establishes `learningKeys` + `useUpdateProgress`/`useUpdateDrill`
+  with `onSuccess: invalidateQueries` (a progress write also invalidates `stages`), following the `contentKeys`
+  hierarchical-key convention in `lib/content.ts`; `useUpdateProgress` surfaces the server's 422 gate message.
+  Added the shadcn `progress` primitive (`components/ui/progress.tsx`, Radix). **Fixed the `dark:` mismatch**
+  (media-based variant vs class-based theme, §5d as-built) by adding `@custom-variant dark (&:where(.dark,
+  .dark *))` to `index.css`.
 - **New endpoints (separate API):**
   - `auth`: `POST /auth/discord/token`, `GET /auth/me`, `POST /auth/debug/token` (debug-gated).
   - `content`: `GET /api/content/pages`, `/pages/{slug}`, `/search`.
-  - `learning`: `GET /api/concepts`, `GET|PATCH /api/progress`, `GET /api/stages`.
+  - `learning` (5e-1, as-built — `app/routers/learning.py`, prefix `/api`, auth-gated + user-scoped):
+    `GET /api/concepts` (`?stage=`), `GET|PATCH /api/progress`, `GET /api/stages`,
+    `GET /api/drills` (`?track=`/`?stage=`), `PATCH /api/drills`. Schemas in `app/schemas/learning.py`.
+  - `planner` (5e-2, auth-gated, user-scoped): `GET|PUT /api/preferences`, `GET /api/plan/today`
+    (materialize+persist today; items + adherence + pace), `GET /api/plan?from=&to=`,
+    `POST /api/plan/regenerate`, `PATCH /api/plan/items/{id}` (status + `done_qty` → feeds
+    `concept_progress`/`drill_progress`).
   - `journal`: `POST|GET|GET{id}|PATCH|DELETE /api/journal` (filters incl. `mode`, `entry_model`).
   - `analytics`: `GET /api/analytics/expectancy` (by model × mode), `/summary`, `/r-distribution`.
   - `gate`: `GET /api/gate`.
@@ -240,8 +451,21 @@ Each phase is a boot-promptable unit; sequenced in [[processes/distributed-workf
 - **5d — Content API + ingest + browser/reader.** ✅ **Built 2026-07-20.** Ingest job (67 pages); content
   endpoints; `/library` + `/concepts` (markdown render, wikilink resolver, TIER/label badges, search). See §5d
   as-built below.
-- **5e — Progress tracker.** `/path` + `/path/:stage` + concept-progress editing (ladder/confidence/reps) +
-  `/drills`.
+- **5e — Progress layer + Study Planner** (redefined 2026-07-20, designed together, three sessions):
+  - **5e-1 — Progress foundation.** ✅ **Built 2026-07-20.** `concept_progress` lazy-upsert lifecycle, the derived
+    stage exit-bars service (+ the shared `rep_targets` freetext parser), the `drills` catalog (53 rows) +
+    `drill_progress` (Alembic `0004`), the `learning` endpoints; frontend `/path`, `/path/:stage`, `/drills`, and
+    the `ConceptTrackPanel` on the reader. See §5e-1 as-built below.
+  - **5e-1b — Multi-track curriculum** (added 2026-07-20 per §Multi-track path redefinition). Turn the single
+    unified `/path` into **three graded tracks** (Aura · AXL · Unified) with a switcher; per-track concepts +
+    `track_stages` (Alembic `0005`) + `cross_refs`; generalize `stages.py`; reshape `/path/:track/:stage` into a
+    **curriculum unit** (Read → Drill → Track → Gate). Ships *before* the planner (which schedules the chosen
+    track). **Bumps the planner migration to `0006`.**
+  - **5e-2 — Planner engine.** `study_preferences` + `plan_items` (Alembic `0006`), the deterministic
+    `scheduler` service (reusing the 5e-1 `rep_targets` parser), and the planner API (preferences, today,
+    calendar, regenerate, mark-item-done → progress). No UI; verified by scheduler unit tests + API checks.
+  - **5e-3 — Planner UI.** `/today`, `/plan` (calendar), `/plan/setup`; wire mark-done → progress; streak /
+    adherence / pace surfaces.
 - **5f — Journal + expectancy.** Model-aligned `/journal` (backtest|live) + `/expectancy` dashboard.
 - **5g — Gate/readiness.** `/gate` computed readiness + watch-only enforcement.
 
@@ -342,6 +566,53 @@ shape. Decisions made while building (the calls the design left open):
   mints a debug JWT from the API and writes it into a Playwright `storageState`; `content.spec.ts` pins the 6 5d
   behaviours (library grouping, reader markdown+table, frontier badge/watch-only, wikilink click-through,
   unresolved-inert, search). `npm run test:e2e`; all 6 green. This is the standing UI-test pattern for 5e+.
+
+### 5e-1 as-built (2026-07-20) — code is now ground truth
+
+Progress foundation shipped and verified end-to-end (see §Progress + journal data model §4 + §Component/API
+surface for the shipped shapes). Alembic `0004` (one enum, two tables), two models, one seed, two pure services,
+one router, and the `/path`·`/path/:stage`·`/drills` frontend + reader track panel. Decisions made while building
+(the calls the design left open):
+
+- **Migration/model.** `0004_drills_progress` created the `drill_variant` enum (`hand|tool`) + `drills`
+  (seed/content, no soft-delete) + `drill_progress` (user-scoped, soft-deleted). **`track` is a CHECK-constrained
+  VARCHAR, not an enum** — only `drill_variant` is an enum in 0004 (per the design); `drill_variant` is created
+  here but consumed by `plan_items` in 0005 (5e-2), so no 0004 column uses it yet. `drills.concept_slugs` gets a
+  GIN index; `drill_progress` gets the partial-unique `(user_id, drill_ref) WHERE NOT is_deleted`. Fully
+  reversible (verified up/down/up).
+- **`seed_drills.py` — projection of the two drill-map tables → 53 drills** (aura 16, ict_course 37). Compound
+  cells are **expanded to atomic `drill_ref`s** so they match the `concepts.drill_refs` convention: `D0-a…e`
+  (letter range), `D4-a/b` / `D6-a/b/c` (slash suffixes), `T-01…14` (numeric range), `Stage 7`→`S7` (which makes
+  London's `"ict-course S7"` ref resolve). `drill_ref` uses the `"ict-course "` hyphen prefix (matching the
+  concept seed) while `track` uses the `ict_course` underscore. `concept_slugs` is **reverse-derived in-memory
+  from the concept seed's `drill_refs`** (single source of truth, no DB round-trip). The 4 aura Stage-0 drills the
+  aura map table omits are **reported as orphan refs** (concepts reference them but they aren't in the map — a
+  faithful wiki asymmetry, not invented). Idempotent on `drill_ref` + stale-prune (mirrors `ingest_content.py`).
+- **`rep_targets.py`** — a pure freetext→`RepTarget(kind, count)` parser: `reps`/`days`(`1 week`→7)/`sessions`/
+  `qualitative`(no floor)/`habit`. Multi-number strings bind the **largest** floor (`"≥5 + ≥50 swings"`→50); a
+  number embedded in an identifier (`"Class-2 hw"`, `"Model 2022"`) is **not** treated as a count (lookbehind
+  guard) so it defaults to qualitative — it never invents a target.
+- **`stages.py`** — the as-implemented exit-bar gate (see §Stage exit-bar derivation). Splits `auto_met`
+  (objective) from `met` (incl. self-attest) and locks off the `auto_met` chain so U0/U4's un-wired attestations
+  don't freeze the curriculum. The two U2-gating SMT concepts (`u2-2-triad-smt`, `u2-3-sequential-smt`) are named
+  explicitly; U3 gates on `is_core` + the `U3.2*` entry-model concepts; frontier U5 is `watch_only` +
+  `never_gate_eligible`; U6 is a 5g placeholder.
+- **`learning` router — two real fixes caught in verification** (evidence-gated, not inferred): (1) `ON CONFLICT`
+  index inference needs the partial-index predicate **textually** — SQLAlchemy's `is_deleted.is_(False)` emits
+  `IS false`, which does **not** match the index's `WHERE NOT is_deleted`; fixed with `text("NOT is_deleted")`.
+  (2) with `expire_on_commit=False`, re-`SELECT`ing after a Core upsert returned the **stale identity-map row**
+  (and `expire_all()` then triggered an async lazy-load / `MissingGreenlet`); fixed by building the PATCH response
+  **from the committed values** instead of re-reading. PATCH also enforces the ladder-advance gate (reps ≥ target
+  + confidence set) and the watch-only Can-mark cap.
+- **Frontend.** `lib/learning.ts` holds the first `useMutation`s (`useUpdateProgress` invalidates `progress` +
+  `stages`; `useUpdateDrill` invalidates `drills`). `ConceptTrackPanel` mirrors the server gate client-side
+  (`advanceBlocked`) to disable Save + show why. **ExitBarGate shows the true bar status** (`met`/`not met`)
+  regardless of lock — the StageDetail page shows a separate "Locked" notice — so a **met-but-locked** stage still
+  reads "Exit bar met" (a UX fix surfaced by the e2e). `shadcn add progress` mis-wrote to a literal `@/` folder
+  (alias glitch) and was relocated to `components/ui/`. Added `@custom-variant dark` (the §5d-flagged fix).
+- **Playwright.** `e2e/learning.spec.ts` adds 4 specs (path spine, reader edit-persist, API-seeded stage exit-bar
+  flip, drill-mark persist) under a `serial` describe (they share the one debug user); with the 6 content specs,
+  **10/10 green**.
 
 ## Contradiction flag (per [[CLAUDE]] Rule #6)
 
