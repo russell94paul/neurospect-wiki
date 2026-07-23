@@ -3,7 +3,7 @@ tags: [distributed-workflow, active, neurospect, mastery, frontend, ui]
 aliases: [Learning Platform UI Tracker, Phase 5 UI, Mastery UI]
 sources: []
 created: 2026-07-18
-updated: 2026-07-19
+updated: 2026-07-23
 ---
 
 # Learning Platform UI — Workstream Tracker
@@ -139,19 +139,27 @@ Planner + §Progress + journal data model "Study Planner + progress-editing" sub
   (53 rows, seeded from the two `exercises.md` drill-map tables) + `drill_progress` (Alembic `0004`), the
   `learning` endpoints; frontend `/path`, `/path/:stage`, `/drills`, `ConceptTrackPanel` on the reader. Code is
   ground truth — [[concepts/architecture/learning-platform]] §5e-1 as-built records the decisions.
-- **5e-1b — Multi-track curriculum ⏭ NEXT (designed 2026-07-20; see Decisions 2026-07-20 post-5e-1).** Redefine
+- **5e-1b — Multi-track curriculum. ✅ Built 2026-07-21 (in `neurospect-learn`).** Redefined
   `/path` from one unified spine into **three graded tracks** (Aura · AXL/MrWitness · Unified) with a track
   switcher; **per-track concepts** (own stages, own drills, own progress — a shared primitive is duplicated on
   purpose for more reps + a second explanation) + **cross-links** between equivalents; `track_stages` seed +
-  `cross_refs` (Alembic `0005`); generalize `stages.py`; reshape `/path/:track/:stage` into a **curriculum unit**
-  (Read → Drill → Track → Gate). Ships **before** the planner (which schedules the chosen track). Design canonical
-  in [[concepts/architecture/learning-platform]] §Multi-track path redefinition. Boot prompt below.
-- **5e-2 — Planner engine.** `study_preferences` + `plan_items` (Alembic `0006`), the
-  deterministic `scheduler` service (reusing the 5e-1 `rep_targets` parser), and the planner API (preferences ·
-  today · calendar · regenerate · mark-item-done → progress). Backend-only; verified by scheduler unit tests +
-  API checks.
-- **5e-3 — Planner UI.** `/today` (prescriptive daily view), `/plan` (calendar), `/plan/setup` (availability
-  form); wire mark-done → progress; streak / adherence / pace surfaces.
+  `cross_refs` (Alembic `0005`); generalized `stages.py`; reshaped `/path/:track/:stage` into a **curriculum unit**
+  (Read → Drill → Track → Gate). Ships **before** the planner (which schedules the chosen track). Code is ground
+  truth — [[concepts/architecture/learning-platform]] §5e-1b as-built records the counts + decisions.
+- **5e-2 — Planner engine. ✅ Built 2026-07-22 (in `neurospect-learn`).** `study_preferences` + `plan_items`
+  (Alembic `0006` + the `plan_activity`/`plan_item_status` enums; `active_track` on prefs for the 5e-1b
+  reconciliation), the deterministic pure `app/services/scheduler.py` (track-scoped; reuses the 5e-1
+  `rep_targets` parser + `stages.compute_stages`), and the planner API (preferences · today · calendar ·
+  regenerate · mark-item-done → progress). Backend-only; verified by 16 tests (9 scheduler unit with no DB + 7
+  API). Code is ground truth — [[concepts/architecture/learning-platform]] §5e-2 as-built records the decisions.
+- **5e-3 — Planner UI. ✅ Built 2026-07-23 (in `neurospect-learn`).** The three planner pages — `/today`
+  (prescriptive ordered daily card list), `/plan` (custom CSS-grid month calendar + regenerate), `/plan/setup`
+  (availability & preferences form) — + the `planner/` components (`TodayList`/`PlanItemCard`, `StudyCalendar`,
+  `AvailabilityForm`, `StreakBadge`/`AdherenceMeter`/`PaceProjection`) + `lib/planner.ts` (query/mutation layer),
+  wired to the live 5e-2 API; mark-done/partial/skip feeds progress; streak / adherence / days-behind / pace
+  surfaced (never hideable). Nav gains Today + Plan. Code is ground truth —
+  [[concepts/architecture/learning-platform]] §5e-3 as-built records the decisions (incl. the adherence-% bug
+  caught in-browser).
 
 Write each sub-phase's build boot prompt when that sub-phase starts (5e-1 first). The standalone 5e build boot
 prompt below (⛔ SUPERSEDED) is folded into 5e-1's scope.
@@ -384,7 +392,275 @@ Model-aligned `/journal` (backtest|live) + `/expectancy` dashboard (per-model, b
 - next: execute the 5e-1b build boot prompt (fresh session recommended — the current session already shipped 5e-1
   end-to-end). Then 5e-2 planner.
 
-## Next Session Boot Prompt (Phase 5e-1b — multi-track curriculum) ⏭ ACTIVE
+### 2026-07-21 — Phase 5e-1b (multi-track curriculum) BUILD ✅
+- approach: Opus main session executing the approved 5e-1b boot prompt (no plan mode). Read the design contract
+  (§Multi-track path redefinition + §Multi-track data model + §Route taxonomy + §5e-1 as-built), both per-track
+  curricula + both `exercises.md`, the grading model, and the live code extended (`concept.py`, `seed_concepts.py`,
+  `stages.py`, `learning.py`/`schemas`, `seed_drills.py`, `path.tsx`/`stage-detail.tsx`/`stage-path.tsx`/
+  `concept-track-panel.tsx`/`lib/learning.ts`/`types/api.ts`).
+- built: Alembic `0005_multi_track` (concepts +track/stage_code/stage_order/cross_refs, u_stage nullable;
+  `track_stages` metadata table — **no concept_slugs**, grouping by (track, stage_code)); `models/track_stage.py`
+  + registration; `seed_concepts.py` (unified backfill + 14 Aura + 19 AXL rows + `EQUIV_GROUPS` cross_refs);
+  new `seed_tracks.py` (23 track stages); `seed_drills.py` re-pointed to same-track `concept_slugs`; generalized
+  `stages.py` (`compute_stages(track, metas, concepts, progress)` — unified keeps exact U0–U6, aura/ict generic
+  rule); `learning.py` (`GET /api/tracks`, `GET /api/stages?track=`, `?track=` on concepts/progress) + schemas
+  (`StageRollup`/`StageOut`/`TrackOut`); frontend `/path` track switcher + `/path/:track/:stage` curriculum unit
+  (Read→Drill→Track→Gate) + `useConceptIndex` "Also taught in" cross-links.
+- decided (calls the design left open; recorded in [[concepts/architecture/learning-platform]] §5e-1b as-built):
+  `track_stages` metadata-only (group by concept columns, no denormalised slug array — anti-drift); concept-less
+  stages (unified U6, aura A4–A6, ict M6–M8 = backtest/live/journal) carry no gradable concepts + an attest
+  placeholder gate (faithful — the wiki authors those as drills); generic gate = foundation-stage behavioural +
+  attest / concept-stage core@Can-mark+conf3+reps / concept-less attest; `cross_refs` from validated `EQUIV_GROUPS`
+  (symmetric, never same-track); `drills.concept_slugs` keyed by (track, ref) so back-links stay same-track. Final
+  counts: concepts 41→74 (aura 14 / ict 19 / unified 41), track_stages 23, drills 53.
+- verified (evidence): alembic `0001→base→head` up/down/up clean (fixed a downgrade FK bug — clear dependent
+  `concept_progress` before deleting non-unified concepts); seeds idempotent + per-track counts reported; SQL —
+  0 unresolved content_slug, 0 unresolved cross_ref, 0 orphan concept stages, 0 cross-track drill links, 44
+  concepts carry cross_refs; `GET /api/tracks` → 3 tracks w/ their stages; **per-track isolation proven** (marking
+  Aura A1's cores flips only Aura A1; Unified U1 0/5 + ICT M1 0/2 untouched; unified `u1-1` stays None); gate flips
+  per track; `tsc -b` + `vite build` clean; **Playwright 12/12 green** (6 content + 6 multi-track: switch,
+  curriculum unit, reader edit, per-track isolation, cross-link jump, drill mark). The live claude-in-chrome visual
+  walkthrough was **not** separately run (Chromium e2e covers the behaviours).
+- reconciled: updated [[concepts/architecture/learning-platform]] §Multi-track data model + §Route taxonomy →
+  as-built + added §5e-1b as-built + marked 5e-1b ✅ in the split + the top banner; did NOT touch trade-schema.md
+  or phase3-frontend-structure.md. Appended log.md; bumped index.md. Paul handles git — did NOT commit.
+- ops note (not code): mid-verification Docker Desktop stopped (DB container dropped) and an earlier full
+  `alembic downgrade base` had emptied `content_pages`; restarted Docker + the container, re-ran all seeds **and
+  `ingest_content` (67 pages)**. Several stray background uvicorns were spawned during verification and cleaned up;
+  one server currently runs on :8000 with current code.
+- next: Phase 5e-2 — planner engine (`study_preferences` + `plan_items` / Alembic `0006` + the deterministic
+  `scheduler` service + planner API; reuses the 5e-1 `rep_targets` parser). Write its build boot prompt when 5e-2
+  starts.
+
+### 2026-07-22 — Phase 5e-2 (Study Planner engine) BUILD ✅
+- approach: Opus main session executing the approved 5e-2 boot prompt (no plan mode). Ran STEP 0 (all pass:
+  alembic 0005, seeds 74/23/53/67, `/api/tracks`=3, `/stages?track=aura`=A0–A6, frontend `tsc -b`+`vite build`
+  clean). Read the design contract in full (§Study Planner + §Progress data model §4 + §Component/API surface +
+  §5e-1/§5e-1b as-built) and the live code reused (`stages.py`/`rep_targets.py`/`learning.py`/`concept*` +
+  `drill*` models/`enums.pg_enum`/`0004`+`0005` migration idiom).
+- built: Alembic `0006_study_planner` (raw-SQL, reversible; enums `plan_activity` + `plan_item_status`;
+  `drill_variant` reused from 0004; `study_preferences` [+ `active_track`, per the 5e-1b reconciliation] +
+  `plan_items` with the `NULLS NOT DISTINCT` slot index for idempotent materialize); models
+  `study_preferences.py` + `plan_item.py` (registered in `models/__init__.py` + `alembic/env.py`); the pure
+  DB-agnostic deterministic `app/services/scheduler.py` (unlock→backlog→rep-parse→spaced-review→daily-pack→
+  projection→slippage; signature reconciled with an added `stage_metas` arg + a `ScheduleResult` bundle);
+  `app/schemas/planner.py`; `app/routers/planner.py` (GET|PUT `/preferences`, GET `/plan/today`, GET `/plan`,
+  POST `/plan/regenerate`, PATCH `/plan/items/{id}`) mounted in `main.py`.
+- decided (calls the design left open; recorded in [[concepts/architecture/learning-platform]] §5e-2 as-built):
+  `schedule(…, stage_metas, …)` track-scoped signature + `ScheduleResult` (design predated multi-track);
+  foundation concepts get Learn/Drill **and** a recurring daily Habit; count-y drills = one task carrying
+  remaining reps, day/session drills = one session/day (longitudinal); lowest unlocked concept-less stage = one
+  `backtest` placeholder; Leitner intervals conf 1→1d…5→21d; est-minutes per activity capped at
+  `max_session_minutes`; habits mandatory (may drive a day's budget negative); PATCH-item feeds reps +
+  last_practiced but never advances the ladder (gate stays with `/api/progress`).
+- verified (evidence): alembic `0001→head→base→head` clean on a **throwaway** DB + `0006` down/up on the working
+  DB (seed + `drill_variant` preserved); **9 scheduler unit tests with NO DB** (determinism, per-track unlock,
+  locked stages never scheduled, U5 observe-only+capped, blackout/0-budget skips, max-session cap, spaced-review
+  due dates, slippage re-queue, pacing-only projection); **7 API tests** (prefs round-trip, `/plan/today`
+  idempotent [0 dupes], PATCH feeds concept + drill progress, regenerate bumps `plan_version` + preserves a done
+  item, per-user isolation, 5e-1b `/tracks`+`/stages` no-regression); live uvicorn boot — all 5 routes mount, a
+  `PUT prefs → GET /plan/today` flow returns tz-aware habits/learn + adherence + pace; **Playwright 12/12 green**
+  (5e-1b regression after the reseed below).
+- reconciled: updated [[concepts/architecture/learning-platform]] §Study Planner (header + as-built scheduling
+  reconciliation) + §Progress data model §4 (`study_preferences`/`plan_items` → as-built, `0005`→`0006`,
+  `active_track`, `NULLS NOT DISTINCT`) + added §5e-2 as-built + marked 5e-2 ✅ in the split; did NOT touch
+  trade-schema.md or phase3-frontend-structure.md. Appended log.md; bumped index.md. Paul handles git — did NOT
+  commit.
+- ops note (evidence-gating lesson): a scratch `alembic downgrade base → upgrade head` intended for a throwaway DB
+  ran against the **working** DB (an exported `DATABASE_URL` did not override the `.env`-derived settings Alembic
+  reads), wiping the seed. Recovered by re-running all seeds + `ingest_content` (74/23/53/67 restored; Playwright
+  12/12 green after). Never run `downgrade base` against the working DB — pin scratch tests to a scratch DB via
+  config, not an env export.
+- next: **Phase 5e-3 — Planner UI** (`/today` prescriptive daily view, `/plan` calendar, `/plan/setup` availability
+  form; wire mark-done → progress; streak / adherence / pace surfaces). Write its build boot prompt when 5e-3
+  starts. The planner engine + API it consumes are live and tested.
+
+### 2026-07-23 — Phase 5e-3 (Study Planner UI) BUILD ✅
+- approach: Opus main session executing the approved 5e-3 boot prompt (no plan mode). Ran STEP 0 (all pass:
+  alembic `0006 (head)`; seeds 74/23/53/67; planner API live — prefs round-trip + `/plan/today` items>0 + range +
+  regenerate + patch all respond; backend `pytest` 16/16; frontend `tsc -b`+`vite build` clean + Playwright 12/12).
+  Read the design contract in full (§Study Planner + §Route taxonomy + §Component/API surface + §5e-2 as-built —
+  the exact Pydantic schemas in `schemas/planner.py`) + the live frontend idioms (`lib/learning.ts` query/mutation
+  pattern, `App.tsx`/`sidebar.tsx`, `stage-detail`/`concept-track-panel`/`drill-card`/`rep-counter`, the e2e
+  harness). Frontend-only — consumed the 5e-2 API unchanged.
+- built: `types/api.ts` planner types (mirroring `schemas/planner.py`); `lib/planner.ts` (`plannerKeys` +
+  `usePreferences`/`useUpdatePreferences`/`usePlanToday`/`usePlanRange`/`useUpdatePlanItem`/`useRegenerate` — a mark
+  invalidates the learning subtrees too, since it feeds progress); `components/planner/` — `TodayList`,
+  `PlanItemCard` (done/partial/skip → PATCH; carried-over + status styling; computed future items read-only),
+  `StudyCalendar` (a **custom Mon-first CSS-grid month calendar** via `date-fns`, per-day status dots + count,
+  today ring-highlit, past frozen / future projected, Regenerate + `unplaced` warning — **no `react-day-picker`**),
+  `AvailabilityForm` (RHF+Zod — weekday minutes, max-session, timezone auto-default, `active_track` Select,
+  blackout chips, pacing-only target date), `StreakBadge`/`AdherenceMeter`/`PaceProjection`; pages `/today`,
+  `/plan`, `/plan/setup` + the three routes in `App.tsx` + Today/Plan in `sidebar.tsx`.
+- decided (recorded in [[concepts/architecture/learning-platform]] §5e-3 as-built): mark → invalidate BOTH
+  `plannerKeys.all` + `learningKeys.all`; blackout dates in local state merged on submit (not RHF); Zod number
+  schemas plain `.int().min().max()` (dropped `invalid_type_error` — changed in Zod 4); done sends
+  `done_qty=target_qty`; computed future items (`id===null`) render read-only.
+- bug caught + fixed IN THE LIVE BROWSER: `AdherenceMeter` multiplied `adherence_pct` by 100 → rendered **2500%**;
+  the backend already returns a 0–100 percentage (the schema comment omits the ×100). Fixed to render directly.
+- verified (evidence, not inference): `tsc -b` + `vite build` clean; **Playwright 17/17** (12 existing regression +
+  5 new planner: setup→ordered non-empty Today; mark-done flips `data-status` + surfaces adherence + **feeds
+  progress** via `/api/progress` cross-check; skip logs a SKIP; calendar shows today's dots; regenerate bumps
+  `plan_version`) — the planner specs run serially against their **own isolated debug user** (`addInitScript`) so
+  they don't race with `learning.spec`. Live claude-in-chrome walkthrough (debug-login → `/plan/setup` save →
+  `/today` mark-done + skip → `/plan` calendar → regenerate) with **NO console errors** (the 2500% bug was caught
+  here). Ops note: the API `CORS_ORIGINS` allows only `:5173`, so the dev server must run there for `/auth/me`.
+- reconciled (mandatory): updated [[concepts/architecture/learning-platform]] §Study Planner header + §Route
+  taxonomy + §Component/API surface → as-built + added §5e-3 as-built + marked 5e-3 ✅ in the split; did NOT touch
+  trade-schema.md or phase3-frontend-structure.md. Appended log.md; bumped index.md.
+- isolation: clean (Neurospect-only; no ALDC refs). git: untouched — Paul handles commits.
+- next: **Phase 5f — Journal + expectancy** (model-aligned `/journal` [backtest|live] + `/expectancy` dashboard
+  per-model, backtest vs live; recharts re-added here). Write its build boot prompt when 5f starts.
+
+## Next Session Boot Prompt (Phase 5f — Journal + expectancy) ⏭ ACTIVE
+
+Recommended launch: **Opus** (`claude --model opus[1m]`), `/effort high` — the expectancy math must be correct
+(evidence-gated) and this introduces the app's **first charts**. No plan mode — this executes the approved
+[[concepts/architecture/learning-platform]] §Progress + journal data model + §Route taxonomy + §Component/API
+surface. Full-stack (journal API + analytics API + the `/journal`·`/expectancy` UI). Working dir:
+`C:\Users\PaulRussell\repos\neurospect-learn` (code is ground truth), or start from the wiki to read the design
+first. **Prereq:** the `neurospect-learn-db` container on :5433 with the 5c+5d+5e-1+5e-1b+5e-2 schema/seed +
+ingest. If gone: `docker start neurospect-learn-db`, then `cd api && poetry run alembic upgrade head && poetry run
+python -m scripts.seed_concepts && poetry run python -m scripts.seed_tracks && poetry run python -m
+scripts.seed_drills && poetry run python -m scripts.ingest_content`. Paste:
+
+````
+GROUNDING: Neurospect is Paul's personal ICT / Smart-Money-Concepts trading-mastery project, and `neurospect-learn` is its standalone learn-to-execute app — a FastAPI + Postgres backend (`api/`) and a React 19 / Vite / TanStack Query SPA (`app/`) — that surfaces the wiki's course corpus and tracks his progress up the mastery ladder (learn → backtest → live) toward being cleared to trade live.
+
+Neurospect — Phase 5f: MODEL-ALIGNED JOURNAL + EXPECTANCY DASHBOARD for `neurospect-learn`. Build the empirical proof-of-edge loop: a `/journal` that logs entries with a `backtest | live` mode toggle against the model-aligned field set, and an `/expectancy` dashboard showing per-model win rate / avg R / expectancy / sample size, backtest vs live. The `journal_entries` TABLE ALREADY EXISTS (5c, Alembic 0003) — you build the API + the UI over it; NO new migration is expected (the deferred items — screenshots, `missed_trades`, `position_size` — STAY deferred unless you deliberately add one, in which case Alembic 0007). This is the axis the Readiness Gate (5g) will read; 5f delivers the journal + the expectancy VIEW, NOT the live-eligibility gate. North star: DISCIPLINE & ACCOUNTABILITY BY DESIGN — the journal is prescriptive and honest (backtest vs live never conflated; expectancy shown per model with its true sample; no "cleared to live" signal here — that's 5g).
+
+STEP 0 — CONFIRM 5e-3 SHIPPED (do this FIRST; if any check fails, STOP and tell Paul — do not build on a broken base):
+  - Migrations at 0006: `cd api && poetry run alembic current` shows `0006 (head)`.
+  - Seeds present: `docker exec neurospect-learn-db psql -U learn -d neurospect_learn -tAc "SELECT 'concepts='||count(*) FROM concepts; SELECT 'track_stages='||count(*) FROM track_stages; SELECT 'drills='||count(*) FROM drills;"` → concepts=74, track_stages=23, drills=53 (content_pages=67).
+  - `journal_entries` table exists: `docker exec neurospect-learn-db psql -U learn -d neurospect_learn -tAc "\d journal_entries"` lists the columns + the 7 journal enums.
+  - Backend tests green: `cd api && poetry run pytest tests/ -q` → 16 passed.
+  - Frontend baseline: `cd app && npx tsc -b && npx vite build` clean; start the API on :8000 (DEBUG=true) then `npx playwright test` → 17/17 green (6 content + 6 multi-track + 5 planner). (Playwright needs the API up on :8000; the dev server must run on :5173 — the API CORS_ORIGINS allows only :5173.)
+  Only once ALL pass, proceed.
+
+Design spec (READ FIRST — it is the contract): C:\Users\PaulRussell\repos\neurospect-wiki\concepts\architecture\learning-platform.md — §Progress + journal data model §2 (the model-aligned `journal_entries` field set — decision-flow capture, execution/risk, frontier stack, review) + §3 (the gate math you REUSE for expectancy: `expectancy = (win% × avg win R) − (loss% × avg loss R)`, break-even `= 1/(1+R:R)`), §Route/page taxonomy (`/journal`·`/journal/new`·`/journal/:id`·`/expectancy` rows), §Component/API surface (the `journal` + `analytics` endpoint lists + `JournalForm`/`JournalCard`/`JournalFilters`/`ExpectancyChart`/`BacktestVsLiveChart`), §5c as-built (CODE is ground truth — the journal enums + field resolutions). Expectancy formula canonical in mastery/README §Readiness-to-Live Gate + [[concepts/aura/risk-management]] — REUSE by reference, do NOT restate.
+
+THE SCHEMA YOU BUILD OVER (code is ground truth — DO NOT change it): `api/app/models/journal_entry.py` + `api/app/models/enums.py` (the 7 journal enums: `journal_mode` backtest|live, `entry_model` [7 models + unified], `range_position`, `session_type`, `entry_pda` [DEFAULT fvg], `outcome`, `grade`). Read them for the EXACT columns + enum values before writing schemas — mirror them in `app/schemas/journal.py` + `types/api.ts`. Expectancy is computed in R (`r_multiple`/`rr_planned`/`risk_pct`), never dollars.
+
+BOOT / CONTEXT
+1. Read the wiki CLAUDE.md — Isolation Rule (Neurospect ONLY; NO ALDC; READ-ONLY on the wiki content; never touch sources/ or vault/), Architecture Doc Integrity (CODE is ground truth — you MUST reconcile learning-platform.md + add a §5f as-built before sign-off), "Paul handles git — NEVER commit".
+2. Run STEP 0 above.
+3. Read learning-platform.md §Progress + journal data model §2/§3 + §Route taxonomy + §Component/API surface + §5c as-built IN FULL, and skim §5e-3 as-built (the mutation-domain + charts-absent notes).
+4. Skim the live code you extend: api/app/models/{journal_entry,enums}.py, api/alembic/versions/0003_journal_entries.py (the enums + table as-built), api/app/routers/{planner,learning}.py + schemas/{planner,learning}.py (the auth-gated + user-scoped router idiom + Pydantic mirroring you copy), app/src/lib/{planner,learning}.ts (the `<domain>Keys` + `useQuery`/`useMutation`-invalidate pattern — `lib/journal.ts` + `lib/analytics.ts` mirror it), app/src/App.tsx (the /journal* + /expectancy STUBS to replace), components/ui/* (form/input/select/tabs/badge/card already present; RHF+Zod+date-fns installed), and the entry-model pages under concepts/entry-models/** (the decision-flow the JournalForm fields trace to — CONSUME/LINK, never restate).
+
+SCOPE — 5f IS:
+  - BACKEND `journal` router (`app/routers/journal.py`, prefix /api, auth-gated + user-scoped; schemas `app/schemas/journal.py`; mount in main.py): `POST /api/journal` (create — validate against the enums; `mode` + `entry_model` required), `GET /api/journal` (this user's entries; filters `?mode=` / `?entry_model=` / `?instrument=` / date range; newest first), `GET /api/journal/{id}`, `PATCH /api/journal/{id}` (partial update), `DELETE /api/journal/{id}` (SOFT-delete — `journal_entries` is soft-deleted). Per-user isolation like `learning`/`planner`.
+  - BACKEND `analytics` router (`app/routers/analytics.py`, prefix /api, auth-gated + user-scoped; schemas `app/schemas/analytics.py`): `GET /api/analytics/expectancy` (group `journal_entries` by `entry_model` × `mode`; per group → sample n, win%, avg win R, avg loss R, **expectancy in R** `= (win% × avgWinR) − (loss% × avgLossR)`, break-even `= 1/(1+avg RR)`, computed ONLY over closed trades with a non-null `r_multiple`), `GET /api/analytics/summary` (top-line per mode), `GET /api/analytics/r-distribution` (r_multiple histogram buckets for the chart). Pure aggregation over the user's entries; NO gate verdict (that's 5g). REUSE the expectancy formula from mastery/README §Gate — do NOT reinvent it.
+  - FRONTEND lib: `lib/journal.ts` (`journalKeys` + `useJournalEntries`/`useJournalEntry`/`useCreateEntry`/`useUpdateEntry`/`useDeleteEntry` — a write invalidates the journal lists AND the analytics subtree, since expectancy depends on entries) + `lib/analytics.ts` (`analyticsKeys` + `useExpectancy`/`useSummary`/`useRDistribution`). Journal + analytics types in `types/api.ts` (mirror the Pydantic schemas).
+  - FRONTEND components under `app/src/components/journal/` + `components/analytics/`: `JournalForm` (tabbed RHF+Zod — Context/Model · Decision-flow · Execution/Risk · Review; the `mode` backtest|live toggle drives both axes; all model-aligned fields per §2; lifts the tabbed trade-form recipe from `neurospect-app` but the field set is the NEW model-aligned one — do NOT copy the generic `trades` shape), `JournalCard` + `JournalFilters` (mode + entry_model + instrument), `ExpectancyChart` (per-model expectancy/win-rate bars), `BacktestVsLiveChart` (the same models, backtest vs live side-by-side — the honesty view). **Re-add `recharts`** (dropped in the 5b lift; `npm install recharts`) for the charts; **do NOT re-add `react-day-picker`** (date inputs, per 5e-3). Before writing ANY chart, load the `/dataviz` skill.
+  - PAGES (replace the 4 stubs): `/journal` (list + JournalFilters + a "New entry" button + the mode toggle), `/journal/new` + `/journal/:id` (JournalForm — create/edit), `/expectancy` (ExpectancyChart + BacktestVsLiveChart + the per-model table with sample sizes). Journal + Expectancy are already in the sidebar navItems (5b) — no nav change needed.
+  - North star surfaced: backtest vs live NEVER conflated (separate expectancy, separate charts); each model's expectancy shows its TRUE sample size (a small-n model is visibly under-evidenced); frontier `confluence_tags` are stored + shown as study-only; NO "cleared to live" verdict here (5g owns it).
+
+5f IS NOT: the `/gate` live-readiness view + its computation (5g — 5f delivers the expectancy VIEW, not the gate verdict); the `missed_trades` surface / the entry-model YAML→strategy (MACHINE_READABLE_STRATEGY) parser / R2 screenshots / `position_size` (all deferred in 5c — keep deferred unless Paul asks, and if added, Alembic 0007 + reconcile); Claude/AI coaching; backtesting methodology; ALDC anything.
+
+VERIFY (evidence, not inference; local Postgres :5433): if you added a migration, `alembic upgrade head` + down/up clean (reversible); journal CRUD (create → GET returns it; filter by `mode`/`entry_model` narrows correctly; PATCH updates in place; DELETE soft-deletes [row gone from GET, still in DB]; per-user isolation — a 2nd debug user sees none; enum/CHECK validation rejects a bad `mode`/`swing_qualification`; no-token 403); **expectancy math correct on a HAND-BUILT fixture** (insert N trades with known `r_multiple`s per model×mode → assert win%, avg win R, avg loss R, expectancy, break-even match the formula by hand — this is the evidence-gated core); `tsc -b` + `vite build` clean; EXTEND Playwright (create a backtest entry → appears in `/journal` list + feeds `/expectancy`; filter by mode; expectancy chart renders per-model bars; backtest-vs-live split renders) green AND the existing 17 still green (no regression); a live claude-in-chrome walkthrough (debug-login → `/journal/new` create a backtest entry → `/journal` list + filter → `/expectancy` dashboard renders the charts) with NO console errors.
+RECONCILE + BOOKKEEP (mandatory): update learning-platform.md §Progress + journal data model §2/§3 → as-built (the journal API + the expectancy computation as shipped) + §Route taxonomy (`/journal`·`/expectancy` → as-built) + §Component/API surface (`journal`+`analytics` endpoints + the shipped component names + recharts re-added) + add a §5f as-built; mark 5f ✅ in the split + tracker + a session-log entry (next=5g gate/readiness); append log.md; bump index.md. Do NOT edit trade-schema.md / phase3-frontend-structure.md. Paul handles git — NEVER commit.
+````
+
+## Next Session Boot Prompt (Phase 5e-3 — Study Planner UI) — ✅ EXECUTED 2026-07-23
+
+Recommended launch: **Sonnet** (`claude --model sonnet[1m]`), `/effort medium` — frontend execution against an
+**approved design + a live, tested API** (5e-2). Escalate to Opus only if the custom CSS-grid calendar or the
+adherence/streak wiring stalls. No plan mode — this executes the approved [[concepts/architecture/learning-platform]]
+§Study Planner + §Route taxonomy + §Component structure. Frontend-only (no backend/scheduler change — 5e-2 is
+done). Working dir: `C:\Users\PaulRussell\repos\neurospect-learn\app` (code is ground truth), or start from the
+wiki to read the design first. **Prereq:** the `neurospect-learn-db` container on :5433 with the
+5c+5d+5e-1+5e-1b+**5e-2** schema/seed + the running 5e-2 planner API. If gone: `docker start neurospect-learn-db`,
+then `cd api && poetry run alembic upgrade head && poetry run python -m scripts.seed_concepts && poetry run python
+-m scripts.seed_tracks && poetry run python -m scripts.seed_drills && poetry run python -m scripts.ingest_content`.
+Paste:
+
+````
+GROUNDING: Neurospect is Paul's personal ICT / Smart-Money-Concepts trading-mastery project, and `neurospect-learn` is its standalone learn-to-execute app — a FastAPI + Postgres backend (`api/`) and a React 19 / Vite / TanStack Query SPA (`app/`) — that surfaces the wiki's course corpus and tracks his progress up the mastery ladder (learn → backtest → live) toward being cleared to trade live.
+
+Neurospect — Phase 5e-3: STUDY PLANNER UI for `neurospect-learn` (FRONTEND ONLY — the 5e-2 engine + API are built + tested; you CONSUME them, never recompute or fork the schedule). Build the three planner pages — `/today` (the prescriptive ordered daily card list — the platform's headline differentiator), `/plan` (the month/week calendar), `/plan/setup` (availability & preferences) — plus their components + the `lib/planner.ts` query/mutation layer, wired to the live planner endpoints. North star: DISCIPLINE & ACCOUNTABILITY BY DESIGN — Today is prescriptive (ordered, not a menu); skipping logs a SKIP (hurts adherence, never hidden); streak / adherence % / days-behind / carried-over are VISIBLE, not hideable; the target go-live date is PACING-ONLY (shown as an ETA, NEVER a gate/unlock).
+
+STEP 0 — CONFIRM 5e-2 SHIPPED (do this FIRST; if any check fails, STOP and tell Paul — do not build on a broken base):
+  - Migrations at 0006: `cd api && poetry run alembic current` shows `0006 (head)`.
+  - Seeds present: `docker exec neurospect-learn-db psql -U learn -d neurospect_learn -tAc "SELECT 'concepts='||count(*) FROM concepts; SELECT 'track_stages='||count(*) FROM track_stages; SELECT 'drills='||count(*) FROM drills;"` → concepts=74, track_stages=23, drills=53 (content_pages=67).
+  - Planner API live: start uvicorn, mint a debug token, `PUT /api/preferences` (a weekday-minutes + active_track body) then `GET /api/plan/today` returns `{items, adherence, pace}` with items > 0 for a fresh aura user; `GET /api/plan?from=&to=`, `POST /api/plan/regenerate`, `PATCH /api/plan/items/{id}` all respond.
+  - Backend tests green: `cd api && poetry run pytest tests/ -q` → 16 passed (9 scheduler unit + 7 API).
+  - Frontend baseline: `cd app && npx tsc -b && npx vite build` clean; `npx playwright test` → 12/12 green (6 content + 6 multi-track). (Playwright needs the API up on :8000 with DEBUG=true — see playwright.config.ts.)
+  Only once ALL pass, proceed.
+
+Design spec (READ FIRST — it is the contract): C:\Users\PaulRussell\repos\neurospect-wiki\concepts\architecture\learning-platform.md — §Study Planner (the differentiator + how the planner enforces the north star per feature), §Route / page taxonomy (the `/today` · `/plan` · `/plan/setup` rows), §Component structure + API surface (the planner component list + the endpoint list), and §5e-2 as-built (CODE is ground truth — the API + Pydantic schemas you consume). Grading model context (do NOT restate): mastery/README.
+
+THE API YOU CONSUME (5e-2 as-built — code is ground truth in `api/app/{routers,schemas}/planner.py`; DO NOT change it):
+  - `GET|PUT /api/preferences` → PreferencesOut (`is_configured=false` + defaults when unset; timezone, mon_minutes…sun_minutes, max_session_minutes, blackout_dates[], target_go_live_date, active_track, plan_version, generated_at). PUT body = PreferencesIn (same, validated ge/le).
+  - `GET /api/plan/today` → TodayOut `{date, active_track, plan_version, items:[PlanItemOut], adherence:AdherenceOut, pace:PaceOut}`. Materializes today idempotently server-side — just render it.
+  - `GET /api/plan?from=&to=` → PlanRangeOut `{date_from, date_to, items, pace, unplaced}` — past/today FROZEN (`id` set, `frozen=true`), future COMPUTED (`id=null`, `frozen=false`).
+  - `POST /api/plan/regenerate` → TodayOut (bumps plan_version; frozen done/partial/skipped kept).
+  - `PATCH /api/plan/items/{id}` body PlanItemPatch `{status: pending|done|partial|skipped, done_qty?}` → PlanItemOut (server feeds concept_progress/drill_progress reps+last_practiced; never advances the ladder).
+  - PlanItemOut fields to render: activity (learn|drill|review|observe|habit|backtest), concept_title/content_slug, drill_ref/drill_title/drill_variant, target_qty/target_unit, est_minutes, status, done_qty, completed_at, sort_order, carried_over, frozen. AdherenceOut: total/done/partial/skipped/pending/adherence_pct/current_streak/days_behind/carried_over. PaceOut: target_go_live_date/projected_go_live/on_pace/projected_clear{stage_code→date}.
+
+BOOT / CONTEXT
+1. Read the wiki CLAUDE.md — Isolation Rule (Neurospect ONLY; NO ALDC; READ-ONLY on the wiki content; never touch sources/ or vault/), Architecture Doc Integrity (CODE is ground truth — you MUST reconcile learning-platform.md + add a §5e-3 as-built before sign-off), "Paul handles git — NEVER commit".
+2. Run STEP 0 above.
+3. Read learning-platform.md §Study Planner + §Route taxonomy + §Component structure + API surface + §5e-2 as-built IN FULL.
+4. Skim the live frontend you extend (the conventions to match): `app/src/App.tsx` (router — add the new routes), `app/src/components/layout/sidebar.tsx` (`navItems` — add Today + Plan), `app/src/lib/{learning,content}.ts` (the hierarchical query-key + `useQuery`/`useMutation`-with-invalidation pattern — `lib/planner.ts` mirrors it), `app/src/types/api.ts` (add the planner types), the 5e-1 components under `components/{progress,drills}/` + `components/ui/*` (shadcn primitives already present: card/button/badge/checkbox/dialog/form/input/select/tabs/skeleton/tooltip/progress/popover/…; RHF+Zod+@hookform/resolvers + date-fns are installed), pages `{path,stage-detail,drills}.tsx`, and the Playwright harness `e2e/{global-setup,content.spec,learning.spec}.ts` + `playwright.config.ts`.
+
+SCOPE — 5e-3 IS:
+  - `app/src/lib/planner.ts` — `plannerKeys` + hooks `usePreferences`/`useUpdatePreferences`/`usePlanToday`/`usePlanRange`/`useRegenerate`/`useUpdatePlanItem`, following the `learningKeys` + `useMutation`→invalidate convention (a mark-done invalidates plan/today + plan range + the learning progress/stages/drills subtrees, since it feeds progress). Planner types in `types/api.ts`.
+  - Components under `app/src/components/planner/`: `TodayList` + `PlanItemCard` (activity icon + concept/drill title + target_qty/unit + est-minutes + done/partial/skip controls → `useUpdatePlanItem`; carried-over + status styling; frozen vs computed), `StudyCalendar` (a LIGHTWEIGHT CUSTOM CSS-grid month/week calendar using `date-fns` — NOT `react-day-picker` [never re-add it — it's a date picker, not a content calendar, and the CSP surface stays minimal]; past frozen [done/skip], today, future projected; a Regenerate button), `AvailabilityForm` (RHF+Zod — per-weekday minutes, max-session, timezone, blackout dates, optional pacing-only target go-live date), `StreakBadge`/`AdherenceMeter`/`PaceProjection`.
+  - Pages (replace nothing existing — ADD): `/today` (TodayList + streak/adherence/days-behind + pace), `/plan` (StudyCalendar + regenerate), `/plan/setup` (AvailabilityForm). Add the three routes to `App.tsx` and Today + Plan to `sidebar.tsx` `navItems`.
+  - North star surfaced in the UI: prescriptive ordered Today; skip → a logged skip (adherence drop shown); days-behind / carried-over / streak visible + not hideable; the target date shown as an ETA / on-pace-or-behind flag only (never gates or unlocks).
+
+5e-3 IS NOT: any backend/API/scheduler/migration change (5e-2 is built + tested — consume it, do not fork or recompute the schedule client-side); journal/expectancy/gate UI (5f/5g); re-adding `react-day-picker` or `recharts` (charts arrive in 5f); ALDC anything.
+
+VERIFY (evidence): `npx tsc -b` + `npx vite build` clean; extend the Playwright suite with planner specs (setup form saves prefs → `/today` renders prescriptive ordered items; mark an item done → adherence/streak update AND progress fed [cross-check on `/path` or `/drills`]; skip logs a SKIP; `/plan` calendar shows frozen past/today + projected future; regenerate bumps plan_version) — all green AND the existing 12 still green (no regression); a live claude-in-chrome walkthrough (debug-login → `/plan/setup` save → `/today` mark-done + skip → `/plan` calendar → regenerate) with NO console errors.
+RECONCILE + BOOKKEEP (mandatory): update learning-platform.md §Route taxonomy + §Component structure + API surface → as-built (the shipped component names + the custom-calendar decision) + add a §5e-3 as-built; mark 5e-3 ✅ in the split + tracker + a session-log entry (next=5f journal + expectancy); append log.md; bump index.md. Do NOT edit trade-schema.md / phase3-frontend-structure.md. Paul handles git — NEVER commit.
+````
+
+## Next Session Boot Prompt (Phase 5e-2 — Study Planner engine) ✅ EXECUTED 2026-07-22
+
+Recommended launch: **Opus** (`claude --model opus[1m]`), `/effort high` for the deterministic scheduler +
+the track-aware unlock/backlog logic. No plan mode — this executes the approved [[concepts/architecture/learning-platform]]
+§Study Planner. Backend-only (no UI — that's 5e-3). Working dir: `C:\Users\PaulRussell\repos\neurospect-learn`
+(code is ground truth), or start from the wiki to read the design first. **Prereq:** the `neurospect-learn-db`
+container on :5433 with the 5c+5d+5e-1+**5e-1b** schema/seed/ingest. If gone: `docker start neurospect-learn-db`,
+then `cd api && poetry run alembic upgrade head && poetry run python -m scripts.seed_concepts && poetry run python
+-m scripts.seed_tracks && poetry run python -m scripts.seed_drills && poetry run python -m scripts.ingest_content`.
+Paste:
+
+````
+GROUNDING: Neurospect is Paul's personal ICT / Smart-Money-Concepts trading-mastery project, and `neurospect-learn` is its standalone learn-to-execute app — a FastAPI + Postgres backend (`api/`) and a React 19 / Vite / TanStack Query SPA (`app/`) — that surfaces the wiki's course corpus and tracks his progress up the mastery ladder (learn → backtest → live) toward being cleared to trade live.
+
+Neurospect — Phase 5e-2: STUDY PLANNER ENGINE for `neurospect-learn` (BACKEND ONLY — no UI; that is 5e-3). Build the adaptive, gate-aware, retention-aware daily/weekly study-schedule generator: `study_preferences` + `plan_items` (Alembic 0006), the deterministic `scheduler` service, and the planner API. It SCHEDULES the existing curriculum — it NEVER restates or forks it (concepts, drill_refs, freetext rep targets, the learning-path stage gates are consumed/linked). North star: DISCIPLINE & ACCOUNTABILITY BY DESIGN — every choice defaults to enforce the disciplined path over let-the-user-decide.
+
+STEP 0 — CONFIRM 5e-1b SHIPPED (do this FIRST, before any 5e-2 work; if any check fails, STOP and tell Paul — do not build on a broken base):
+  - Migrations at 0005: `cd api && poetry run alembic current` shows `0005 (head)`.
+  - Seeds present: `docker exec neurospect-learn-db psql -U learn -d neurospect_learn -tAc "SELECT 'concepts='||count(*) FROM concepts; SELECT 'track_stages='||count(*) FROM track_stages; SELECT 'drills='||count(*) FROM drills;"` → concepts=74, track_stages=23, drills=53 (and content_pages=67).
+  - API multi-track live: start uvicorn, mint a debug token, `GET /api/tracks` returns 3 tracks (aura/ict_course/unified) with their stages; `GET /api/stages?track=aura` returns A0–A6.
+  - Frontend builds: `cd app && npx tsc -b && npx vite build` clean; `npx playwright test` → 12/12 green (6 content + 6 multi-track).
+  Only once ALL pass, proceed.
+
+Design spec (READ FIRST — it is the contract): C:\Users\PaulRussell\repos\neurospect-wiki\concepts\architecture\learning-platform.md — §Study Planner (availability · the deterministic gate-aware/retention-aware scheduling algorithm · persist-vs-compute hybrid · how the planner enforces the north star), §Progress + journal data model §4 (the `study_preferences` + `plan_items` table shapes + the `plan_activity`/`plan_item_status` enums), §Component structure + API surface (the planner endpoint list), §5e-1 + §5e-1b as-built (CODE is ground truth — `concepts`/`concept_progress`/`drills`/`drill_progress`/`track_stages`/`stages.py`/`rep_targets.py`/`learning` router already exist and are what you reuse). Grading model (reuse, do NOT restate): mastery/README (ladder 1–4, confidence 1–5, reps, gate).
+
+MULTI-TRACK RECONCILIATION (the design predates 5e-1b — you MUST reconcile it): the planner now schedules ONE CHOSEN TRACK (per 5e-1b there are three: aura/ict_course/unified). So: (a) `study_preferences` gains `active_track` (VARCHAR(16) CHECK aura|ict_course|unified, default 'aura'); (b) the scheduler is TRACK-SCOPED — unlock uses the generalized `stages.py compute_stages(track, stage_metas, concepts, progress)`; backlog iterates THAT track's concepts (ordered stage_order, sort_order) + their `drill_refs`; concept-less stages (backtest/live/journal — unified U6, aura A4–A6, ict M6–M8) are NOT scheduled as learn/drill (observe/backtest only, gated behind the concept work). Update §Study Planner + §4 in the doc to the as-built multi-track shape when you reconcile.
+
+BOOT / CONTEXT
+1. Read the wiki CLAUDE.md — Isolation Rule (Neurospect ONLY; NO ALDC; READ-ONLY on the wiki content; never touch sources/ or vault/), Architecture Doc Integrity (CODE is ground truth — you MUST reconcile learning-platform.md + add a §5e-2 as-built before sign-off), "Paul handles git — NEVER commit".
+2. Run STEP 0 above.
+3. Read learning-platform.md §Study Planner + §Progress data model §4 + §Component/API surface IN FULL, and §5e-1/§5e-1b as-built (the shapes you reuse: the lazy-upsert progress lifecycle, `rep_targets.parse/meets`, `compute_stages`, the per-track concept/drill grouping).
+4. Skim the live code you extend: api/app/models/{concept,concept_progress,drill,drill_progress,track_stage}.py, api/app/services/{stages,rep_targets}.py, api/app/routers/learning.py + schemas/learning.py, api/alembic/versions/0005_multi_track.py (the migration idiom), api/app/models/enums.py (the pg_enum helper).
+
+SCOPE — 5e-2 IS:
+  - MIGRATION alembic 0006_study_planner (raw-SQL, reversible, mirroring 0002–0005; reuse update_updated_at()): NEW enums `plan_activity` (learn|drill|review|observe|habit|backtest) + `plan_item_status` (pending|done|partial|skipped) (drill_variant already exists from 0004 — do NOT recreate); NEW `study_preferences` (user-scoped, soft-deleted, UNIQUE (user_id) WHERE NOT is_deleted): timezone (IANA text), mon_minutes…sun_minutes (7 SMALLINT, 0=off), max_session_minutes, blackout_dates DATE[], target_go_live_date (nullable, PACING-ONLY), active_track (CHECK aura|ict_course|unified), plan_version INT, generated_at; NEW `plan_items` (user-scoped, soft-deleted): plan_version, scheduled_date, activity, concept_id (nullable FK→concepts), drill_ref (nullable soft ref), drill_variant (nullable), target_qty + target_unit (nullable), est_minutes, status, done_qty, completed_at, sort_order; index (user_id, scheduled_date) WHERE NOT is_deleted + partial-unique (user_id, scheduled_date, activity, concept_id, drill_ref, drill_variant) WHERE NOT is_deleted.
+  - MODELS: `study_preferences.py` + `plan_item.py` (registered in models/__init__.py + alembic/env.py).
+  - SERVICE: pure `app/services/scheduler.py` — `schedule(today, prefs, concepts, drills, concept_progress, drill_progress, past_items)` → dated plan_items. Deterministic + re-runnable (strict ordering, NO randomness; same inputs → same plan), unit-testable WITHOUT a DB. Pipeline: unlock (highest unlocked stage via compute_stages for prefs.active_track) → backlog (learn untracked / drill below rep target / observe U5 watch-only / habit U0-equivalent) → rep-target parse (reuse rep_targets.py — NEVER invent) → mandatory spaced review (Leitner from confidence+last_practiced; no off switch) → daily packing (tz-aware, skip blackout + 0-budget days, blocks ≤ max_session_minutes) → projection/ETA (pacing-only vs target_go_live_date; NEVER gates) → slippage carry-over (past pending re-queued; days-behind surfaced, never hidden).
+  - ENDPOINTS (new `app/routers/planner.py`, prefix /api, auth-gated + user-scoped; schemas in `app/schemas/planner.py`; mount in main.py): GET|PUT /api/preferences; GET /api/plan/today (materialize+persist today's computed items once — idempotent via the partial-unique index; return items + adherence + pace); GET /api/plan?from=&to= (past+today frozen, future computed/projected); POST /api/plan/regenerate (bump plan_version, recompute; frozen past keeps its version); PATCH /api/plan/items/{id} (status + done_qty → FEED concept_progress/drill_progress reps + last_practiced, honoring the existing ladder-advance gate + watch-only cap).
+
+5e-2 IS NOT: any UI (/today, /plan, /plan/setup — that is 5e-3); journal/expectancy/gate (5f/5g); backtesting methodology; ALDC anything.
+
+VERIFY (evidence): alembic 0001→0006 up/down/up clean; scheduler UNIT TESTS with no DB (determinism: same inputs→identical plan; unlock respects the per-track gate; locked stages never scheduled; U5 observe-only; blackout/0-budget days skipped; max-session honored; spaced-review due dates; slippage re-queue) — pytest green; API checks (self-written harness or pytest): PUT/GET preferences round-trip, GET /plan/today materializes idempotently (2nd call no dupes), PATCH item done feeds concept_progress reps+last_practiced and respects the gate, regenerate bumps plan_version, per-user isolation; confirm 5e-1b endpoints still green (no regression).
+RECONCILE + BOOKKEEP (mandatory): update learning-platform.md §Study Planner + §Progress data model §4 (the `study_preferences`/`plan_items` parts — fix any stale "Alembic 0005" → 0006, add `active_track`, describe the track-scoped scheduler) → as-built + add a §5e-2 as-built; mark 5e-2 ✅ in the split + tracker + a session-log entry (next=5e-3); append log.md; bump index.md. Do NOT edit trade-schema.md / phase3-frontend-structure.md. Paul handles git — NEVER commit.
+````
+
+## Next Session Boot Prompt (Phase 5e-1b — multi-track curriculum) — ✅ EXECUTED 2026-07-21
 
 Recommended launch: **Opus** (`claude --model opus[1m]`), `/effort high` for the per-track concept authoring +
 the `stages.py` generalization. No plan mode — this executes the approved [[concepts/architecture/learning-platform]]

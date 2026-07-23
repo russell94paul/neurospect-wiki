@@ -19,7 +19,10 @@ scale / Readiness-to-Live Gate defined in [[concepts/mastery/README]]. It is the
 > the **code is ground truth**; this doc describes it *as implemented* (see §5b/§5c/§5d/§5e-1 as-built for
 > divergences). **Phase 5e-1 (progress foundation) shipped 2026-07-20** — the `concept_progress` lifecycle, the
 > derived stage exit-bars, the `drills` catalog + `drill_progress`, the `learning` endpoints, and `/path`,
-> `/path/:stage`, `/drills` + the reader track panel are live (§5e-1 as-built). **The Study Planner (5e-2 engine +
+> `/path/:stage`, `/drills` + the reader track panel are live (§5e-1 as-built). **Phase 5e-1b (multi-track
+> curriculum) shipped 2026-07-21** — `/path` is now a three-track switcher (Aura · AXL · Unified) and
+> `/path/:track/:stage` is a curriculum unit (Read → Drill → Track → Gate); per-track concepts + `track_stages`
+> (Alembic `0005`) + `cross_refs` (§5e-1b as-built). **The Study Planner (5e-2 engine +
 > 5e-3 UI) is designed but not yet built** — see §Study Planner and the `study_preferences`/`plan_items` parts of
 > §Progress + journal data model; those describe the *approved design*, not shipped code, until 5e-2/5e-3 land.
 > Remaining phases 5e-2–5g are sequenced in [[processes/distributed-workflow/active/learning-platform-ui]].
@@ -102,7 +105,13 @@ project with its own DB and secrets. Screenshot storage (R2) is **optional/defer
 > how Paul wants to learn. The wiki's per-track paths ([[concepts/mastery/aura/learning-path]] +
 > [[concepts/course/README]]) are the seed source — **consumed/linked, never restated**.
 
-### Multi-track data model (5e-1b design)
+### Multi-track data model (5e-1b — as-built 2026-07-21)
+
+> **As-built.** Shipped in `neurospect-learn` (Alembic `0005_multi_track`, `models/{concept,track_stage}.py`,
+> `scripts/{seed_concepts,seed_tracks,seed_drills}.py`, `services/stages.py`, `routers/learning.py`). **Code is
+> ground truth.** Confirmed decision: `track_stages` is **metadata only (no `concept_slugs`)** — a stage's
+> concepts and drills are resolved by GROUPING on `concepts.(track, stage_code)` and `concept.drill_refs`, not by
+> a denormalised array (avoids drift). See §5e-1b as-built for counts + divergences.
 
 Approach: **per-track concept rows** (no shared spine). Reuses the 5c/5e-1 conventions; extends `concepts`.
 
@@ -127,8 +136,15 @@ Approach: **per-track concept rows** (no shared spine). Reuses the 5c/5e-1 conve
 
 ## Route / page taxonomy
 
-> **Multi-track (see the redefinition above).** `/path` gains a track switcher; a stage lives at
-> `/path/:track/:stage`. The rows below show the post-5e-1b shape.
+> **Multi-track — as-built (5e-1b, 2026-07-21).** `/path` is a **track switcher** (Aura · AXL · Unified;
+> default Aura, persisted in `localStorage`) → the selected track's gated stage spine; a stage lives at
+> `/path/:track/:stage` as the **curriculum unit** (Read → Drill → Track → Gate). The rows below are the shipped
+> shape. **Code is ground truth** (`app/src/pages/{path,stage-detail}.tsx`).
+>
+> **Planner routes — as-built (5e-3, 2026-07-23).** `/today` (prescriptive ordered daily card list + streak /
+> adherence / pace), `/plan` (custom CSS-grid month calendar + regenerate), `/plan/setup` (availability &
+> preferences form) shipped, wired to the 5e-2 planner API. Nav gains **Today** (top) + **Plan**. `/` still
+> redirects to `/path`. **Code is ground truth** (`app/src/pages/{today,plan,plan-setup}.tsx`).
 
 | Route | Page | Surfaces |
 |---|---|---|
@@ -270,21 +286,22 @@ never on unbacktested confluence.
 
 ### 4. Study Planner + progress-editing (Phase 5e)
 
-> **Split: 5e-1 is as-built; the planner (5e-2/5e-3) is design.** The `concept_progress` lifecycle, the `drills`
-> catalog, `drill_progress`, and the stage exit-bar derivation below **shipped in Phase 5e-1 (2026-07-20)** —
-> Alembic **`0004`** (`drills` + `drill_progress` + the `drill_variant` enum), models under `app/models/`, seed
-> `scripts/seed_drills.py`, services `app/services/{rep_targets,stages}.py`, router `app/routers/learning.py`.
-> **Code is ground truth** (see §5e-1 as-built for divergences). The `study_preferences` + `plan_items` tables
-> (Alembic **`0005`**, + the `plan_activity`/`plan_item_status` enums) remain **approved design, not yet built**
-> until 5e-2. Conventions reuse [[concepts/architecture/trade-schema]] §Schema Conventions (UUID PK · TIMESTAMPTZ ·
-> `updated_at` trigger · user-scoped · soft-delete + partial unique `WHERE NOT is_deleted`) exactly as
-> `concept_progress` (5c) does.
+> **As-built: 5e-1 + 5e-2 shipped; only the planner UI (5e-3) remains design.** The `concept_progress`
+> lifecycle, the `drills` catalog, `drill_progress`, and the stage exit-bar derivation below **shipped in Phase
+> 5e-1 (2026-07-20)** — Alembic **`0004`** (`drills` + `drill_progress` + the `drill_variant` enum), models under
+> `app/models/`, seed `scripts/seed_drills.py`, services `app/services/{rep_targets,stages}.py`, router
+> `app/routers/learning.py`. The `study_preferences` + `plan_items` tables **shipped in Phase 5e-2 (2026-07-22)** —
+> Alembic **`0006`** (+ the `plan_activity`/`plan_item_status` enums; `drill_variant` reused from 0004), models
+> `app/models/{study_preferences,plan_item}.py`, the pure `app/services/scheduler.py`, router
+> `app/routers/planner.py`. **Code is ground truth** (see §5e-1 + §5e-2 as-built for divergences). Conventions
+> reuse [[concepts/architecture/trade-schema]] §Schema Conventions (UUID PK · TIMESTAMPTZ · `updated_at` trigger ·
+> user-scoped · soft-delete + partial unique `WHERE NOT is_deleted`) exactly as `concept_progress` (5c) does.
 
 The planner reads `concepts` + `concept_progress` (unchanged from 5c; **no columns added**). 5e-1 added two
-tables (`drills`, `drill_progress`) + the `drill_variant` enum; 5e-2 adds two more (`study_preferences`,
+tables (`drills`, `drill_progress`) + the `drill_variant` enum; 5e-2 added two more (`study_preferences`,
 `plan_items`) + the `plan_activity` (`learn|drill|review|observe|habit|backtest`) / `plan_item_status`
-(`pending|done|partial|skipped`) enums. New model files are registered in `app/models/__init__.py` **and**
-imported in `alembic/env.py`.
+(`pending|done|partial|skipped`) enums (Alembic **`0006`**). New model files are registered in
+`app/models/__init__.py` **and** imported in `alembic/env.py`.
 
 - **`concept_progress` lifecycle (5e-1, as-built — the 5c seed populates `concepts` only).** Per-user **lazy
   upsert**: `GET /api/progress` LEFT JOINs `concepts` × the user's rows (untracked → null ladder/confidence);
@@ -305,16 +322,20 @@ imported in `alembic/env.py`.
 - **`drill_progress` (5e-1, as-built)** — user-scoped, soft-deleted: `drill_ref` (TEXT soft ref, matching the
   `concepts.drill_refs` convention), `reps`, `hand_done` + `tool_done` (the ✋/🛠 variant marks),
   `last_practiced`, `notes`. `UNIQUE (user_id, drill_ref) WHERE NOT is_deleted`.
-- **`study_preferences` (5e-2, design)** — user-scoped, soft-deleted, one active row/user (`UNIQUE (user_id) WHERE NOT
-  is_deleted`): `timezone` (IANA), `mon_minutes … sun_minutes` (7 `SMALLINT`, 0 = day off), `max_session_minutes`,
-  `blackout_dates` (`DATE[]`), `target_go_live_date` (nullable, **pacing-only**), `plan_version` (INT) +
-  `generated_at`.
-- **`plan_items` (5e-2, design)** — user-scoped, soft-deleted; the **frozen** past/today assignments (see §Study Planner
-  persist-vs-compute): `plan_version`, `scheduled_date`, `activity` (`plan_activity`), `concept_id` (nullable FK →
-  `concepts`), `drill_ref` (nullable soft ref), `drill_variant` (nullable), `target_qty` + `target_unit`
-  (nullable), `est_minutes`, `status` (`plan_item_status`), `done_qty`, `completed_at`, `sort_order`. Index
-  `(user_id, scheduled_date) WHERE NOT is_deleted`; partial-unique on `(user_id, scheduled_date, activity,
-  concept_id, drill_ref, drill_variant) WHERE NOT is_deleted` to keep daily materialization idempotent.
+- **`study_preferences` (5e-2, as-built — Alembic 0006)** — user-scoped, soft-deleted, one active row/user
+  (`UNIQUE (user_id) WHERE NOT is_deleted`): `timezone` (IANA text, default `UTC`), `mon_minutes … sun_minutes`
+  (7 `SMALLINT`, 0 = day off; `CHECK ≥ 0`), `max_session_minutes` (`CHECK > 0`, default 60), `blackout_dates`
+  (`DATE[]`), `target_go_live_date` (nullable, **pacing-only**), **`active_track`** (`VARCHAR(16)` `CHECK
+  aura|ict_course|unified`, default `aura` — which of the three graded tracks the planner schedules; added in the
+  5e-1b reconciliation), `plan_version` (INT, default 1) + `generated_at`.
+- **`plan_items` (5e-2, as-built — Alembic 0006)** — user-scoped, soft-deleted; the **frozen** past/today
+  assignments (see §Study Planner persist-vs-compute): `plan_version`, `scheduled_date`, `activity`
+  (`plan_activity`), `concept_id` (nullable FK → `concepts`), `drill_ref` (nullable soft ref), `drill_variant`
+  (nullable, the 0004 enum), `target_qty` + `target_unit` (nullable), `est_minutes`, `status`
+  (`plan_item_status`), `done_qty`, `completed_at`, `sort_order`. Index `(user_id, scheduled_date) WHERE NOT
+  is_deleted`; partial-unique on `(user_id, scheduled_date, activity, concept_id, drill_ref, drill_variant)
+  **NULLS NOT DISTINCT** WHERE NOT is_deleted` to keep daily materialization idempotent (the `NULLS NOT DISTINCT`
+  — PG 15+ — makes a concept-less/all-NULL-ref `backtest` item still de-duplicate).
 
 **Stage exit-bar derivation (5e-1, as-built)** — a pure `app/services/stages.py`, **computed never stored**,
 encoding the exit bars from [[concepts/mastery/unified/learning-path]] §Stage gate (LINKED as canonical — the
@@ -332,13 +353,15 @@ integrate them — surfaced honestly, never hidden.
 
 ## Study Planner
 
-> **Design (Phase 5e-2/5e-3), not yet built.** The platform's headline differentiator: an **adaptive, gate-aware,
-> retention-aware** daily/weekly study-schedule generator that tells Paul exactly what to study/drill *today*,
-> driven by his availability + the U0→U6 curriculum + his current progress. It **schedules the existing
-> curriculum — it never restates or forks it** (concepts, `drill_refs`, freetext rep targets, and the
-> learning-path stage gates are consumed/linked). Data model in §Progress + journal data model ("Study Planner
-> + progress-editing"). North star: **discipline & accountability by design** — every choice defaults to
-> *enforce the disciplined path* over *let the user decide*.
+> **Engine as-built (Phase 5e-2, 2026-07-22); UI as-built (Phase 5e-3, 2026-07-23).** The platform's headline
+> differentiator: an **adaptive, gate-aware, retention-aware** daily/weekly study-schedule generator that tells
+> Paul exactly what to study/drill *today*, driven by his availability + the chosen track's curriculum + his
+> current progress. It **schedules the existing curriculum — it never restates or forks it** (concepts,
+> `drill_refs`, freetext rep targets, and the learning-path stage gates are consumed/linked). The pure
+> `app/services/scheduler.py` + the `app/routers/planner.py` API shipped in 5e-2 (**code is ground truth** — see
+> §5e-2 as-built); the `/today`, `/plan`, `/plan/setup` UI shipped in 5e-3 (see §5e-3 as-built). Data model in
+> §Progress + journal data model ("Study Planner + progress-editing"). North star: **discipline & accountability
+> by design** — every choice defaults to *enforce the disciplined path* over *let the user decide*.
 
 ### Availability / preferences
 
@@ -353,7 +376,15 @@ Readiness-to-Live Gate stays evidence-based ([[concepts/mastery/README]] §Gate)
 
 A pure function `schedule(today, prefs, concepts, drills, concept_progress, drill_progress, past_items)` → dated
 `plan_items`, in `app/services/scheduler.py` (+ `stages.py`, `rep_targets.py`). **Deterministic + re-runnable**
-(strict ordering, no randomness; same inputs → same plan), unit-testable without a DB. Pipeline:
+(strict ordering, no randomness; same inputs → same plan), unit-testable without a DB.
+
+> **As-built reconciliation (5e-2).** The scheduler is **track-scoped** — it schedules `prefs.active_track` only.
+> Because unlock reuses the generalized `stages.compute_stages(track, stage_metas, …)`, the shipped signature
+> takes an extra `stage_metas` argument: `schedule(today, prefs, stage_metas, concepts, drills, concept_progress,
+> drill_progress, past_items, *, horizon_days)` and returns a `ScheduleResult` bundle (`items` + `projected_clear`
+> / `projected_go_live` / `on_pace` + `days_behind` / `carried_over` + `unplaced`) rather than a bare list — the
+> API needs the adherence/pace surfaces. Foundation-stage concepts get their one-time Learn/Drill backlog **and**
+> a recurring daily Habit overlay. Pipeline (unchanged in intent):
 
 1. **Unlock.** Via the exit-bar service, find the highest unlocked stage `S` (first stage whose gate is unmet).
    **Schedulable concepts = stages ≤ S only;** later stages are locked and **never scheduled**. **U5 unlocks only
@@ -410,10 +441,12 @@ record; the future is always recomputed from current state** — is the elite ad
   `ExitBarGate`, `LadderBadge` (1–4), `ConfidenceRating` (1–5), `RepCounter`, `ConceptTrackPanel` (on the reader
   + on `/path/:stage`), `DrillCard` (✋/🛠). Under `components/{progress,drills}/`. Plus the already-built
   `TierBadge`/`LabelBadge`/`MarkdownRenderer` (5d).
-- **New components (planner, 5e-3):** `TodayList`/`PlanItemCard`, `StudyCalendar` (a **lightweight custom
-  CSS-grid calendar** using `date-fns` — *not* `react-day-picker`, which was never added; it's a date picker,
-  not a content calendar, and this keeps the CSP surface minimal), `AvailabilityForm` (RHF+Zod),
-  `StreakBadge`/`AdherenceMeter`/`PaceProjection`.
+- **Planner components (5e-3, as-built):** `TodayList`/`PlanItemCard` (activity icon + concept/drill title +
+  target + est-minutes + done/partial/skip → `useUpdatePlanItem`; carried-over + status styling; computed future
+  items render read-only), `StudyCalendar` (the **lightweight custom CSS-grid month calendar** using `date-fns` —
+  *not* `react-day-picker`, which was never added; a Mon-first grid with per-day status dots, today ring-highlit,
+  past frozen / future projected, + a Regenerate button + an `unplaced` warning), `AvailabilityForm` (RHF + Zod),
+  `StreakBadge`/`AdherenceMeter`/`PaceProjection`. Under `components/planner/`. See §5e-3 as-built.
 - **New components (journal/gate, 5f/5g):** `JournalForm` (tabbed, RHF+Zod, `mode` toggle — lifts the
   `trade-form` recipe), `JournalCard`/`JournalFilters`, `ExpectancyChart`, `BacktestVsLiveChart`,
   `GateChecklist`, `GateSignal`.
@@ -456,16 +489,19 @@ Each phase is a boot-promptable unit; sequenced in [[processes/distributed-workf
     stage exit-bars service (+ the shared `rep_targets` freetext parser), the `drills` catalog (53 rows) +
     `drill_progress` (Alembic `0004`), the `learning` endpoints; frontend `/path`, `/path/:stage`, `/drills`, and
     the `ConceptTrackPanel` on the reader. See §5e-1 as-built below.
-  - **5e-1b — Multi-track curriculum** (added 2026-07-20 per §Multi-track path redefinition). Turn the single
-    unified `/path` into **three graded tracks** (Aura · AXL · Unified) with a switcher; per-track concepts +
-    `track_stages` (Alembic `0005`) + `cross_refs`; generalize `stages.py`; reshape `/path/:track/:stage` into a
-    **curriculum unit** (Read → Drill → Track → Gate). Ships *before* the planner (which schedules the chosen
-    track). **Bumps the planner migration to `0006`.**
-  - **5e-2 — Planner engine.** `study_preferences` + `plan_items` (Alembic `0006`), the deterministic
-    `scheduler` service (reusing the 5e-1 `rep_targets` parser), and the planner API (preferences, today,
-    calendar, regenerate, mark-item-done → progress). No UI; verified by scheduler unit tests + API checks.
-  - **5e-3 — Planner UI.** `/today`, `/plan` (calendar), `/plan/setup`; wire mark-done → progress; streak /
-    adherence / pace surfaces.
+  - **5e-1b — Multi-track curriculum.** ✅ **Built 2026-07-21.** Turned the single unified `/path` into **three
+    graded tracks** (Aura · AXL · Unified) with a switcher; per-track concepts + `track_stages` (Alembic `0005`) +
+    `cross_refs`; generalized `stages.py`; reshaped `/path/:track/:stage` into a **curriculum unit** (Read → Drill
+    → Track → Gate). Ships *before* the planner (which schedules the chosen track). **Bumped the planner migration
+    to `0006`.** See §5e-1b as-built below.
+  - **5e-2 — Planner engine.** ✅ **Built 2026-07-22.** `study_preferences` + `plan_items` (Alembic `0006`), the
+    deterministic pure `scheduler` service (reusing the 5e-1 `rep_targets` parser + the generalized `stages.py`),
+    and the planner API (preferences, today, calendar, regenerate, mark-item-done → progress). No UI; verified by
+    16 tests (9 scheduler unit + 7 API). See §5e-2 as-built below.
+  - **5e-3 — Planner UI.** ✅ **Built 2026-07-23.** `/today` (prescriptive ordered daily plan), `/plan` (custom
+    CSS-grid calendar + regenerate), `/plan/setup` (availability form); `lib/planner.ts` (query/mutation layer);
+    mark-done/partial/skip → feeds progress; streak / adherence / days-behind / pace surfaces. Frontend-only
+    (consumes the 5e-2 API). See §5e-3 as-built below.
 - **5f — Journal + expectancy.** Model-aligned `/journal` (backtest|live) + `/expectancy` dashboard.
 - **5g — Gate/readiness.** `/gate` computed readiness + watch-only enforcement.
 
@@ -613,6 +649,172 @@ one router, and the `/path`·`/path/:stage`·`/drills` frontend + reader track p
 - **Playwright.** `e2e/learning.spec.ts` adds 4 specs (path spine, reader edit-persist, API-seeded stage exit-bar
   flip, drill-mark persist) under a `serial` describe (they share the one debug user); with the 6 content specs,
   **10/10 green**.
+
+### 5e-1b as-built (2026-07-21) — code is now ground truth
+
+Multi-track curriculum shipped and verified end-to-end. One migration, two model changes, three seeds, a
+generalized service, two new endpoints, and the reshaped `/path` + curriculum unit. **Code is ground truth.**
+
+- **Migration `0005_multi_track`** (raw-SQL, mirrors 0002–0004; reuses `update_updated_at()`). `concepts` ADD
+  `track` VARCHAR(16) NOT NULL DEFAULT `'unified'` + CHECK `(aura|ict_course|unified)`, `stage_code` VARCHAR(16),
+  `stage_order` SMALLINT, `cross_refs` TEXT[]; `u_stage` DROP NOT NULL (unified-only henceforth — still drives the
+  U5-core CHECK, which passes on NULL, + the content join + the unified bars). NEW `track_stages` (seed/content, no
+  soft-delete): `track`, `stage_order`, `stage_code`, `title`, `summary`, `gate_text`, trigger, UNIQUE
+  `(track, stage_code)` — **no `concept_slugs`** (grouping is by `concepts.(track, stage_code)`). **Reversibility
+  fix (evidence-gated):** the downgrade clears `concept_progress` rows FK-referencing non-unified concepts *before*
+  deleting those concepts and restoring `u_stage NOT NULL`; verified `0001→base→head` up/down/up clean.
+- **Seed counts (reported):** `concepts` 41 → **74** (unified=41 backfilled `track='unified'`, `stage_code`=U-stage,
+  `stage_order`; **aura=14** A0–A3 concepts; **ict_course=19** M0–M5 concepts). `track_stages` **23** (aura A0–A6=7,
+  ict_course M0–M8=9, unified U0–U6=7). `drills` unchanged at **53**. All seeds idempotent (re-run → stable, no
+  dupes). Every non-null `content_slug` resolves against the 5d scheme (**0 unresolved**, SQL-verified); every
+  `cross_ref` resolves to a concept slug (**0 unresolved**; **44** concepts carry cross_refs).
+- **`cross_refs` from `EQUIV_GROUPS`** (in `seed_concepts.py`): equivalence groups list a concept's cross-track
+  twins; assignment is **symmetric, never same-track, and validated at build** (an unknown slug raises) — so
+  "Also taught in …" always resolves. Never merges progress (display-only).
+- **`drills.concept_slugs` re-pointed to same-track** (`seed_drills._build_ref_to_slugs` now keys by
+  `(concept.track, drill_ref)`): a drill_ref like `"aura D1-a"` — referenced by both a unified and an aura concept —
+  links to the **aura** concept (SQL-verified: **0 cross-track drill links**). Unified-only refs (`"ict-course S7"`,
+  tape `T-*`) simply carry no same-track concept.
+- **Concept-less stages are faithful, not gaps:** unified **U6**, aura **A4–A6**, ict **M6–M8** (backtest / live /
+  journal) carry **no gradable concept rows** — the wiki authors those as drills, not concepts. Their `track_stages`
+  metadata + `gate_text` stand alone; `stages.py` emits a single attest placeholder (auto_met False) so the lock
+  chain honestly holds them behind the concept work (5f/5g wire the evidence). Their `/path` unit shows the gate
+  text + "backtest/journal by reference" notes.
+- **`stages.py` generalized.** Unified keeps its **exact** U0–U6 rules (unchanged from 5e-1). Aura/ict use the
+  generic rule: **foundation stage** (stage_order 0 — psychology/discipline) = every concept ≥ Can-mark
+  (behavioural) + a held-habit attest; **concept stage** = its `is_core` concepts ≥ Can-mark, conf ≥3, reps ≥
+  parsed floor (falls back to all concepts if none flagged core); **concept-less stage** = attest placeholder. Lock
+  chain: unified keeps its exact chain (U0–U4 on auto_met; U5/U6 on U1–U4); aura/ict use a sequential auto_met
+  chain. `compute_stages(track, stage_metas, concepts, progress)` is the new signature (DB-agnostic, unit-testable).
+  **Verified:** marking Aura A1's 3 core concepts flips **only** Aura A1 to met — Unified U1 (0/5) and ICT M1 (0/2)
+  stay untouched, and the Unified `u1-1` row stays `None` (per-track isolation is real, not shared).
+- **Endpoints (`learning.py`).** NEW `GET /api/tracks` → the 3 tracks + per-stage rollups (switcher/spine).
+  `GET /api/stages?track=` (default `unified`; 404 on unknown track) → full per-stage requirements. `?track=` added
+  to `GET /api/concepts` + `GET /api/progress`. `PATCH /api/progress|drills` unchanged (the watch-only cap + the
+  reps≥target/confidence gate still apply). `_compute_track_stages()` is shared by `/tracks` + `/stages`. Schemas:
+  `ConceptOut`/`ProgressRow` gained `track`/`stage_code`/`stage_order`/`cross_refs` (`u_stage` now optional);
+  `StageOut` split into `StageRollup` (+ `track`/`stage_code`/`summary`/`gate_text`, no `u_stage`) and `StageOut`
+  (rollup + requirements); new `TrackOut`.
+- **Frontend.** `/path` is a **track switcher** (`TRACKS` = Aura·AXL·Unified; default Aura, persisted in
+  `localStorage['neurospect_learn_track']`) rendering the selected track's `StagePath` (now keyed on
+  `track`/`stage_code`, links to `/path/:track/:stage`). `StageDetailPage` is the **curriculum unit** — Read
+  (deduped `content_slug` links) → Drill (`DrillCard`s for the stage concepts' `drill_refs`) → Track
+  (`ConceptTrackPanel`s) → Gate (`gate_text` + `ExitBarGate`). `ConceptTrackPanel` resolves `cross_refs` via a new
+  `useConceptIndex()` (a slug→concept map over all tracks) into "Also taught in: {Track} — {title}" links to the
+  twin's `/path/:track/:stage`; the reader inherits these on its per-concept panels. `lib/learning.ts` added
+  `useTracks`/`useConceptIndex`, track-scoped `useStages(track)`/`useProgress(track)`, and widened the mutation
+  invalidations to the whole progress/stages/tracks subtrees. `tsc -b` + `vite build` clean.
+- **Playwright.** `e2e/learning.spec.ts` rewritten for multi-track — 6 specs (track switch shows each track's own
+  spine; curriculum unit renders Read→Drill→Track→Gate; reader edit persists; **per-track isolation** — Unified U1
+  met leaves Aura A1 unmet; **cross-link jumps tracks**; drill-mark persists). With the 6 content specs, **12/12
+  green**. (The live claude-in-chrome visual walkthrough was **not** separately run — the Chromium e2e covers the
+  same behaviours; a manual visual pass remains optional.)
+- **Ops note (not code):** during verification Docker Desktop stopped, dropping the `neurospect-learn-db`
+  container; a full `alembic downgrade base` had also emptied `content_pages`. Restarted Docker + the container,
+  re-ran all seeds **and `ingest_content` (67 pages)** — the 5e-1b work assumes the 5d ingest is present.
+
+### 5e-2 as-built (2026-07-22) — code is now ground truth
+
+Study-Planner engine shipped and verified end-to-end (backend only — no UI; that is 5e-3). One migration, two
+models, one pure service, one router, 16 tests. **Code is ground truth.** Decisions made while building:
+
+- **Migration `0006_study_planner`** (raw-SQL, reversible, mirrors 0002–0005; reuses `update_updated_at()`). NEW
+  enums `plan_activity` (`learn|drill|review|observe|habit|backtest`) + `plan_item_status`
+  (`pending|done|partial|skipped`); **`drill_variant` reused from 0004** (not recreated — 0006 downgrade does not
+  drop it). `study_preferences` (user-scoped, soft-deleted, `UNIQUE (user_id) WHERE NOT is_deleted`) + `plan_items`
+  (user-scoped, soft-deleted). **Idempotency fix (evidence-gated):** the `ux_plan_items_slot` partial-unique index
+  uses **`NULLS NOT DISTINCT`** (PG 16) so a concept-less `backtest` item (concept_id + drill_ref both NULL) still
+  de-duplicates on re-materialization — without it Postgres treats every NULL-ref row as distinct and daily
+  materialize would dupe. Verified `0001→head→base→head` clean on a throwaway DB; `0006` down/up on the working DB
+  keeps the seed + `drill_variant`.
+- **Models** `study_preferences.py` + `plan_item.py`, registered in `models/__init__.py` + `alembic/env.py`.
+  `plan_item.drill_variant` binds the 0004 enum by name (`create_type=False`), matching the `enums.pg_enum` idiom.
+- **`app/services/scheduler.py` — a pure, DB-agnostic, deterministic function** over view dataclasses (no clock
+  reads, no randomness, no DB — unit-tested with none). **Signature reconciled for multi-track:**
+  `schedule(today, prefs, stage_metas, concepts, drills, concept_progress, drill_progress, past_items, *,
+  horizon_days)` (the `stage_metas` arg is new — `compute_stages` needs it), returning a `ScheduleResult`
+  (dated `items` + `projected_clear`/`projected_go_live`/`on_pace` + `days_behind`/`carried_over`/`unplaced`).
+  Pipeline as designed: unlock via `compute_stages(prefs.active_track, …)` (locked stages **never** scheduled) →
+  backlog (untracked → Learn, each drill below its `rep_targets.parse` floor → Drill [count-y = one task carrying
+  remaining reps; `days`/`sessions` = one session/day, longitudinal], watch_only/U5 → Observe capped at Can-mark,
+  foundation stage_order 0 → Learn/Drill **plus** a recurring daily Habit, lowest unlocked concept-less stage → a
+  single Backtest placeholder) → mandatory spaced review (Leitner by confidence: 1→1d…3→3d,4→7d,5→21d; `None`→3d)
+  → deterministic daily packing (tz-resolved `today`; skip blackout + 0-budget weekdays; fill order habits → due
+  reviews → backlog in curriculum order; day-based drills one slot/day; est-minutes per activity capped at
+  `max_session_minutes`; overflow rolls to the next eligible day; habits are mandatory and may drive a day's
+  budget negative) → projection/ETA (pacing-only vs `target_go_live_date` — never gates) → slippage carry-over
+  (past pending backlog re-queued at the FRONT of today; `days_behind`/`carried_over` surfaced). Anything that
+  can't fit the horizon is returned in `unplaced` (surfaced, never silently dropped).
+- **`app/routers/planner.py`** (prefix `/api`, auth-gated + user-scoped). `GET|PUT /api/preferences` (defaults
+  returned with `is_configured=false` when unset). `GET /api/plan/today` — resolves `today` in the user's tz (the
+  one clock read; the scheduler stays clock-free), runs the scheduler (`horizon_days=1`), **materializes today's
+  items via `pg_insert … on_conflict_do_update`** on the slot index with `WHERE status='pending'` (never clobbers
+  a mark), then returns the frozen rows + adherence + pace. `GET /api/plan?from=&to=` — past/today **frozen** (DB
+  rows, `id` set) + future **computed** (scheduler specs, `id` null). `POST /api/plan/regenerate` — bumps
+  `plan_version` + `generated_at`, soft-deletes today's **pending** items (done/partial/skipped kept as the
+  accountability record), re-materializes at the new version. `PATCH /api/plan/items/{id}` — sets status +
+  `done_qty`, and for a done/partial concept/drill item **feeds `concept_progress`/`drill_progress`** (reps +
+  `last_practiced`) via the same lazy-upsert as `learning.py`; it **never advances the ladder** (that gate stays
+  owned by `/api/progress`), honouring the north star. Schemas in `app/schemas/planner.py`; router mounted in
+  `main.py`.
+- **DB-session reuse (test infra, real fix):** the app's module-global async engine pools connections bound to one
+  event loop; pytest's per-test loops then hit "Event loop is closed". The API tests use a dedicated **`NullPool`**
+  engine + `app.dependency_overrides[get_db]` so no connection outlives its loop.
+- **Ops note (not code) — evidence-gating lesson relearned:** a `downgrade base → upgrade head` chain intended for
+  a throwaway DB ran against the **working** DB (an exported `DATABASE_URL` did **not** override the `.env`-derived
+  settings that Alembic reads), wiping the 5c/5d/5e-1b seed. Recovered by re-running all seeds + `ingest_content`
+  (74 concepts / 23 track_stages / 53 drills / 67 content_pages restored; Playwright 12/12 green after). Lesson:
+  never run `downgrade base` against the working DB — pin scratch tests to a scratch DB by editing config, not an
+  env export, or run migrations there via an explicit `-x`/`-c` the tool actually honours.
+- **Verified:** scheduler unit tests (determinism; per-track unlock; locked stages never scheduled; U5
+  observe-only + capped; blackout/0-budget skips; max-session cap; spaced-review due dates; slippage re-queue;
+  pacing-only projection) — 9 green with **no DB**. API tests (preferences round-trip; `/plan/today` idempotent
+  materialization [2nd call, 0 dupes]; PATCH-done feeds concept + drill progress; regenerate bumps `plan_version`
+  and preserves a done item; per-user isolation; 5e-1b `/tracks` + `/stages` no-regression) — 7 green. Live
+  uvicorn boot confirms all five planner routes mount and a full `PUT prefs → GET /plan/today` flow returns
+  tz-aware habits/learn + adherence + pace.
+
+### 5e-3 as-built (2026-07-23) — code is now ground truth
+
+Study-Planner **UI** shipped and verified end-to-end (frontend only — consumes the 5e-2 API unchanged). Three
+pages, seven components, one query/mutation layer, five Playwright specs. **Code is ground truth** (`app/src/
+{pages/{today,plan,plan-setup}.tsx, components/planner/*, lib/planner.ts, types/api.ts}`). Decisions + notes:
+
+- **`lib/planner.ts`** mirrors `lib/learning.ts`: hierarchical `plannerKeys` (`preferences`/`today`/`range`),
+  queries `usePreferences`/`usePlanToday`/`usePlanRange`, mutations `useUpdatePreferences`/`useUpdatePlanItem`/
+  `useRegenerate`. A **mark (`useUpdatePlanItem`) invalidates BOTH `plannerKeys.all` AND `learningKeys.all`** —
+  since a done/partial item feeds `concept_progress`/`drill_progress`, `/path` + `/drills` must refetch. Prefs +
+  regenerate invalidate `plannerKeys.all` (whole schedule recomputes).
+- **Custom CSS-grid calendar (`StudyCalendar`)** — Mon-first month grid via `date-fns` (`startOfWeek`/`endOfWeek`
+  `{weekStartsOn:1}` + `eachDayOfInterval`); items grouped by `scheduled_date`; per-day status dots + count; today
+  ring-highlit; out-of-month cells muted; future-only days rendered as "projected" (lighter). `usePlanRange` is
+  fetched for the visible grid `[gridStart, gridEnd]`; prev/next month via local state. **`react-day-picker` was
+  NOT re-added** (a date picker, not a content calendar; keeps the CSP surface minimal, per the design).
+- **`AvailabilityForm`** — RHF + `zodResolver`; per-weekday minute inputs (`valueAsNumber`), max-session, timezone
+  (defaulted from `Intl…resolvedOptions().timeZone`), `active_track` via a `Controller`-wrapped shadcn `Select`,
+  and an optional **pacing-only** target go-live date (labeled as never gating). **Blackout dates** are managed in
+  local component state (add/remove chips) and merged on submit rather than through RHF — simpler and equally
+  valid. Zod number schemas use plain `.int().min().max()` (dropped `invalid_type_error` — the option changed in
+  Zod 4).
+- **`PlanItemCard`** — activity→icon map (`learn`→BookOpen, `drill`→Dumbbell, `review`→History, `observe`→Eye,
+  `habit`→Repeat, `backtest`→Rewind); done sends `done_qty = target_qty` when present (feeds the right reps);
+  `data-status`/`data-activity` attributes for the e2e specs; **computed future items (`id===null`) render
+  read-only** (no controls) — only frozen/today items are markable. A **skip is a logged skip** (strikethrough +
+  adherence drop), never hidden.
+- **Bug caught + fixed in the live browser walkthrough:** `AdherenceMeter` initially multiplied `adherence_pct` by
+  100 (rendered **2500%**). The backend already returns a **0–100 percentage**
+  (`planner.py`: `round(100 * (done + 0.5·partial) / total, 1)`) — the Pydantic schema comment
+  `# (done + 0.5·partial) / total` omits the ×100. Fixed to render the value directly; the `types/api.ts` comment
+  now says "0–100 percentage".
+- **Nav** gains **Today** (top — the differentiator) + **Plan**; `/` still redirects to `/path` (unchanged).
+- **Verified (evidence):** `tsc -b` + `vite build` clean. **Playwright 17/17** (12 existing regression + 5 new
+  planner: setup saves → Today renders an ordered non-empty plan; mark-done flips `data-status` + surfaces
+  adherence + **feeds progress** [API cross-check on `/api/progress`]; skip logs a SKIP; calendar shows today with
+  its dots; regenerate bumps `plan_version`). The planner specs run **serially against their own isolated debug
+  user** (injected via `addInitScript`) so they never race with `learning.spec` on the shared `e2e` user. Live
+  claude-in-chrome walkthrough (debug-login → `/plan/setup` save → `/today` mark-done + skip → `/plan` calendar →
+  regenerate) with **NO console errors**; the 2500% bug was caught here and fixed. (Note: the API `CORS_ORIGINS`
+  allows only `http://localhost:5173` — the dev server must run on `:5173` for `/auth/me` to pass.)
 
 ## Contradiction flag (per [[CLAUDE]] Rule #6)
 
