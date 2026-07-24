@@ -3,7 +3,7 @@ tags: [architecture, frontend, backend, learning-platform, mastery, neurospect, 
 aliases: [Learning Platform Architecture, neurospect-learn, Learn App, Learning Platform Frontend]
 sources: [processes/distributed-workflow/active/learning-platform-ui.md, concepts/mastery/README.md, concepts/mastery/unified/learning-path.md, concepts/mastery/unified/tracker.md, concepts/architecture/phase3-frontend-structure.md, concepts/architecture/phase2-project-structure.md, concepts/architecture/trade-schema.md]
 created: 2026-07-18
-updated: 2026-07-20
+updated: 2026-07-24
 ---
 
 # Learning Platform — Architecture (Phase 5a design)
@@ -145,6 +145,12 @@ Approach: **per-track concept rows** (no shared spine). Reuses the 5c/5e-1 conve
 > adherence / pace), `/plan` (custom CSS-grid month calendar + regenerate), `/plan/setup` (availability &
 > preferences form) shipped, wired to the 5e-2 planner API. Nav gains **Today** (top) + **Plan**. `/` still
 > redirects to `/path`. **Code is ground truth** (`app/src/pages/{today,plan,plan-setup}.tsx`).
+>
+> **Journal + expectancy — as-built (5f, 2026-07-24).** `/journal` (list + `mode`/`entry_model`/`instrument`
+> filters + "New entry"), `/journal/new` + `/journal/:id` (one tabbed `JournalForm` — create/edit; delete is a
+> two-step inline confirm, no native dialog), `/expectancy` (summary tiles + expectancy-by-model + win-rate
+> backtest-vs-live + R-distribution charts + a per-model table). Journal + Expectancy were already in the nav
+> (5b). **Code is ground truth** (`app/src/pages/{journal,journal-entry,expectancy}.tsx`).
 
 | Route | Page | Surfaces |
 |---|---|---|
@@ -276,7 +282,9 @@ Gate text, which is canonical in [[concepts/mastery/README]] §Readiness-to-Live
 - **(a)** every **core** concept (U1–U4) at **Backtested+** (from `concept_progress`); load-bearing few at Live-ready.
 - **(b)** `mode='backtest'` sample ≥ target (≥50 setups / ≥100 trades) with **positive expectancy in R** per
   model — expectancy `= (win% × avg win R) − (loss% × avg loss R)`, break-even `= 1/(1+R:R)`
-  (reimplemented over `journal_entries`; see [[concepts/aura/risk-management]]).
+  (reimplemented over `journal_entries`; see [[concepts/aura/risk-management]]). **The expectancy math itself is
+  shipped as of 5f** (the pure `services/expectancy.py` + `/api/analytics/expectancy`, surfaced on `/expectancy`);
+  5f delivers the VIEW, and 5g will combine it with (a) + (c) into the gate verdict. See §5f as-built.
 - **(c)** the behavioural checklist items (risk precommitted in writing, journaling habit, circuit-breaker
   demonstrated) — user-attested.
 
@@ -447,9 +455,16 @@ record; the future is always recomputed from current state** — is the elite ad
   *not* `react-day-picker`, which was never added; a Mon-first grid with per-day status dots, today ring-highlit,
   past frozen / future projected, + a Regenerate button + an `unplaced` warning), `AvailabilityForm` (RHF + Zod),
   `StreakBadge`/`AdherenceMeter`/`PaceProjection`. Under `components/planner/`. See §5e-3 as-built.
-- **New components (journal/gate, 5f/5g):** `JournalForm` (tabbed, RHF+Zod, `mode` toggle — lifts the
-  `trade-form` recipe), `JournalCard`/`JournalFilters`, `ExpectancyChart`, `BacktestVsLiveChart`,
-  `GateChecklist`, `GateSignal`.
+- **Journal components (5f, as-built):** `JournalForm` (tabbed RHF+Zod — mode toggle + Context / Decision-flow /
+  Execution&risk / Review; optional numbers held as strings + coerced on submit; enum selects use a `__none__`
+  sentinel; `confluence_tags`/`mistake_tags` are local-state chip inputs), `JournalCard` (mode-color-coded badge +
+  R/outcome), `JournalFilters` (mode/model/instrument). Under `components/journal/`.
+- **Analytics components (5f, as-built):** `ExpectancyChart` (per-model expectancy in R, grouped backtest/live,
+  zero reference line), `BacktestVsLiveChart` (per-model win-rate %, backtest vs live — the honesty view),
+  `RDistributionChart` (R histogram, an addition beyond the two named), and `chart-common.tsx` (validated 2-hue
+  categorical palette [blue backtest / orange live] as `--chart-*` CSS vars in `index.css`, a theme-aware
+  `ChartTooltip`, `EmptyChart`). Under `components/analytics/`. **`recharts` re-added** (dropped in the 5b lift).
+- **New components (gate, 5g):** `GateChecklist`, `GateSignal`.
 - **Infra note (5e-1, as-built):** the progress/drill mutations are the **first `useMutation`s in this codebase**
   (5b–5d were read-only) — `lib/learning.ts` establishes `learningKeys` + `useUpdateProgress`/`useUpdateDrill`
   with `onSuccess: invalidateQueries` (a progress write also invalidates `stages`), following the `contentKeys`
@@ -467,8 +482,12 @@ record; the future is always recomputed from current state** — is the elite ad
     (materialize+persist today; items + adherence + pace), `GET /api/plan?from=&to=`,
     `POST /api/plan/regenerate`, `PATCH /api/plan/items/{id}` (status + `done_qty` → feeds
     `concept_progress`/`drill_progress`).
-  - `journal`: `POST|GET|GET{id}|PATCH|DELETE /api/journal` (filters incl. `mode`, `entry_model`).
-  - `analytics`: `GET /api/analytics/expectancy` (by model × mode), `/summary`, `/r-distribution`.
+  - `journal` (5f, as-built — `app/routers/journal.py`, prefix `/api`, auth-gated + user-scoped, soft-delete):
+    `POST /api/journal`, `GET /api/journal` (`?mode=`/`?entry_model=`/`?instrument=`/`?from=`/`?to=`, newest
+    first), `GET|PATCH|DELETE /api/journal/{id}`. Schemas in `app/schemas/journal.py`.
+  - `analytics` (5f, as-built — `app/routers/analytics.py`, prefix `/api/analytics`, read-only aggregation over
+    the user's entries; math in the pure `app/services/expectancy.py`): `GET /expectancy` (by model × mode),
+    `/summary` (per mode), `/r-distribution` (R histogram split by mode). No gate verdict (5g owns it).
   - `gate`: `GET /api/gate`.
 
 ## Implementation split (5b → 5g)
@@ -502,7 +521,10 @@ Each phase is a boot-promptable unit; sequenced in [[processes/distributed-workf
     CSS-grid calendar + regenerate), `/plan/setup` (availability form); `lib/planner.ts` (query/mutation layer);
     mark-done/partial/skip → feeds progress; streak / adherence / days-behind / pace surfaces. Frontend-only
     (consumes the 5e-2 API). See §5e-3 as-built below.
-- **5f — Journal + expectancy.** Model-aligned `/journal` (backtest|live) + `/expectancy` dashboard.
+- **5f — Journal + expectancy.** ✅ **Built 2026-07-24.** Model-aligned `/journal` (backtest|live CRUD +
+  filters, soft-delete) + `/expectancy` dashboard (per-model expectancy in R, win rate, backtest-vs-live, R
+  distribution, per-model table). Backend `journal` + `analytics` routers over the existing 5c `journal_entries`
+  table (no migration); pure `services/expectancy.py`; recharts re-added. See §5f as-built below.
 - **5g — Gate/readiness.** `/gate` computed readiness + watch-only enforcement.
 
 ### 5b as-built (2026-07-19) — code is now ground truth
@@ -815,6 +837,61 @@ pages, seven components, one query/mutation layer, five Playwright specs. **Code
   claude-in-chrome walkthrough (debug-login → `/plan/setup` save → `/today` mark-done + skip → `/plan` calendar →
   regenerate) with **NO console errors**; the 2500% bug was caught here and fixed. (Note: the API `CORS_ORIGINS`
   allows only `http://localhost:5173` — the dev server must run on `:5173` for `/auth/me` to pass.)
+
+### 5f as-built (2026-07-24) — code is now ground truth
+
+Model-aligned **journal** + **expectancy dashboard** shipped and verified end-to-end, built over the existing
+5c `journal_entries` table — **no migration** (the deferred items — screenshots, `missed_trades`,
+`position_size` — stay deferred). **Code is ground truth** (`api/app/{routers/{journal,analytics}.py,
+schemas/{journal,analytics}.py, services/expectancy.py}`; `app/src/{pages/{journal,journal-entry,expectancy}.tsx,
+components/{journal,analytics}/*, lib/{journal,analytics}.ts, types/api.ts}`). Decisions + notes:
+
+- **Backend `journal` router** — CRUD over `journal_entries`, auth-gated + user-scoped + soft-deleted (mirrors the
+  `drill_progress` idiom). `mode` + `entry_model` + `entry_date` + `instrument` required on create; `entry_pda`
+  **defaults to `fvg`** in the Pydantic `JournalEntryIn` (so an omitted value applies R4 rather than writing NULL).
+  PATCH is partial (`exclude_unset`); DELETE sets `is_deleted`/`deleted_at`. List supports
+  `mode`/`entry_model`/`instrument`/`from`/`to`, newest-first.
+- **Expectancy math is a pure service (`services/expectancy.py`)** — DB-agnostic, so it's unit-tested against
+  hand-built fixtures (mirrors `scheduler.py`). **Win/loss/breakeven are classified by the SIGN of `r_multiple`**
+  (r>0 / r<0 / r==0), NOT by the `outcome` enum — this keeps the math self-consistent and makes the identity
+  **`expectancy == mean(r_multiple)`** exact (asserted both ways in tests). Only CLOSED trades (non-null
+  `r_multiple`) enter the sample; a group is emitted per (model, mode) with ≥1 non-deleted entry, its stats over
+  the closed subset. `win_rate`/`break_even` are returned as **fractions 0–1** (the UI formats as %); break-even
+  `= 1/(1+avg rr_planned)`. A `SAMPLE_TARGET = 50` (design gate ≥50 setups) is surfaced as a **reference** only —
+  under-evidenced models read amber — and is explicitly **NOT** the live-eligibility verdict (5g owns that).
+- **`analytics` router** — three read-only endpoints (`/expectancy` by model × mode, `/summary` per mode,
+  `/r-distribution` R histogram split by mode) that load the user's non-deleted entries once, map to
+  `expectancy.TradeR`, and delegate to the pure service. No gate verdict.
+- **Frontend libs** — `lib/journal.ts` (`journalKeys` + `useJournalEntries`/`useJournalEntry` + create/update/
+  delete mutations; **every write invalidates BOTH `journalKeys.all` AND `analyticsKeys.all`** since expectancy
+  derives from entries) + `lib/analytics.ts` (`analyticsKeys` + the three read hooks + `pct()`/`rMultiple()`
+  formatters). Enum label maps live in `lib/journal.ts`.
+- **`JournalForm`** — tabbed RHF+Zod (Context / Decision-flow / Execution&risk / Review) with a prominent
+  **backtest|live segmented toggle above the tabs** (drives both axes). Optional numeric fields are registered as
+  **strings and coerced on submit** (empty → null) to avoid RHF `valueAsNumber` NaN; optional enum selects use a
+  `__none__` sentinel (Radix Select can't hold `""`); `confluence_tags`/`mistake_tags` are local-state chip inputs
+  (the blackout-date pattern). `plan_followed` defaults **true**. All fields trace to the model-aligned field set
+  (§2) — NOT the generic `trades` shape.
+- **Charts + validated palette** — the two axes map to two **dataviz-validated** categorical hues (slot-1 blue =
+  backtest, slot-2 orange = live; the pair PASSES all six checks in both light + dark — CVD ΔE 24.7 / 26.8, ≥8
+  target), declared as `--chart-*` CSS vars in `index.css` (light + `.dark` steps). `ExpectancyChart` (expectancy
+  R, zero reference line), `BacktestVsLiveChart` (win-rate %, the honesty view), plus an **added**
+  `RDistributionChart` (R histogram). A theme-aware `ChartTooltip` (shadcn popover tokens — the default white
+  tooltip is unreadable in dark). `recharts` re-added (`npm install recharts`); `react-day-picker` stays out.
+- **`/expectancy` page** — summary tiles (per mode: expectancy/trade in R, win%, total R, n/logged closed), the
+  three charts, and a **per-model table** (the accessible table view + exact numbers: n, win%, avg win/loss R,
+  expectancy, break-even) with amber under-reference sample sizes and a footnote clarifying the reference-vs-gate
+  distinction + confluence-is-study-only + "the Readiness-to-Live decision lives on the Gate."
+- **Verified (evidence, not inference; local Postgres :5433):** backend **33 tests** (16 prior + **9 pure
+  expectancy** hand-built-fixture unit tests [by-hand win%/avgWinR/avgLossR/expectancy/break-even + the
+  `expectancy == mean r` identity + open/breakeven/grouping/mode-summary/R-distribution] + **8 journal API**
+  [CRUD, filters narrow, soft-delete (gone from API, row still in DB flagged), per-user isolation, enum/CHECK 422,
+  no-token 403, and the expectancy VIEW over created entries]). `tsc -b` + `vite build` clean. **Playwright 20/20**
+  (17 prior regression + 3 new journal: create backtest → list + feeds expectancy; mode filter narrows [Radix
+  select]; charts render per-model bars). Live claude-in-chrome walkthrough (debug-login → `/journal/new` create a
+  backtest entry → `/journal` list → `/expectancy` dashboard) with **NO console errors**; the rendered expectancy
+  table + charts were cross-checked against hand-computed values (Backtest +0.64R / win 55%, Live −0.33R / win 33%
+  — backtest-vs-live honesty view stark; London backtest +0.20R vs live −0.33R). No migration was needed.
 
 ## Contradiction flag (per [[CLAUDE]] Rule #6)
 

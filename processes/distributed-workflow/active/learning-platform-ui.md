@@ -3,7 +3,7 @@ tags: [distributed-workflow, active, neurospect, mastery, frontend, ui]
 aliases: [Learning Platform UI Tracker, Phase 5 UI, Mastery UI]
 sources: []
 created: 2026-07-18
-updated: 2026-07-23
+updated: 2026-07-24
 ---
 
 # Learning Platform UI — Workstream Tracker
@@ -164,8 +164,15 @@ Planner + §Progress + journal data model "Study Planner + progress-editing" sub
 Write each sub-phase's build boot prompt when that sub-phase starts (5e-1 first). The standalone 5e build boot
 prompt below (⛔ SUPERSEDED) is folded into 5e-1's scope.
 
-### Phase 5f — Journal + expectancy
-Model-aligned `/journal` (backtest|live) + `/expectancy` dashboard (per-model, backtest vs live).
+### Phase 5f — Journal + expectancy ✅ (2026-07-24, in `neurospect-learn`)
+Model-aligned `/journal` (backtest|live CRUD + filters + soft-delete) + `/expectancy` dashboard (per-model
+expectancy in R, win rate, backtest-vs-live honesty view, R distribution, per-model table). Backend `journal` +
+`analytics` routers over the existing 5c `journal_entries` table (**no migration**); the pure
+`services/expectancy.py` (win/loss by `r_multiple` sign; `expectancy == mean r` identity; break-even
+`1/(1+rr)`; sample-target 50 is a reference, NOT the gate); recharts re-added with a dataviz-validated 2-hue
+palette. Verified: 33 backend tests (9 pure expectancy + 8 journal API), Playwright 20/20, live browser
+walkthrough (no console errors, expectancy cross-checked by hand). Code is ground truth —
+[[concepts/architecture/learning-platform]] §5f as-built records the decisions.
 
 ### Phase 5g — Gate/readiness view
 `/gate` computed readiness over progress + backtest expectancy + checklist; watch-only enforcement for frontier.
@@ -512,7 +519,85 @@ Model-aligned `/journal` (backtest|live) + `/expectancy` dashboard (per-model, b
 - next: **Phase 5f — Journal + expectancy** (model-aligned `/journal` [backtest|live] + `/expectancy` dashboard
   per-model, backtest vs live; recharts re-added here). Write its build boot prompt when 5f starts.
 
-## Next Session Boot Prompt (Phase 5f — Journal + expectancy) ⏭ ACTIVE
+### 2026-07-24 — Phase 5f (journal + expectancy) ✅
+- approach: Opus main session executing the approved 5f boot prompt (no plan mode). Ran STEP 0 (all pass: alembic
+  0006 head; seeds concepts=74/track_stages=23/drills=53/content_pages=67; `journal_entries` + 7 enums present;
+  16 backend tests; `tsc -b`+`vite build` clean; Playwright 17/17). Read the design contract (§Progress + journal
+  data model §2/§3 + §Route taxonomy + §Component/API surface + §5c as-built) and the live 5b–5e idioms
+  (journal_entry/enums models, planner/learning routers + schemas, lib/planner+learning, App.tsx stubs, ui
+  primitives), then built to the established pattern (router+schemas mirror planner/learning; frontend fetch
+  mirrors lib/planner; pure service + no-DB unit tests mirror scheduler).
+- built: **backend** — `schemas/journal.py` (In/Update/Out mirroring the 5c table + 7 enums; `entry_pda` defaults
+  fvg), `schemas/analytics.py`, the **pure** `services/expectancy.py` (win/loss by `r_multiple` sign;
+  `expectancy == mean r` identity; break-even `1/(1+rr)`; `SAMPLE_TARGET=50` reference, not the gate),
+  `routers/journal.py` (CRUD + filters + soft-delete, user-scoped) + `routers/analytics.py` (`/expectancy`,
+  `/summary`, `/r-distribution`), mounted in main.py. **NO migration** (built over the existing 5c
+  `journal_entries`; deferred items stay deferred). **frontend** — `recharts` re-added; Journal+Analytics types in
+  `types/api.ts`; `lib/journal.ts` (a write invalidates journal **and** analytics) + `lib/analytics.ts`;
+  components `journal/{journal-form (tabbed RHF+Zod, mode toggle),journal-card,journal-filters}` +
+  `analytics/{chart-common,expectancy-chart,backtest-vs-live-chart,r-distribution-chart}`; pages
+  `{journal,journal-entry,expectancy}` (replaced the 4 stubs in App.tsx). `--chart-*` palette tokens in index.css.
+- decided (calls the design left open; recorded in [[concepts/architecture/learning-platform]] §5f as-built):
+  win/loss classified by `r_multiple` sign (not the `outcome` enum) so expectancy is self-consistent + equals
+  mean r; `win_rate`/`break_even` returned as fractions 0–1 (UI formats %); sample-target 50 surfaced as a
+  reference (amber), explicitly not the 5g verdict; expectancy math in a pure service for hand-fixture unit tests;
+  optional form numbers held as strings + coerced on submit; enum selects use a `__none__` sentinel; charts use a
+  **dataviz-validated** 2-hue palette (blue backtest / orange live — all six checks pass both modes); added an
+  `RDistributionChart` beyond the two named charts; delete is a two-step inline confirm (no native dialog).
+- verified (evidence, not inference; local Postgres :5433): backend **33 tests** (16 prior + 9 pure expectancy +
+  8 journal API — CRUD, filters narrow, soft-delete [gone from API, row still in DB flagged], per-user isolation,
+  enum/CHECK 422, no-token 403, expectancy VIEW over created entries). `tsc -b`+`vite build` clean. **Playwright
+  20/20** (17 prior regression + 3 journal: create→list→feeds expectancy, Radix mode filter narrows, charts render
+  per-model bars). Live claude-in-chrome walkthrough (debug-login → `/journal/new` create a backtest entry →
+  `/journal` list → `/expectancy` dashboard) with **NO console errors**; rendered table + charts cross-checked
+  against hand-computed expectancy (Backtest +0.64R/win 55%, Live −0.33R/win 33% — honesty view; London backtest
+  +0.20R vs live −0.33R). Dev servers + DB left running; Paul handles git.
+- reconciled (mandatory): updated [[concepts/architecture/learning-platform]] §Route taxonomy + §Progress +
+  journal data model §3 + §Component/API surface → as-built + added §5f as-built + marked 5f ✅ in the split;
+  did NOT touch trade-schema.md or phase3-frontend-structure.md. Appended log.md; bumped index.md.
+- isolation: clean (Neurospect-only; no ALDC refs). git: untouched — Paul handles commits.
+- next: **Phase 5g — Gate/readiness** (`/gate` computed readiness over progress + backtest expectancy + checklist;
+  watch-only enforcement for frontier). Boot prompt written below (⏭ ACTIVE).
+
+## Next Session Boot Prompt (Phase 5g — Gate / readiness view) ⏭ ACTIVE
+
+Recommended launch: **Opus** (`claude --model opus[1m]`), `/effort high` — this is the north-star payoff (the
+"cleared to live?" verdict) and the readiness logic must be correct + non-overridable (evidence-gated). No plan
+mode — this executes the approved [[concepts/architecture/learning-platform]] §Progress + journal data model §3
+(the gate) + §Route taxonomy (`/gate`) + §Component/API surface. Full-stack (a `gate` API that COMBINES the
+three existing sources + the `/gate` UI). Working dir: `C:\Users\PaulRussell\repos\neurospect-learn` (code is
+ground truth), or start from the wiki to read the design first. **Prereq:** the `neurospect-learn-db` container
+on :5433 with the 5c+5d+5e+5f schema/seed + ingest. If gone: `docker start neurospect-learn-db`, then
+`cd api && poetry run alembic upgrade head && poetry run python -m scripts.seed_concepts && poetry run python -m
+scripts.seed_tracks && poetry run python -m scripts.seed_drills && poetry run python -m scripts.ingest_content`.
+Paste:
+
+````
+GROUNDING: Neurospect is Paul's personal ICT / Smart-Money-Concepts trading-mastery project, and `neurospect-learn` is its standalone learn-to-execute app — a FastAPI + Postgres backend (`api/`) and a React 19 / Vite / TanStack Query SPA (`app/`) — that surfaces the wiki's course corpus and tracks his progress up the mastery ladder (learn → backtest → live) toward being cleared to trade live.
+
+Neurospect — Phase 5g: GATE / READINESS VIEW for `neurospect-learn`. Build the "cleared to live?" verdict — a `/gate` that COMPUTES per-model live-readiness by combining the three sources that already exist: (a) core-concept ladder position from `concept_progress` (5e-1), (b) backtest sample + positive expectancy from the journal/analytics (5f), and (c) a behavioural checklist (risk precommitted in writing, journaling habit, circuit-breaker demonstrated — user-attested). This is the north-star payoff: DISCIPLINE & ACCOUNTABILITY BY DESIGN — the gate is NON-OVERRIDABLE (no manual "mark cleared"), frontier (U5/EMERGING/SPECULATIVE) concepts NEVER count toward eligibility, and a model is never "cleared" without the required backtest sample AND positive expectancy AND its core concepts at Backtested+. The expectancy math is ALREADY shipped (5f `services/expectancy.py` + `/api/analytics/expectancy`) — REUSE it, do NOT reinvent it.
+
+STEP 0 — CONFIRM 5f SHIPPED (do this FIRST; if any check fails, STOP and tell Paul):
+  - Migrations at 0006: `cd api && poetry run alembic current` shows `0006 (head)`.
+  - Seeds present: concepts=74, track_stages=23, drills=53, content_pages=67.
+  - Backend tests green: `cd api && poetry run pytest tests/ -q` → 33 passed.
+  - Frontend baseline: `cd app && npx tsc -b && npx vite build` clean; start the API on :8000 (DEBUG=true) then `npx playwright test` → 20/20 green (6 content + 6 multi-track + 5 planner + 3 journal). (Dev server on :5173 — CORS allows only :5173.)
+  Only once ALL pass, proceed.
+
+Design spec (READ FIRST — it is the contract): C:\Users\PaulRussell\repos\neurospect-wiki\concepts\architecture\learning-platform.md — §Progress + journal data model §3 (THE GATE: the three sources (a)/(b)/(c), the expectancy formula [now shipped in 5f — reuse], and the INVARIANTS the UI must enforce: no frontier toward "core at Backtested+", never "Backtested+" without the sample, live-eligibility on U1–U4 not confluence), §Route taxonomy (`/gate` row) + §Component/API surface (`gate: GET /api/gate`; `GateChecklist`/`GateSignal`), §5e-1 as-built (the `stages.py` derivation + `concept_progress` shape you read (a) from), §5f as-built (the `expectancy.py` + `/api/analytics/expectancy` you read (b) from — the sample-target 50 is the reference; 5g turns it into the verdict). The Gate text is CANONICAL in [[concepts/mastery/README]] §Readiness-to-Live Gate — REUSE by reference, do NOT restate.
+
+SCOPE — 5g IS:
+  - BACKEND `gate` router (`app/routers/gate.py`, prefix /api, auth-gated + user-scoped; schemas `app/schemas/gate.py`): `GET /api/gate` (optionally `?track=`) → per-model readiness: for each entry_model, does it clear (a) its core concepts (U1–U4, is_core, NOT watch_only) at Backtested+ (ladder≥3), (b) backtest sample ≥ target with positive expectancy in R (from the 5f expectancy service — REUSE, do NOT reimplement), (c) the attested behavioural checklist items — and an overall `cleared: bool` per model + the blocking reasons. The (c) checklist attestation needs a store — add a minimal `gate_attestations` table (Alembic 0007, reversible) OR fold into a small user-settings row; decide + record it. Pure readiness logic in `app/services/gate.py` (DB-agnostic, hand-fixture unit-tested like expectancy.py). NON-OVERRIDABLE: no endpoint sets `cleared` directly.
+  - FRONTEND: `lib/gate.ts` (`gateKeys` + `useGate` + the attestation mutation); `components/gate/{GateSignal (per-model cleared / blocked signal), GateChecklist (the three source groups with met/unmet + the attestable (c) items)}`; `/gate` page (replaces the 5g stub) — per-model readiness cards + the checklist; frontier concepts shown as never-eligible; a clear "what's blocking live" list per model.
+  - North star surfaced: the gate is the one place the whole disciplined process pays off; nothing here is manually overridable; watch-only/frontier never counts; expectancy must be POSITIVE with a real sample, not just logged.
+
+5g IS NOT: changing the expectancy math (reuse 5f); a live-trading integration / broker anything; changing the journal or planner; Claude/AI coaching; ALDC anything.
+
+VERIFY (evidence, not inference; local Postgres :5433): if you added a migration, `alembic upgrade head` + down/up clean (reversible); **gate logic correct on a HAND-BUILT fixture** (a model with core@Backtested+ + sample≥target + positive expectancy + all (c) attested → cleared; flip each of the four → not cleared with the right blocking reason — this is the evidence-gated core); frontier concept never counts toward (a); per-user isolation; no-token 403; `tsc -b` + `vite build` clean; EXTEND Playwright (a fully-satisfied model shows cleared; an unmet one shows blocked with reasons) green AND the existing 20 still green; a live claude-in-chrome walkthrough (debug-login → `/gate` renders per-model readiness + blocking reasons) with NO console errors.
+RECONCILE + BOOKKEEP (mandatory): update learning-platform.md §Progress + journal data model §3 → as-built (the gate as shipped) + §Route taxonomy (`/gate` → as-built) + §Component/API surface (`gate` endpoint + `GateSignal`/`GateChecklist` shipped) + add a §5g as-built; mark 5g ✅ in the split + tracker + a session-log entry; append log.md; bump index.md. This COMPLETES the Phase 5 arc — note that in the tracker. Do NOT edit trade-schema.md / phase3-frontend-structure.md. Paul handles git — NEVER commit.
+````
+
+## Next Session Boot Prompt (Phase 5f — Journal + expectancy) — ✅ EXECUTED 2026-07-24
 
 Recommended launch: **Opus** (`claude --model opus[1m]`), `/effort high` — the expectancy math must be correct
 (evidence-gated) and this introduces the app's **first charts**. No plan mode — this executes the approved
