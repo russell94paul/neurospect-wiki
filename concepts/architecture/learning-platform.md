@@ -14,18 +14,19 @@ all Neurospect course content in a navigable layout and (b) tracks Paul's progre
 scale / Readiness-to-Live Gate defined in [[concepts/mastery/README]]. It is the delivery layer over the
 [[processes/distributed-workflow/active/mastery-layer|Mastery Layer]] content (complete).
 
-> **Code now exists (Phase 5b shipped 2026-07-19).** The scaffold lives at
-> `C:\Users\PaulRussell\repos\neurospect-learn` (`app/` + `api/`). Per [[CLAUDE]] §Architecture Doc Integrity
-> the **code is ground truth**; this doc describes it *as implemented* (see §5b/§5c/§5d/§5e-1 as-built for
-> divergences). **Phase 5e-1 (progress foundation) shipped 2026-07-20** — the `concept_progress` lifecycle, the
-> derived stage exit-bars, the `drills` catalog + `drill_progress`, the `learning` endpoints, and `/path`,
-> `/path/:stage`, `/drills` + the reader track panel are live (§5e-1 as-built). **Phase 5e-1b (multi-track
-> curriculum) shipped 2026-07-21** — `/path` is now a three-track switcher (Aura · AXL · Unified) and
-> `/path/:track/:stage` is a curriculum unit (Read → Drill → Track → Gate); per-track concepts + `track_stages`
-> (Alembic `0005`) + `cross_refs` (§5e-1b as-built). **The Study Planner (5e-2 engine +
-> 5e-3 UI) is designed but not yet built** — see §Study Planner and the `study_preferences`/`plan_items` parts of
-> §Progress + journal data model; those describe the *approved design*, not shipped code, until 5e-2/5e-3 land.
-> Remaining phases 5e-2–5g are sequenced in [[processes/distributed-workflow/active/learning-platform-ui]].
+> **The Phase 5 arc is COMPLETE (5b → 5g shipped 2026-07-19 → 2026-07-24).** The app lives at
+> `C:\Users\PaulRussell\repos\neurospect-learn` (`app/` + `api/`). Per [[CLAUDE]] §Architecture Doc Integrity the
+> **code is ground truth**; this doc describes it *as implemented* — see the per-phase as-built sections
+> (§5b · §5c · §5d · §5e-1 · §5e-1b · §5e-2 · §5e-3 · §5f · §5g) for every divergence from the original design.
+> Shipped: the scaffold + Discord auth (5b); the data model, 8 enums and Alembic `0002`/`0003` (5c); the content
+> API + ingest + `/library`·`/concepts/:slug` (5d); the progress layer, stage exit-bars, `drills` +
+> `drill_progress` (`0004`) (5e-1); the three-track curriculum — `/path` switcher + `/path/:track/:stage` as a
+> Read → Drill → Track → Gate unit, `track_stages` + `cross_refs` (`0005`) (5e-1b); the Study Planner engine
+> (`study_preferences` + `plan_items`, `0006`, the deterministic `scheduler`) (5e-2) and its
+> `/today`·`/plan`·`/plan/setup` UI (5e-3); the model-aligned `/journal` + `/expectancy` dashboard (5f); and the
+> computed, non-overridable `/gate` verdict + `gate_attestations` (`0007`) (5g). **Every route in the taxonomy is
+> implemented — no stubs remain.** Migrations are at `0007`; seeds are 74 concepts / 23 track stages / 53 drills /
+> 67 content pages. Next work is sequenced in [[processes/distributed-workflow/active/learning-platform-ui]].
 
 > **No-drift.** This doc states *structure and decisions*. It does **not** restate the mastery model, the
 > playbook, the learning-path, the exercise libraries, the entry-model YAML, or any concept page — it **links**
@@ -151,6 +152,13 @@ Approach: **per-track concept rows** (no shared spine). Reuses the 5c/5e-1 conve
 > two-step inline confirm, no native dialog), `/expectancy` (summary tiles + expectancy-by-model + win-rate
 > backtest-vs-live + R-distribution charts + a per-model table). Journal + Expectancy were already in the nav
 > (5b). **Code is ground truth** (`app/src/pages/{journal,journal-entry,expectancy}.tsx`).
+>
+> **Gate — as-built (5g, 2026-07-24).** `/gate` ships the computed per-model verdict: an overall banner, a
+> `GateSignal` card per entry model (cleared / not-cleared + the three source pills + backtest n / expectancy /
+> win-vs-break-even + the blocking list), the selected model's `GateChecklist`, a "credit progress from" selector
+> (restricts which track may satisfy a concept requirement — **can only tighten**), and an explicit
+> "Frontier — never gate-eligible" panel. Gate was already in the nav (5b). **This completes the route taxonomy:
+> no route is a stub any more** (`pages/stub.tsx` was deleted). **Code is ground truth** (`app/src/pages/gate.tsx`).
 
 | Route | Page | Surfaces |
 |---|---|---|
@@ -276,21 +284,37 @@ surface per [[concepts/architecture/trade-schema]] §Missed Trades (separate lig
 
 ### 3. The gate (computed, not stored)
 
+> **As-built (Phase 5g shipped 2026-07-24).** `GET /api/gate` is live; the verdict is computed by the pure
+> `api/app/services/gate.py` on every read and is **not stored** — there is no `cleared` column and no endpoint
+> that sets one. The only new persistence is `gate_attestations` (Alembic **`0007`**) for source (c). **Code is
+> ground truth** (`api/app/{services/gate.py,routers/gate.py,schemas/gate.py,models/gate_attestation.py}`;
+> `app/src/{pages/gate.tsx,components/gate/*,lib/gate.ts}`). See §5g as-built for the decisions.
+
 `GET /api/gate` computes readiness **per model** by combining all three sources — it does not duplicate the
 Gate text, which is canonical in [[concepts/mastery/README]] §Readiness-to-Live Gate:
 
 - **(a)** every **core** concept (U1–U4) at **Backtested+** (from `concept_progress`); load-bearing few at Live-ready.
+  **As-built:** the requirement set is anchored on the **unified** curriculum (the only track whose taxonomy
+  enumerates all seven entry models, as U3.2a–g) — the shared core is its 10 `is_core` U1–U4 concepts at
+  **Backtested+ (ladder ≥3)**, and the model's own entry-model concept is the load-bearing one at
+  **Live-ready (ladder 4)**. Progress on another track still counts via `cross_refs` equivalents.
 - **(b)** `mode='backtest'` sample ≥ target (≥50 setups / ≥100 trades) with **positive expectancy in R** per
   model — expectancy `= (win% × avg win R) − (loss% × avg loss R)`, break-even `= 1/(1+R:R)`
-  (reimplemented over `journal_entries`; see [[concepts/aura/risk-management]]). **The expectancy math itself is
-  shipped as of 5f** (the pure `services/expectancy.py` + `/api/analytics/expectancy`, surfaced on `/expectancy`);
-  5f delivers the VIEW, and 5g will combine it with (a) + (c) into the gate verdict. See §5f as-built.
-- **(c)** the behavioural checklist items (risk precommitted in writing, journaling habit, circuit-breaker
-  demonstrated) — user-attested.
+  (see [[concepts/aura/risk-management]]). **The expectancy math is shipped as of 5f** (the pure
+  `services/expectancy.py` + `/api/analytics/expectancy`, surfaced on `/expectancy`) and 5g **REUSES it
+  verbatim** — the gate router calls `expectancy.compute_groups` exactly as the analytics router does, and
+  reimplements nothing. **As-built:** three requirements — sample ≥50 closed backtest trades, expectancy
+  strictly `> 0`, and win rate ≥ break-even for its planned R:R. The README's "ideally ≥100" is surfaced as a
+  non-gating stretch marker. See §5f + §5g as-built.
+- **(c)** the behavioural checklist items — user-attested, stored in `gate_attestations`. **As-built: all four**
+  README items (risk precommitted in writing · a demo/sim track record · journaling habit · circuit-breaker
+  demonstrated), per-user (behaviour belongs to the trader, not a model) and revocable.
 
-**Invariants the UI must enforce:** no frontier (U5) concept counts toward "core at Backtested+"; a model is
-never "Backtested+" without the required sample; live-eligibility is gated on the established playbook (U1–U4),
-never on unbacktested confluence.
+**Invariants (enforced server-side in `services/gate.py`, not merely in the UI):** no frontier (U5 / watch-only)
+concept is ever a requirement **or** a source of cross-ref credit; a model is never cleared without the required
+sample **and** positive expectancy; live-eligibility is gated on the established playbook (U1–U4), never on
+unbacktested confluence (`confluence_tags` are unread by the gate). Attesting (c) can never satisfy (a) or (b),
+and a missing/unseeded concept **fails closed** (an unmet requirement) rather than vanishing from the checklist.
 
 ### 4. Study Planner + progress-editing (Phase 5e)
 
@@ -350,14 +374,18 @@ encoding the exit bars from [[concepts/mastery/unified/learning-path]] §Stage g
 rules are *not* restated here): U0 = U0 concepts ≥ Can-mark + held-habit attest; U1 = all five primitives ≥
 Can-mark, conf ≥3, reps ≥ parsed target; U2 = triad + Sequential SMT ≥ Can-mark, conf ≥3; U3 = U3 core + entry
 models ≥ Can-mark; U4 = U4 concepts ≥ Can-mark + expectancy/risk-precommit attest. **U5 = observation-only,
-never live-gate-eligible; U6 = 5g placeholder.** The service exposes **`auto_met`** (objective, concept-based)
+never live-gate-eligible; U6 = an attest row that POINTS AT `/gate`** (5g ships the real verdict, but it is
+**per model** and a stage is not, so the U6 stage links to the Gate rather than mirroring it — see §5g as-built).
+The service exposes **`auto_met`** (objective, concept-based)
 distinct from **`met`** (fully cleared, incl. self-attest) and computes **`locked`** off the *auto_met* chain, so
 U0/U4's un-wired attestations don't permanently freeze the curriculum in 5e-1. The `reps ≥ target` check uses the
 shared **`app/services/rep_targets.py`** freetext parser (reps/days/sessions/qualitative/habit; conservative,
 never invents a target). *Integrity flag:* these rules live in code as the *as-implemented* gate — if
 learning-path changes, `stages.py` must be reconciled (per [[CLAUDE]] §Architecture Doc Integrity). U0/U4 are
-partly self-attested (held-habit, risk precommit, journal-derived expectancy) until the 5f journal + 5g gate
-integrate them — surfaced honestly, never hidden.
+partly self-attested (held-habit, risk precommit, journal-derived expectancy) — surfaced honestly, never hidden.
+**Still true after 5g:** the *stage* attestations were deliberately left un-wired to the gate's evidence; the
+Gate itself is fully evidence-backed per model on `/gate`. Wiring U4's expectancy attestation to the shipped
+`services/gate.py` (a stage-level evidence roll-up) is a candidate follow-up, not part of 5g.
 
 ## Study Planner
 
@@ -464,7 +492,12 @@ record; the future is always recomputed from current state** — is the elite ad
   `RDistributionChart` (R histogram, an addition beyond the two named), and `chart-common.tsx` (validated 2-hue
   categorical palette [blue backtest / orange live] as `--chart-*` CSS vars in `index.css`, a theme-aware
   `ChartTooltip`, `EmptyChart`). Under `components/analytics/`. **`recharts` re-added** (dropped in the 5b lift).
-- **New components (gate, 5g):** `GateChecklist`, `GateSignal`.
+- **Gate components (5g, as-built):** `GateSignal` (one model's cleared/not-cleared signal — the three source
+  pills, backtest n / expectancy / win-vs-break-even, and the blocking list; no control that could mark it
+  cleared) and `GateChecklist` (the three source groups with per-group `met/total`; concept + evidence rows are
+  read-only *earned* rows carrying their `detail` and a "work it" link to `/path/:track/:stage`, while the four
+  behavioural items are the page's **only** writable control — a server-controlled Radix checkbox, deliberately
+  not optimistic, above a corroboration strip of objective journal facts). Under `components/gate/`.
 - **Infra note (5e-1, as-built):** the progress/drill mutations are the **first `useMutation`s in this codebase**
   (5b–5d were read-only) — `lib/learning.ts` establishes `learningKeys` + `useUpdateProgress`/`useUpdateDrill`
   with `onSuccess: invalidateQueries` (a progress write also invalidates `stages`), following the `contentKeys`
@@ -488,7 +521,10 @@ record; the future is always recomputed from current state** — is the elite ad
   - `analytics` (5f, as-built — `app/routers/analytics.py`, prefix `/api/analytics`, read-only aggregation over
     the user's entries; math in the pure `app/services/expectancy.py`): `GET /expectancy` (by model × mode),
     `/summary` (per mode), `/r-distribution` (R histogram split by mode). No gate verdict (5g owns it).
-  - `gate`: `GET /api/gate`.
+  - `gate` (5g, as-built — `app/routers/gate.py`, prefix `/api`, auth-gated + user-scoped; verdict in the pure
+    `app/services/gate.py`): `GET /api/gate` (`?track=` restricts which track may supply credit — tightens only),
+    `GET|PATCH /api/gate/attestations` (the four behavioural items; lazy upsert, revocable). Schemas in
+    `app/schemas/gate.py`. **No endpoint writes a verdict** — `cleared` is computed per read.
 
 ## Implementation split (5b → 5g)
 
@@ -525,7 +561,11 @@ Each phase is a boot-promptable unit; sequenced in [[processes/distributed-workf
   filters, soft-delete) + `/expectancy` dashboard (per-model expectancy in R, win rate, backtest-vs-live, R
   distribution, per-model table). Backend `journal` + `analytics` routers over the existing 5c `journal_entries`
   table (no migration); pure `services/expectancy.py`; recharts re-added. See §5f as-built below.
-- **5g — Gate/readiness.** `/gate` computed readiness + watch-only enforcement.
+- **5g — Gate/readiness.** ✅ **Built 2026-07-24.** The computed, non-overridable per-model "cleared to live?"
+  verdict: the pure `services/gate.py` combining (a) `concept_progress` + (b) the reused 5f `expectancy.py` +
+  (c) `gate_attestations` (Alembic `0007`), the `gate` router, and the `/gate` UI (`GateSignal` ·
+  `GateChecklist` · frontier panel · credit-track selector). See §5g as-built below.
+  **This completes the Phase 5 arc** — every route in the taxonomy is implemented.
 
 ### 5b as-built (2026-07-19) — code is now ground truth
 
@@ -892,6 +932,74 @@ components/{journal,analytics}/*, lib/{journal,analytics}.ts, types/api.ts}`). D
   backtest entry → `/journal` list → `/expectancy` dashboard) with **NO console errors**; the rendered expectancy
   table + charts were cross-checked against hand-computed values (Backtest +0.64R / win 55%, Live −0.33R / win 33%
   — backtest-vs-live honesty view stark; London backtest +0.20R vs live −0.33R). No migration was needed.
+
+### 5g as-built (2026-07-24) — code is now ground truth
+
+The **Readiness-to-Live Gate** shipped and verified end-to-end — the north-star payoff, and the last phase of the
+Phase 5 arc. One migration (`0007`), one model, one pure service, one router + schemas, and the `/gate` UI.
+**Code is ground truth** (`api/app/{services/gate.py,routers/gate.py,schemas/gate.py,models/gate_attestation.py}`,
+`api/alembic/versions/0007_gate_attestations.py`; `app/src/{pages/gate.tsx,components/gate/*,lib/gate.ts}`).
+Decisions + notes:
+
+- **Anchor track (the load-bearing call the design left open).** `journal_entries.entry_model` — the gate's
+  grouping key — maps **1:1 onto the unified track's seven U3.2a–g entry-model concepts**, and no other track
+  enumerates a per-model set. So the requirement set is defined by the **unified** curriculum: the shared core is
+  its 10 `is_core` U1–U4 concepts at **Backtested+**, plus the model's own entry-model concept at **Live-ready**.
+  The seven slugs are named **explicitly** in `gate.ENTRY_MODEL_CONCEPTS` (the `stages._U2_GATE_SLUGS` idiom —
+  greppable, and immune to a re-seed shifting a code-letter ordering).
+- **`unified` carries the hardest bar.** The unified decision flow routes into every model at runtime, so
+  `entry_model='unified'` requires **all seven** entry-model concepts at Live-ready (north star: default to
+  enforce; 5e-1b reframed Unified as the advanced track, and the shipped unified U3 stage gate already requires
+  all seven at Can-mark).
+- **Cross-track credit, and `?track=` tightens only.** A requirement is satisfied by its anchor concept **or** by
+  any `cross_refs` equivalent that reached the bar — studying the same primitive in Aura is real evidence, and
+  refusing it would make the gate unreachable for an Aura-only student (per-track progress stays separate
+  everywhere else, per 5e-1b). `?track=` restricts which track may supply that credit, so it can only ever
+  **remove** evidence: no caller-supplied parameter can loosen a verdict. Default = any track.
+- **Non-overridability is structural, not cosmetic.** There is no `cleared` column, no request schema field, and
+  no endpoint that sets one; `cleared` is the conjunction `(a) ∧ (b) ∧ (c)`, recomputed on every read (a unit test
+  asserts exactly that identity). The only write on the whole gate surface is PATCH-ing one behavioural item.
+- **Fails closed, never vacuously.** An absent curriculum concept emits an **unmet** requirement pointing at
+  `scripts.seed_concepts`, and an empty core set emits an unmet "unseeded" requirement — an empty requirement list
+  would otherwise make `all()` report a model as cleared.
+- **(b) is reuse, not reimplementation.** `routers/gate.py` calls the pure 5f `expectancy.compute_groups` exactly
+  as the analytics router does. Three requirements: sample ≥ `SAMPLE_TARGET` (50) closed **backtest** trades,
+  expectancy strictly `> 0`, and `above_break_even`. An unknown planned R:R fails the third with "a win rate
+  without its R:R is meaningless" (README §Gate item 3). `SAMPLE_STRETCH = 100` is the README's "ideally" —
+  surfaced, never gating. **Live trades never gate** (a losing live record is shown for honesty only).
+- **(c) = all four README items** (not the boot prompt's three): risk precommitted in writing · demo/sim track
+  record · journaling habit · circuit-breaker demonstrated. `gate_attestations` (Alembic `0007`, new
+  `gate_attestation_item` enum) is per-user, revocable, soft-deleted with the partial-unique lazy-upsert idiom of
+  `concept_progress`/`drill_progress`. **Corroboration, not thresholds:** the API returns objective journal facts
+  (entries logged, distinct journaling days, backtest/live split, last entry) so a self-attest is made in the face
+  of the record — no invented rule gates on them.
+- **Frontier stays study-only.** `watch_only` concepts are excluded from the requirement set **and** from the
+  credit candidates, and are returned separately so `/gate` can name them "never gate-eligible" (12 seeded U5
+  rows). `confluence_tags` are not read by the gate at all.
+- **Frontend.** `lib/gate.ts` (`gateKeys` + `useGate`/`useAttestations`/`useUpdateAttestation`; a mark invalidates
+  the whole gate subtree). The attestation checkbox is **server-controlled — deliberately not optimistic**: an
+  attestation should not flip in the UI before it is recorded (the e2e therefore uses `click()`, not `check()`).
+  `/gate` replaced the last stub and **`pages/stub.tsx` was deleted** — the route taxonomy is fully implemented.
+- **Verified (evidence, not inference; local Postgres :5433):** `alembic upgrade head` 0006→0007 + `downgrade
+  0006` and back up clean (table + enum dropped and recreated; the 74-concept seed preserved). Backend **68 tests**
+  (33 prior + **24 pure gate** hand-fixture unit tests + **11 gate API**). The pure suite pins the cleared case
+  then flips each input (core ladder, load-bearing ladder, sample, expectancy, break-even-with-positive-expectancy,
+  each of the four attestations) and asserts the right blocking reason, plus: frontier never a requirement nor a
+  creditor, cross-track credit, `credit_track` tightening both ways, unified-needs-all-seven, missing/empty
+  curriculum fails closed, `ALL_MODELS` ≡ the `EntryModel` enum (drift guard), live activity never gates. The API
+  suite builds a **fully satisfied London against the real 74-concept seed**, proves it clears, then flips all
+  four sources back; plus attest round-trip/revoke (one row, upserted in place), non-overridability (all four
+  attested + full ladder + no sample → still blocked; a stray `cleared` field in the body changes nothing),
+  per-user isolation, corroboration, unknown track 404, unknown item 422, no-token 403. `tsc -b` + `vite build`
+  clean. **Playwright 27/27** (20 prior regression + 7 new gate: cleared renders cleared, blocked renders blocked
+  *with reasons*, revoking an attestation blocks it and re-ticking it in the UI clears it again, attesting cannot
+  clear an unevidenced model, frontier listed as never-eligible, credit-track tightening, and a seed-drift guard).
+  Live claude-in-chrome walkthrough on the fixture user: London **Cleared** (50/50, +0.80R, win 60% vs break-even
+  33%, all three pills green) while all seven other models stayed blocked *with all four discipline boxes ticked*
+  — non-overridability visible on the rendered surface; checklist groups 11/11 · 3/3 · 4/4; frontier panel showing
+  12 watch-only concepts; the credit-track selector toggled to "Aura only" and back, flipping London
+  Cleared → Not cleared → Cleared. **No console errors.** One copy wart caught in-browser and fixed
+  ("across 1 days" → "1 day").
 
 ## Contradiction flag (per [[CLAUDE]] Rule #6)
 
