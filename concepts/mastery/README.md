@@ -117,4 +117,5 @@ size up.
 - [[concepts/entry-models/README]] — per-strategy execution checklists (canonical; the ICT track links here)
 - [[concepts/architecture/trade-schema]] — the journal data model the tracking/journaling drills map onto
 - [[concepts/architecture/learning-platform]] — the Learning Platform app that visualizes this ladder/gate + tracks progress, and the **Study Planner** that schedules the drills/reps toward each stage gate (consumes this model; never restates it)
+- [[concepts/architecture/learning-enforcement]] — how a rep is made *verifiable*: uploaded evidence of the work, graded against rubrics **projected from** each track's `exercises.md` bullets (consumes this model and the drill libraries; authors no rubric text of its own)
 - [[entities/projects/neurospect]] — full project context

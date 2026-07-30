@@ -3,7 +3,7 @@ tags: [distributed-workflow, active, neurospect, mastery, frontend, ui]
 aliases: [Learning Platform UI Tracker, Phase 5 UI, Mastery UI]
 sources: []
 created: 2026-07-18
-updated: 2026-07-24
+updated: 2026-07-25
 ---
 
 # Learning Platform UI — Workstream Tracker
@@ -15,19 +15,23 @@ consistent profitability — **learning exercises → backtesting → live tradi
 on top of the [[processes/distributed-workflow/active/mastery-layer|Mastery Layer]] workstream (content ✅
 complete: mastery system, both tracks, unified playbook, frontier ICT, graded roadmap + tracker, Tier-1 sourcing).
 
-> **STATUS: the Phase 5 arc (5a → 5g) is COMPLETE as of 2026-07-24.** All four goals below ship in
-> `neurospect-learn`: read/navigate the corpus (5d), track learning progress (5e-1/5e-1b), log backtests and see
-> expectancy build (5f), and see gate status (5g) — plus the Study Planner (5e-2/5e-3), which was added to the
-> scope on 2026-07-20 and is the platform's differentiator. Every route in the taxonomy is implemented; no stubs
-> remain. Migrations are at `0007`.
+> ## ✅ WORKSTREAM CLOSED — 2026-07-25
 >
-> **This tracker now carries ONE remaining phase: Phase 6 — Phase-5 debt** (boot prompt below, ⏭ ACTIVE). It
-> closes the three follow-ups Paul scoped on 2026-07-25: wiring the stage attestations to the shipped gate,
-> the deferred missed-trade log, and `position_size`. **When Phase 6 lands, this workstream is closed.**
+> **The Phase 5 arc (5a → 5g) shipped 2026-07-18 → 2026-07-24, and Phase 6 closed its debt on 2026-07-25.** All
+> four goals below ship in `neurospect-learn`: read/navigate the corpus (5d), track learning progress
+> (5e-1/5e-1b), log backtests and see expectancy build (5f), and see gate status (5g) — plus the Study Planner
+> (5e-2/5e-3), which was added to the scope on 2026-07-20 and is the platform's differentiator. Every route in the
+> taxonomy is implemented; no stubs remain. **Phase 6** then wired the stage exit bars to that shipped evidence
+> (no permanently-unmet rows), added the missed/canceled-trade log + opportunity cost in R, and added
+> `position_size`. Migrations are at **`0008`**; 114 backend tests + Playwright 36/36 green.
 >
-> **The next big push is a SEPARATE workstream:**
+> **Nothing further is planned here.** The next push is a SEPARATE workstream:
 > [[processes/distributed-workflow/active/learning-enforcement]] — verified drill grading (screenshot evidence of
-> markings), anti-cheat, and gamification. Deploy/hosting and live commentary remain unscoped in either tracker.
+> markings), anti-cheat, and gamification. It also owns the two things Phase 6 deliberately did *not* build: the
+> **uploaded-evidence/screenshot primitive** and **grading a drill as genuinely done** (which is why ict_course M6's
+> exit bar is the one stage row left self-attested). Its first session is a deep-research + design session whose
+> boot prompt is authored now that Phase 6 has landed. Deploy/hosting and live commentary remain unscoped in either
+> tracker.
 
 ## Goal
 
@@ -201,14 +205,22 @@ is now implemented** (`pages/stub.tsx` deleted). Verified: 68 backend tests (24 
 Playwright 27/27, live browser walkthrough. Code is ground truth —
 [[concepts/architecture/learning-platform]] §5g as-built records the decisions.
 
-### Phase 6 — Phase-5 debt (⏭ boot prompt below) — **closes this workstream**
-Three scoped follow-ups from the 5g sign-off (Paul, 2026-07-25): **(6a)** wire the stage attestations in
-`services/stages.py` to the evidence that now exists (the 5g `gate_attestations` store + the 5f expectancy
-service) so `/path` stops showing permanently-unmet placeholder rows; **(6b)** the deferred **missed-trade log**
-(Aura canceled orders — the "how much is hesitation costing you?" analytic), adapted to the learn app's
-model-aligned conventions and **without** the screenshots child table; **(6c)** `position_size` + any remaining
-small journal field gaps, with expectancy staying R-based. Screenshots/evidence storage is **deliberately
-excluded** — see the Decisions block.
+### Phase 6 — Phase-5 debt ✅ (2026-07-25, in `neurospect-learn`) — **CLOSES THIS WORKSTREAM**
+The three scoped follow-ups from the 5g sign-off, all shipped. **(6a)** `services/stages.py` now grades the
+behavioural + empirical exit bars on evidence that already existed — the 5g `gate_attestations` store (mapped
+explicitly per `(track, stage_code)`; the row *reflects* the `/gate` tick, no second checkbox) and the 5f
+`expectancy.py` (U4 = *can compute*, A4/M7 = ≥50 + positive + above break-even, U6 = the per-model verdict rolled
+up). `compute_stages` takes an optional pure `Evidence` bundle; **`auto_met` and the whole lock chain are
+byte-identical** to 5e-1b (asserted). `/today` was wired to the same bundle so the two surfaces agree — the
+foundation habit overlay now stops when the bar is actually met. ict_course **M6** is left honestly un-wired (its
+bar is drill completion, which learning-enforcement owns). **(6b)** the **missed/canceled-trade log** —
+`missed_trades` + 2 enums (Alembic `0008`), the pure `services/opportunity_cost.py` (forgone vs **saved** vs net R,
+sliced by miss type / hesitation tag / model), `GET /api/analytics/missed-summary`, and a second **tab on
+`/journal`** with the opportunity-cost panel; screenshots deliberately omitted. **(6c)** `position_size` (same
+migration) — record-keeping only. Verified: 114 backend tests, Playwright 36/36, and the **evidence gate**:
+`/api/analytics/*` + `/api/gate` byte-identical before Phase 6 vs after the code *and* after writing missed trades
+(incl. a +12.5R "would have won") + `position_size`. Code is ground truth —
+[[concepts/architecture/learning-platform]] §6 as-built + §Stage exit-bar derivation + §2b record the decisions.
 
 ## Decisions (Paul, 2026-07-25 — post-5g)
 
@@ -663,7 +675,76 @@ excluded** — see the Decisions block.
   vision, moved to [[processes/distributed-workflow/active/learning-enforcement]]. Deploy/hosting and live
   commentary remain unscoped.)*
 
-## Next Session Boot Prompt (Phase 6 — Phase-5 debt) ⏭ ACTIVE
+### 2026-07-25 — Phase 6 (Phase-5 debt) ✅ — **WORKSTREAM CLOSED**
+- approach: Opus main session, `/effort high`, executing the approved Phase 6 boot prompt (no plan mode). Ran
+  STEP 0 (all pass: alembic `0007 (head)`; seeds 74/23/53/67; 68 backend tests; `tsc -b`+`vite build` clean;
+  Playwright 27/27). Read the design contract (§Progress + journal data model §2/§3 + §Stage exit-bar derivation +
+  §5c/§5f/§5g as-built), [[concepts/architecture/trade-schema]] §Missed Trades (**read + adapted, not edited** —
+  it is the `journal-analytics` lane's and describes the older `trades` schema), and the canonical exit bars in
+  [[concepts/mastery/unified/learning-path]] + [[concepts/mastery/aura/learning-path]] + the `seed_tracks`
+  `gate_text` values, then the live code (`services/{stages,expectancy,gate,scheduler}.py`,
+  `routers/{learning,gate,planner,analytics,journal}.py`, the 0007 migration idiom, the journal frontend + e2e
+  harness). **Captured the before-snapshot of `/api/analytics/*` + `/api/gate` BEFORE touching any code** — the
+  phase's evidence gate.
+- built — **6a (wire the stage attestations):** `stages.Evidence` (pure bundle) + the explicit
+  `STAGE_ATTESTATIONS` / `STAGE_EVIDENCE` / `STAGE_UNWIRED` maps + `Requirement.{derived,detail,attest_item,link}`;
+  `expectancy.compute_pooled` (delegates to `compute_groups` over a re-labelled copy — same code path, no second
+  implementation); `learning.load_stage_evidence` + `load_concepts_and_ladder` (**moved out of `routers/gate.py`**,
+  which now imports it — removes a duplicate query instead of adding one); evidence threaded into `/api/stages`,
+  `/api/tracks` **and** the three `scheduler.schedule` call sites; `ExitBarGate` rewritten for three row kinds
+  (earned / attested-on-the-Gate / concept) + the `StagePath` concept-less copy fix.
+  **6b (missed-trade log):** Alembic `0008` (`missed_trades` + `miss_type` + `hypothetical_outcome`, 4 indexes,
+  trigger), `models/missed_trade.py` (registered in `models/__init__.py` + `alembic/env.py`),
+  `schemas/missed_trade.py`, `routers/missed_trades.py` (CRUD + 6 filters + soft-delete), the pure
+  `services/opportunity_cost.py` + `GET /api/analytics/missed-summary`; frontend `lib/missed-trades.ts` +
+  `MissedTradeForm`/`MissedTradeCard`/`MissedFilters`/`OpportunityCost` + `/journal` **tabs** (`?tab=missed`) +
+  `/journal/missed/new|:id`. **6c:** `position_size` (same `0008`) + the form field + types.
+- decided (the calls the boot prompt left open; recorded in [[concepts/architecture/learning-platform]] §6 as-built
+  + §Stage exit-bar derivation + §2b): **wired attests do NOT feed `auto_met`/the lock chain** (behavioural evidence
+  must not freeze a track) — only `met`/`attest_pending` move, and `met` generalized to *all requirements*;
+  **U4's bar is computability, not positivity** (label corrected — the page says "can compute"; positivity is
+  A4/M7's bar), and **U0's composite row was split** into the two attestations it names so each row maps to exactly
+  one `/gate` tick; **the planner was wired too** (beyond the minimum) so `/path` and `/today` cannot disagree about
+  the foundation bar — the habit overlay finally stops, as the 5e-2 code always intended; **ict_course M6 left
+  honestly un-wired** (its bar is drill completion; self-declared drill marks must not become gate evidence before
+  learning-enforcement defines verified grading); 6b keeps `entry_model`+`entry_date` (not `setup_type`/`trade_date`),
+  puts the analytic on the **analytics** router (avoids the `{id}` route collision), keys the sums off the **sign**
+  of `hypothetical_r`, and lives as a **tab on `/journal`** rather than a new nav item; `missedKeys` deliberately
+  does **not** invalidate `analyticsKeys`.
+- verified (evidence, not inference; local Postgres :5433): `0008` up + `downgrade 0007` + up clean (table/enums/
+  indexes/trigger + `position_size` dropped and recreated; seeds preserved 74/23/53/67). **114 backend tests**
+  (68 prior + 18 pure stage-evidence + 7 stage/planner API + 9 pure opportunity-cost + 4 `compute_pooled` + 8
+  missed-trade API), including the full `(locked, auto_met)` signature compared with/without evidence across three
+  tracks × four progress states **and** against the real seed. `tsc -b`+`vite build` clean. **Playwright 36/36**
+  (27 prior regression + 9 new). **EVIDENCE GATE, three ways:** (1) before-Phase-6 vs after-code snapshot of
+  `/api/analytics/*`+`/api/gate` **byte-identical** (file hashes); (2) same fixture after writing 3 missed trades
+  (incl. a **+12.5R "would have won"**) + `position_size` on every entry — **byte-identical again**; (3) the same
+  assertion as a durable pytest + a Playwright spec. Live claude-in-chrome walkthrough: `/path/unified/U0` before
+  (two rows "attest it on the Gate", pending hint) → after ticking two `/gate` boxes (**both green, "attested on the
+  Gate · 8 journaling days · 3 misses logged"**, hint gone, concept rows correctly still unmet, lock chain
+  unchanged); `/path/unified/U4` "EARNED — expectancy +0.00R over 6 closed backtest trades"; `/path/aura/A4`
+  "6/50 closed backtest trades · expectancy +0.00R · win 33% vs break-even 33%"; `/path/unified/U6` pointing at the
+  per-model verdict; the missed tab (Forgone +12.50R · Saved +3.00R · Net +9.50R "hesitation is costing you") and a
+  live create that recomputed it to Net +7.00R; the journal form's Position size (1.5, "record only");
+  `/expectancy` still showing **London +0.20R / n=5** with the new exclusion footnote. **NO console errors.**
+- flagged: one pre-existing wart noticed, NOT touched (out of scope) — the §Route taxonomy table in
+  learning-platform.md carries a duplicated row block from the 5e-1b edit (two `/library`, `/concepts/:slug`,
+  `/drills`, `/today`, `/plan`, `/plan/setup`, `/journal`, `/expectancy`, `/gate` rows, the second set with an extra
+  column). Cosmetic; worth a tidy in a future doc pass.
+- reconciled (mandatory): updated [[concepts/architecture/learning-platform]] — top banner (arc + Phase 6 +
+  migrations `0008` + workstream closed), §Route taxonomy (the 6b banner + two journal rows), §Progress + journal
+  data model §2 (`position_size`) + the deferred list (now closed except screenshots) + a **new §2b Missed-trade
+  log**, §Stage exit-bar derivation (the whole 6a wiring, canonically), §Component/API surface (missed-trade
+  components + the `ExitBarGate` note + the `missed-trades` endpoints + the shared 6a loaders), §Implementation
+  split (→ 6), and a new **§6 as-built**; frontmatter `updated`. Did **NOT** edit trade-schema.md or
+  phase3-frontend-structure.md. Appended log.md; bumped index.md.
+- isolation: clean (Neurospect-only; no ALDC refs). git: untouched — Paul handles commits.
+- next: **this workstream is CLOSED.** All further work is
+  [[processes/distributed-workflow/active/learning-enforcement]] (verified drill grading + the uploaded-evidence
+  primitive + anti-cheat + gamification); its deep-research/design boot prompt is authored from the real
+  post-Phase-6 code. Deploy/hosting and live commentary remain unscoped.
+
+## Next Session Boot Prompt (Phase 6 — Phase-5 debt) — ✅ EXECUTED 2026-07-25
 
 Recommended launch: **Opus** (`claude --model opus[1m]`), `/effort high` — 6a changes a service every `/path`
 stage reads and must not regress the curriculum's lock chain, and 6b/6c touch the journal that expectancy and the
