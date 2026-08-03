@@ -3,7 +3,7 @@ tags: [mastery, aura, exercises, drills, backtesting, tape-reading, neurospect]
 aliases: [Aura Drills, Aura Exercises, Aura Practice Library]
 sources: [concepts/aura/swing-points.md, concepts/aura/ranges.md, concepts/aura/gaps.md, concepts/aura/sequential-smt.md, concepts/aura/triads-asset-selection.md, concepts/aura/aura-asset.md, concepts/aura/htf-ltf-application.md, concepts/aura/risk-management.md, concepts/aura/discipline-systems.md, concepts/aura/mind-and-emotional-control.md, concepts/aura/psychology-foundations.md, concepts/aura/journaling-system.md, concepts/aura/trade-reviews.md]
 created: 2026-07-17
-updated: 2026-07-17
+updated: 2026-07-30
 ---
 
 # Aura Exercise Library
@@ -78,19 +78,19 @@ indicator (Paul has all three). The ✋ variants deliberately switch the indicat
 - ✋ **Range flip:** the D1-b forward-bar sim, now explicitly tracking each Sequential-SMT confirm/invalidate.
 - 🛠 Confirm hand-reads against the indicator (which shows only currently-valid SMTs). **[R18–R23]**
 
-### D2-d — Sequential Skip *(aura-14; start simple)*
+### D2-d — Sequential Skip *(aura-14; start simple — proposed target ≥10)*
 - ✋ Hunt skip setups where the adjacent cycle is missing: **down-cycle skip** (weekly→session, daily→micro)
-  **and** the **cross-asset variant** (same setup on another triad member in the bias direction). Target modest,
+  **and** the **cross-asset variant** (same setup on another triad member in the bias direction); target modest,
   realistic R:R (1:2, 1:3). **[R24–R26]**
 
 ## Stage 3 — Cascade & risk
 
-### D3-a — HTF→LTF cascade *(aura-17)*
-- Run the full top-down if-then chain to a 5m iFVG entry. **Before each practice entry write BOTH the confirm
-  and the invalidate condition.** Practise the discipline checkpoint: when the expected trigger fails to appear,
+### D3-a — HTF→LTF cascade *(aura-17; proposed target ≥20 practice entries)*
+- Run the full top-down if-then chain to a 5m iFVG entry; **before each practice entry write BOTH the confirm
+  and the invalidate condition**; practise the discipline checkpoint: when the expected trigger fails to appear,
   zoom out — do not keep waiting. **[R27–R32]**
 
-### D3-c — Risk math & evolving-R *(aura-13; proposed drill)*
+### D3-c — Risk math & evolving-R *(aura-13; proposed drill — proposed target ≥3 batches)*
 - Compute, for a batch of your backtest trades: **R per trade**, **break-even win rate** for each R:R
   (`1/(1+R:R)`), and overall **expectancy** (`(win%×avgWinR)−(loss%×avgLossR)`).
 - **Evolving-R reps:** on replayed winners, practise recalculating risk **from current price** and trailing so
@@ -146,15 +146,16 @@ Build toward ≥50 setups / ≥100 executed backtest trades with a computed expe
 
 | Drill | Concept | Advances to | Rep target |
 |---|---|---|---|
+| D0-a…e | discipline / journal | (habit) | behavioural |
 | D1-a | swing points | Can-mark | ≥50 |
 | D1-b | ranges | Can-mark | ≥50 |
-| D1-c | gaps | Can-mark | (reuses 50 ranges) |
-| D2-a | triads | Learned→Can-mark | 1 triad + spot-check |
+| D1-c | gaps | Can-mark | (no separate target — reuses D1-b's range set) |
+| D2-a | triads | Learned→Can-mark | 2 *(1 full triad + 1 spot-check)* |
 | D2-b | Aura Asset | Can-mark | ≥20 *(proposed)* |
 | D2-c | Sequential SMT | Can-mark | ~50 |
-| D2-d | Sequential Skip | Can-mark | simple-first |
-| D3-a | HTF→LTF cascade | Learned→applied | per practice entry |
-| D3-c | risk / evolving-R | Learned→applied | per backtest batch |
+| D2-d | Sequential Skip | Can-mark | ≥10 *(proposed)* |
+| D3-a | HTF→LTF cascade | Learned→Backtested | ≥20 practice entries *(proposed)* |
+| D3-c | risk / evolving-R | Learned→Backtested | ≥3 batches *(proposed)* |
 | D4-a/b | whole model | Backtested | ≥50 setups / ≥100 trades |
 | D5-a/b | whole model | Live-ready | sim track record |
 | D6-a/b/c | journaling | (habit) | weekly / continuous |

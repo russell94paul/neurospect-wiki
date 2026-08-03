@@ -1,6 +1,6 @@
 ---
-tags: [architecture, learning-enforcement, evidence, grading, anti-cheat, gamification, mastery, neurospect, phase-e1, phase-e2]
-aliases: [Learning Enforcement Architecture, Evidence Layer, Drill Grading, Verified Reps, Anti-Cheat Design]
+tags: [architecture, learning-enforcement, evidence, grading, rubrics, self-check, anti-cheat, gamification, mastery, neurospect, phase-e1, phase-e2, phase-e3]
+aliases: [Learning Enforcement Architecture, Evidence Layer, Drill Grading, Verified Reps, Anti-Cheat Design, Rubric Layer, Self-Check]
 sources:
   - processes/distributed-workflow/active/learning-enforcement.md
   - concepts/architecture/learning-platform.md
@@ -12,10 +12,10 @@ sources:
   - "MeasureBench — Do Vision-Language Models Measure Up? Benchmarking Visual Measurement Reading (arXiv 2510.26865)"
   - "Deci, Koestner & Ryan (1999) — A meta-analytic review of experiments examining the effects of extrinsic rewards on intrinsic motivation (128 studies)"
 created: 2026-07-28
-updated: 2026-07-29
+updated: 2026-08-02
 ---
 
-# Learning Enforcement — Architecture (E1 design · E2 as-built)
+# Learning Enforcement — Architecture (E1 design · E2 + E3 as-built)
 
 Canonical design doc for the layer that makes progress in `neurospect-learn` **impossible to fake**: a rep
 counts only when **evidence of the work** exists, that evidence is **graded**, and the loop is **gamified**
@@ -23,11 +23,12 @@ without rewarding activity over mastery. It extends the shipped platform describ
 [[concepts/architecture/learning-platform]] and is sequenced by
 [[processes/distributed-workflow/active/learning-enforcement]].
 
-> **Status: E2 BUILT (2026-07-28); E3–E6 are still design.** The evidence layer, the deterministic tier and
-> the derived `reps` **ship** in `neurospect-learn` at Alembic `0009` — per [[CLAUDE]] §Architecture Doc
-> Integrity the **code is ground truth** for everything E2 covers, and §E2 as-built below records every
-> divergence from the design in this doc. §§1–5 and §7–8 now describe *what is running* for E2's scope;
-> §§3 (rubrics), §2 tier 3, §9 and §6's mechanics remain unbuilt design for E3–E6.
+> **Status: E2 BUILT (2026-07-28) · E3 BUILT (2026-08-02); E4–E6 are still design.** The evidence layer, the
+> deterministic tier, the derived `reps`, the rubric layer and the self-check **ship** in `neurospect-learn` at
+> Alembic `0010` — per [[CLAUDE]] §Architecture Doc Integrity the **code is ground truth** for everything E2 and
+> E3 cover, and §E2 as-built / §E3 as-built below record every divergence from the design in this doc. §§1–5 and
+> §7–8 now describe *what is running*; **§2 tier 3 (AI vision), §9 (pre-commitment) and §6's mechanics remain
+> unbuilt design for E4–E6.**
 
 > **No-drift.** This doc states *structure and decisions*. It does not restate the mastery ladder, the
 > confidence scale, the Readiness-to-Live Gate, any drill definition, or any rubric text — it **links** them,
@@ -237,8 +238,11 @@ Each phase is a boot-promptable unit; sequenced in
   (R2 + local); upload/list/delete endpoints; paste-first capture on `DrillCard` **and `ConceptTrackPanel`**;
   the deterministic tier; **`reps` became DERIVED rather than merely guarded** (see §E2 as-built). Closed both
   inherited debts: the journal's deferred screenshots and `missed_trade_screenshots` attach to the same layer.
-- **E3 — Rubrics + self-check.** `seed_rubrics.py`; rubric API; self-check UI; plus the targeted wiki pass on
-  the drills named below (edit the wiki, then re-seed).
+- **E3 — Rubrics + self-check.** ✅ **BUILT 2026-08-02** — Alembic `0010` (`rubrics` + `rubric_items`);
+  `seed_rubrics.py` projecting 44 rubrics / 104 items from the two exercise libraries with a programmatic
+  no-drift proof; the read-only rubric API; the `self_check` grade; the self-check UI; and the targeted wiki
+  content pass (all seven named drills fixed, orphan refs 5 → 0). **An unchecked rep still counts** — see §E3
+  as-built.
 - **E4 — AI vision second reader.** Sonnet 5 + structured outputs + cached rubric prefix + Batch API;
   advisory grades, flags, cost telemetry.
 - **E5 — Pre-commitment + calibration.** Prediction capture before reveal; calibration score; wires M6 and
@@ -250,15 +254,17 @@ Each phase is a boot-promptable unit; sequenced in
 project from bullets that already exist, most drills are gradable **as written**, so E2 is not blocked on
 content. Only the ungradable subset needs editing, and that is E3's own scope.
 
-### Drills ungradable or ambiguous as written (for E3)
+### Drills ungradable or ambiguous as written (✅ ALL FIXED IN E3 — see §E3 as-built for before→after)
 
 - aura **D1-c** — rep target `(reuses 50 ranges)` parses to a 50-rep floor via the parser's largest-number
   rule, though the intent is "no separate target".
 - aura **D2-d** `simple-first`, **D2-a** `1 triad + spot-check`, **D3-a** `per practice entry`, **D3-c**
   `per backtest batch` — no countable floor, so evidence-backed grading has no target to compare against.
 - ict **D3-d** — advances `Learned→applied`, which names no observable artifact.
-- The **4 aura Stage-0 drills the map table omits** — already reported as orphan refs by `seed_drills.py`; a
+- The **~~4~~ 5 aura Stage-0 drills the map table omits** — already reported as orphan refs by `seed_drills.py`; a
   faithful wiki asymmetry, but they cannot carry evidence until the map lists them.
+  **Corrected at E3 (Rule #6): there are FIVE, not four** — `seed_drills.py` reports
+  `['aura D0-a', 'aura D0-b', 'aura D0-c', 'aura D0-d', 'aura D0-e']`. E1 undercounted by one.
 
 ## E2 as-built (2026-07-28) — code is now ground truth
 
@@ -355,6 +361,130 @@ durable pytest); per-user isolation; no-token 403; the local backend works with 
 tests** (114 → +28), `tsc -b` + `vite build` clean, **Playwright 45** (36 → +9) stable over three consecutive
 full runs, and a live browser walkthrough of every changed surface with **no console errors**.
 
+## E3 as-built (2026-08-02) — code is now ground truth
+
+Shipped in `neurospect-learn`: Alembic **`0010`** (`rubrics` + `rubric_items` + the `rubric_variant` enum),
+`models/rubric.py`, `scripts/seed_rubrics.py`, `routers/rubrics.py`, `schemas/rubric.py`, the `self_check` grade
+write in `routers/evidence.py`, and the frontend `lib/rubrics.ts` + `components/evidence/self-check.tsx` wired
+into `EvidenceCapture` (so it reaches `DrillCard` and `ConceptTrackPanel`). Plus the targeted wiki content pass on
+both `exercises.md` libraries. **44 rubrics / 104 items**, seeds now **74/23/58/67**.
+
+### THE DECISION THIS PHASE OWED: an unchecked rep STILL COUNTS
+
+**A self-check can never un-count a rep.** `reps` is derived from `evidence_assets.reps_claimed`, and
+`services/stages.py` + `services/gate.py` read `reps` — so deducting on a missing or partial check would make
+progress **non-monotonic**: a met stage exit bar could un-meet and a Gate verdict could flip backwards with no
+user action. That is exactly what §4 forbids ("a grade may flag, never retract") and what invariant 5 means:
+`reps` gets harder to **create**, not revocable after the fact.
+
+So "ungraded" is **surfaced, never deducted** — `EvidenceCapture` renders "N awaiting your check" and each
+unchecked capture says *"not checked yet — the reps still count"*. A partial check records `flagged` plus the
+specific unticked items (informational feedback, §6) and **never `failed`**. Pinned by
+`tests/test_rubrics.py::test_a_self_check_never_moves_a_rep`, which attacks the adversarial case — an **empty**
+self-check on a 4-rep capture — and asserts the count is unchanged, then that a full check does not inflate it
+either. The *aggregate* honesty strip over that backlog remains **E6's**; E3 changed no rep count, no stage bar
+and no Gate verdict.
+
+### The parser: one item per bullet, split ONLY on top-level semicolons
+
+§3 said "one rubric item per bullet". Measurement refined it in two ways, and the reasoning is the phase's real
+content:
+
+- **Compound bullets split on `;`.** Several bullets carry multiple deliverables joined by semicolons — aura
+  **D0-a** is four in one bullet. One checkbox for four deliverables forces a **dishonest tick** when three are
+  done, which is the self-deception this workstream exists to prevent.
+- **Sentence splitting was tried and REJECTED on evidence.** This corpus writes "vs." mid-sentence followed by a
+  capital — *"**which KZ sets the HOD vs. LOD**"*, *"**STL (no gap) vs. ITL (…)**"*, *"Tag **LRLR vs. HRLR**"*,
+  *"tag real vs. **fake retracement**"* — and every sentence heuristic mangled all four into garbage fragments.
+  **A parser that can mangle wiki text is a parser that authors wiki text.** A top-level semicolon is
+  unambiguous; a sentence boundary is not. Pinned by `test_sentence_boundaries_are_not_clause_boundaries`.
+- The split is **depth-aware** (a `;` inside `()`, `[]` or `""` is not a boundary) because the corpus has those
+  too: *"(overlapping gaps; liquidity-left …)"*, *'("inside a [bull/bear] 4H FVG; target [level]")'*.
+- Only **structural markers** are stripped, each edge-anchored so what remains is a contiguous substring: the
+  leading `*(source)*:` marker, a trailing `→ [[wikilink]]` trailer (required to be `→` **then** `[[`, since the
+  corpus also uses a bare mid-sentence `→`), a trailing `[R8]`-style rule ref (captured into `rule_refs`), and a
+  `**Advances:**` tail (`drills.advances_to` already carries it).
+
+**The no-drift proof is programmatic, not asserted.** `verify_no_drift()` checks that **every** item's text is a
+contiguous substring of a whitespace-normalised wiki bullet, over the whole seed; it runs inside every seed run
+*and* as `test_no_rubric_text_is_authored`. An item that is not verbatim wiki text is a **bug**, not a variation.
+
+### Divergences from the design
+
+- **`version` excludes provenance from its hash.** `content_hash` covers only what the user ticks
+  (variant + text + rule refs). `source_path` / `source_ref` update in place **without** a bump, so a cosmetic
+  marker edit cannot imply the bar moved. Consequence worth knowing: E3's D1-c / D2-a / D2-d / D3-a / D3-c
+  *map-table* fixes changed rep targets **without** bumping any rubric version; only the two **bullet** edits
+  (D2-d, D3-a) bumped, to v2.
+- **`item_key` is a positional TEXT key** (`aura-d1-a#3`), not the row UUID, because a re-seed replaces
+  `rubric_items` and a stored grade must stay legible afterwards — which is also why `findings` stores the item
+  **text** alongside the key.
+- **E3 added no grading table.** The self-check is an `evidence_grades` row, so the deterministic row E2 writes on
+  arrival survives untouched and grading stays append-only.
+- **The self-check write lives in `routers/evidence.py`, not `routers/rubrics.py`** — it appends a grade rather
+  than touching a rubric, and one router owning all `/evidence` paths is the cleaner split.
+- **A concept's bar is the union of its drills' bars.** 10 of the 74 concepts resolve 2–3 rubrics, so `SelfCheck`
+  offers a picker; a grade records exactly one `rubric_slug`.
+- **`either` is a first-class variant, not a fallback.** 40 of 104 items come from bullets with **no** glyph (the
+  Stage-0 written artifacts, aura D2-a's Pearson computation, D3-a/D3-c's procedures). Recording the wiki's
+  silence beats inventing a ✋/🛠 claim it never made.
+
+### Two bugs the DB and the browser caught (neither was visible at the query layer)
+
+1. **A phantom drill named "Evolving".** The inline-drill regex was loose enough that the bolded lead-in
+   `**Evolving-R reps:**` inside aura **D3-c** matched as a drill definition — inventing a rubric AND **stealing
+   that bullet from D3-c**. Fixed by anchoring the code pattern to the four shapes the corpus actually uses
+   (`D4-a` · `T-01` · `J-a` · `S7`), the same shapes `seed_drills._expand()` emits.
+2. **The version bump could not write.** Replacing a rubric's items via the ORM collection emitted this mapper's
+   INSERTs **before** its orphan DELETEs, so the positional `item_key` (`…#1`) collided on
+   `ux_rubric_items_key` and every re-seed containing a changed bullet died with an `IntegrityError`. Fixed with an
+   explicit `clear()` + `flush()` before re-adding, and pinned by
+   `test_reseed_after_a_wiki_edit_bumps_the_version` — **verified to fail on exactly that constraint with the fix
+   reverted.**
+
+### The content pass — before → after, with the parse as evidence
+
+The wiki is canonical, so each bar was fixed **in the wiki and re-seeded**, never patched around in code. Parses
+via `services/rep_targets.py`:
+
+| Drill | Before | After |
+|---|---|---|
+| aura **D1-c** | `(reuses 50 ranges)` → **reps=50 floor** (bogus — the heading says "reuses the ≥50 range set") | `(no separate target — reuses D1-b's range set)` → **qualitative, no floor** |
+| aura **D2-a** | `1 triad + spot-check` → **reps=1** (understates "1 full triad + 1 spot-check") | `2 *(1 full triad + 1 spot-check)*` → **reps=2** |
+| aura **D2-d** | `simple-first` → **qualitative, no floor** | `≥10 *(proposed)*` → **reps=10**; bullet split → **1 → 2 items, v2** |
+| aura **D3-a** | `per practice entry` → **no floor**; advances `Learned→applied` | `≥20 practice entries *(proposed)*` → **reps=20**; advances **`Learned→Backtested`**; bullet split → **1 → 3 items, v2** |
+| aura **D3-c** | `per backtest batch` → **no floor**; advances `Learned→applied` | `≥3 batches *(proposed)*` → **reps=3**; advances **`Learned→Backtested`** |
+| ict **D3-d** | advances `Learned→applied` — **not a ladder stage**, so it named no observable artifact | advances **`Can-mark`**, matching its Stage-3 siblings and the README's real vocabulary |
+| aura **D0-a…e** | **absent from the map table** — `seed_drills.py` had reported them as orphan refs since 5e-1 | one row `\| D0-a…e \| discipline / journal \| (habit) \| behavioural \|`, mirroring the ict library |
+
+Result: **`seed_drills.py` orphan refs 5 → 0**, drills **53 → 58**, and rubrics whose drill the map omits **8 → 3**.
+Every proposed number is flagged *(proposed)*, which is the convention the aura page's own preamble already states.
+Two edits went slightly beyond a map-table cell and are called out honestly: the **D2-d / D3-a bullet punctuation**
+(sentence-final periods → semicolons, plus the case change that follows, so a compound bar becomes tickable) and
+the **aura D3-a / D3-c `advances_to`** values, fixed alongside ict D3-d because they carried the identical
+non-ladder value — `advances_to` is **display-only** (model → schema → `DrillCard`), so nothing gates on it.
+
+### Verified
+
+`0010` up/down/up/base reversible on a **scratch** DB, including a tightened single-step proof that
+`downgrade 0009` removes exactly E3's objects and **leaves E2's evidence layer untouched**; working-DB seeds intact
+across the migration (74/23/53/67 → 58 only from the deliberate content fix). The **no-drift proof passes over all
+104 items**. Re-seeding twice is a genuine no-op (0 bumped / 44 unchanged); a wiki bullet edit bumps **only** the
+edited rubric (`aura-d2-d` v2, `aura-d3-a` v2, `aura-d1-a` still v1). A self-check attaches as an **additional**
+`evidence_grades` row with the deterministic row surviving; refusals name the offending item key / slug / drill.
+**`reps` is untouched in both directions** — E2's bypass test still passes and the empty-self-check test proves no
+deduction. `/api/analytics/*` + `/api/gate` **byte-identical** to the STEP-0 baseline (same sha256 `27ff7157…`).
+**160 backend tests** (142 → +18), `tsc -b` + `vite build` clean, and the new `self-check.spec.ts` (5 tests) plus
+`planner.spec.ts` green.
+
+**One item is NOT closed and is handed to E4:** the **full** Playwright suite (50) is green at `--workers=1` and was
+green once at default parallelism immediately after the N+1 fixes, but subsequent default-parallelism runs went
+flaky (2–3 rotating failures, wall-clock drifting 31s → 1.5m) with `ECONNRESET` against the dev API. The two
+genuine defects found on the way — the N+1 request storms and a **latent date-dependency in `planner.spec.ts`**
+(the availability form ships `sun_minutes: 0`, so a plan for a Sunday is correctly empty and that spec failed every
+Sunday, fixed by giving *today* explicit capacity) — are both fixed. What remains is unproven and must not be
+called green: see the tracker's E4 boot prompt for the first diagnostic step.
+
 ## Invariants this layer must preserve (checked at every phase)
 
 1. The Gate stays **non-overridable and computed per read** — no `cleared` column, and evidence adds no write
@@ -387,6 +517,28 @@ full runs, and a live browser walkthrough of every changed surface with **no con
 7. **Advisory score never writes `confidence` / `ladder_stage` ✔** — `evidence_grades.score` exists but E2
    writes only `state` (and `findings`) on the `deterministic` grader, and nothing reads `score` yet. The two
    user-owned columns are written exclusively by `PATCH /api/progress` from the request body.
+
+### Walked at E3 (2026-08-02) — each one, explicitly
+
+1. **Gate non-overridable ✔** — no `cleared` column, request field or endpoint was added; `services/gate.py` is
+   untouched and reads no rubric or grade. `/api/gate` is byte-identical to the STEP-0 baseline, pinned as a
+   durable pytest.
+2. **Frontier never gate-eligible ✔** — `watch_only` handling is untouched. A rubric is drill-scoped content and a
+   self-check writes only a grade, so neither can lift a frontier concept's Can-mark cap.
+3. **Skips still logged ✔** — `plan_item_status` and `_adherence` are unmodified; E3 added no planner path. (The
+   one planner touch this session was to a *Playwright spec*, fixing a date-dependency — not to the planner.)
+4. **Backtest ≠ live ✔** — nothing in the rubric layer touches `journal_entries.mode`, `expectancy.py` or
+   `opportunity_cost.py`. Journal / missed-trade evidence has no bar at all: `_resolve_rubric` refuses to guess one
+   (422 naming `rubric_slug`) rather than attaching an unrelated drill's rubric.
+5. **`reps` strictly harder, never easier ✔ — and unchanged in E3.** The derivation is untouched: no new write
+   path, and the self-check deliberately cannot deduct (above) *or* mint. Both directions are pinned by
+   `test_a_self_check_never_moves_a_rep`, and E2's three-endpoint bypass test still passes.
+6. **`auto_met` / `locked` still concept-based ✔** — `services/stages.py` is unmodified and reads no rubric. The
+   content pass changed *drill* rep targets and `advances_to`; `advances_to` is display-only, and the concept rep
+   targets that feed the ladder gate were not touched.
+7. **Advisory score never writes `confidence` / `ladder_stage` ✔** — the self-check *does* now write
+   `evidence_grades.score` (k/N × 100, informational feedback per §6), and nothing reads it into either
+   user-owned column; both remain written exclusively by `PATCH /api/progress` from the request body.
 
 ## Contradiction flags (per [[CLAUDE]] Rule #6)
 

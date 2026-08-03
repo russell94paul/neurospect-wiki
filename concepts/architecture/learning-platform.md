@@ -28,15 +28,20 @@ scale / Readiness-to-Live Gate defined in [[concepts/mastery/README]]. It is the
 > computed, non-overridable `/gate` verdict + `gate_attestations` (`0007`) (5g); and the Phase-5 debt — stage exit
 > bars wired to that evidence, the missed/canceled-trade log + opportunity cost in R, and `position_size`
 > (`0008`) (6). **Every route in the taxonomy is
-> implemented — no stubs remain.** Seeds are 74 concepts / 23 track stages / 53 drills /
-> 67 content pages. **The learning-platform-ui workstream is CLOSED.**
+> implemented — no stubs remain.** **The learning-platform-ui workstream is CLOSED.**
 >
-> **Migrations are at `0009` as of 2026-07-28.** The successor workstream
-> [[processes/distributed-workflow/active/learning-enforcement]] shipped its **Phase E2 evidence layer**, which
+> **Migrations are at `0010` as of 2026-08-02; seeds are 74 concepts / 23 track stages / 58 drills /
+> 67 content pages, plus 44 rubrics / 104 rubric items.** The successor workstream
+> [[processes/distributed-workflow/active/learning-enforcement]] shipped **Phase E2 (evidence layer)**, which
 > closed the last two deferrals on this page (journal screenshots · `missed_trade_screenshots`) and **changed a
-> shipped contract: `reps` is now DERIVED from uploaded evidence, not a writable integer.** Any statement below
-> that treats `reps` as user-settable is superseded — canonical is
-> [[concepts/architecture/learning-enforcement]] §E2 as-built.
+> shipped contract: `reps` is now DERIVED from uploaded evidence, not a writable integer**; then **Phase E3
+> (rubrics + self-check)**, which added `rubrics`/`rubric_items` (Alembic `0010`) projected from the two wiki
+> exercise libraries. Any statement below that treats `reps` as user-settable is superseded — canonical is
+> [[concepts/architecture/learning-enforcement]] §E2 as-built / §E3 as-built.
+>
+> **The drill count moved 53 → 58 on purpose** (E3's content pass added the five aura Stage-0 drills the aura map
+> table had always omitted, which `seed_drills.py` had been reporting as orphan refs). Earlier statements of
+> "53 drills" on this page describe the pre-E3 seed.
 
 > **No-drift.** This doc states *structure and decisions*. It does **not** restate the mastery model, the
 > playbook, the learning-path, the exercise libraries, the entry-model YAML, or any concept page — it **links**
@@ -426,6 +431,13 @@ tables (`drills`, `drill_progress`) + the `drill_variant` enum; 5e-2 added two m
   drills, concepts, journal entries and missed trades, and **the only way a rep is created**. DDL, the
   fail-closed subject CHECK, and the storage/key conventions are canonical in
   [[concepts/architecture/learning-enforcement]] §7–8 (linked, not restated here).
+- **`rubrics` + `rubric_items` (E3, Alembic `0010`)** — **seed content, not user data**: no soft-delete and no
+  user scoping, mirroring `drills`/`concepts`, because a re-seed replaces. One rubric per drill, keyed by a TEXT
+  `drill_ref` soft ref, holding one item per ✋/🛠 bullet clause **projected verbatim** from the two wiki exercise
+  libraries by `scripts/seed_rubrics.py`. `version` bumps if and only if `content_hash` (a sha256 over the
+  projected items) changes, so a historical grade's `rubric_version` still names the bar it was judged against.
+  **E3 added NO grading table** — the user's answer is an `evidence_grades` row with `grader='self_check'`, which
+  `0009` already provided. Canonical in [[concepts/architecture/learning-enforcement]] §3 + §E3 as-built.
 - **`study_preferences` (5e-2, as-built — Alembic 0006)** — user-scoped, soft-deleted, one active row/user
   (`UNIQUE (user_id) WHERE NOT is_deleted`): `timezone` (IANA text, default `UTC`), `mon_minutes … sun_minutes`
   (7 `SMALLINT`, 0 = day off; `CHECK ≥ 0`), `max_session_minutes` (`CHECK > 0`, default 60), `blackout_dates`
@@ -627,6 +639,23 @@ record; the future is always recomputed from current state** — is the elite ad
   `lib/evidence.ts` holds `evidenceKeys` + `useEvidence`/`useUploadEvidence`/`useDeleteEvidence`, and — unlike
   `missedKeys` — **a write invalidates `learningKeys.all` AND `plannerKeys.all`**, since evidence moves reps and
   the schedule is computed from reps still owed.
+- **Self-check components (E3, as-built 2026-08-02):** `SelfCheck` (`components/evidence/self-check.tsx`) — one
+  per captured asset, rendering **the drill's own wiki bullets as checkable items**. Collapsed it shows either the
+  recorded verdict (*Meets the bar* / *Partly met* + %) or, when never checked, "not checked yet — the reps still
+  count"; expanded it lists the rubric items with a ✋/🛠 icon per item, cites the source wiki path, warns when the
+  last check was against an older `rubric_version`, and offers a rubric picker when a concept's bar spans several
+  drills. `RubricText` renders the wiki's markdown emphasis rather than restating the words — **no criterion text
+  exists in the frontend**. `EvidenceCapture` gained an `unchecked` count ("N awaiting your check") and switched to
+  a per-capture ROW layout when a bar exists. `lib/rubrics.ts` holds `rubricKeys` + `useRubricCatalog`/`useRubrics`
+  + `useSelfCheck` and the grading-state helpers; a self-check invalidates **only** `evidenceKeys.all` — not
+  `learningKeys`/`plannerKeys` — because a grade deliberately moves no rep.
+- **E3 perf note — two N+1 query fixes:** `/drills` mounts an `EvidenceCapture` per drill (58 of them), and both
+  `useEvidence` and the first cut of `useRubrics` keyed per subject, so a single page load fired **~116**
+  near-identical requests, saturated the browser's 6-connection-per-origin limit and queued the user's own upload
+  behind the pile. Both now fetch **once** under a shared query key (`useEvidenceCatalog` / `useRubricCatalog`) and
+  slice client-side; a concept's bar resolves from `ProgressRow.drill_refs`, which the row already carried. The
+  server-side `subject_type`/`drill_ref`/`concept_id` filters are unchanged and still used. Measured effect: the
+  Playwright suite went from ~47s to ~31s.
 - **6a note — `ExitBarGate` rewritten:** three row kinds now read differently because they are graded differently.
   Concept rows unchanged; **derived** rows are tagged *earned* / *from your log* and carry the numbers (Σ glyph
   when unmet — objectively short, not "pending a declaration"); **attested** rows link to `/gate` and say
@@ -673,6 +702,14 @@ record; the future is always recomputed from current state** — is the elite ad
     route deliberately not behind `get_current_user` (the token is the authorisation, exactly as an R2 presigned
     URL is). Schemas in `app/schemas/evidence.py`; services `app/services/{storage,evidence_checks}.py`.
     **This is the only endpoint that can create a rep.**
+    Plus, added in E3: **`POST /api/evidence/{id}/self-check`** — appends a `self_check` `evidence_grades` row
+    carrying the ticked items in `findings` plus `rubric_slug`/`rubric_version`, and returns the asset with its
+    full grade history. It **cannot** change a rep count (see §E3 as-built for why retraction is forbidden).
+  - `rubrics` (E3, as-built — `app/routers/rubrics.py`, prefix `/api`, auth-gated): **`GET /api/rubrics`** only
+    (`?drill_ref=` / `?concept_id=` / `?concept_slug=` / `?track=`, or unfiltered for the whole catalog).
+    **Deliberately read-only — POST/PATCH/PUT/DELETE all 405**, so no rubric text can be authored in the app; a
+    bar changes by editing the wiki and re-seeding. Schemas in `app/schemas/rubric.py`. Seeded by
+    `scripts/seed_rubrics.py`.
   - **Shared loaders (6a):** `routers/learning.py` owns `load_concepts_and_ladder` (all tracks × the user's ladder —
     **moved here from `routers/gate.py`**, which now imports it: gate already depended on learning, so this removes
     a duplicate query rather than adding one) and `load_stage_evidence` (the gate-attestation / pooled-expectancy /

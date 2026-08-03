@@ -3,7 +3,7 @@ tags: [distributed-workflow, active, neurospect, mastery, enforcement, grading, 
 aliases: [Learning Enforcement Tracker, Drill Grading, Anti-Cheat, Gamification Workstream]
 sources: []
 created: 2026-07-25
-updated: 2026-07-29
+updated: 2026-08-02
 ---
 
 # Learning Enforcement — Workstream Tracker
@@ -14,8 +14,19 @@ deviations, swings, FVGs, SMT, …), that evidence is **graded**, and the whole 
 consistency. The Phase 5 arc built the skeleton (curriculum, progress, planner, journal, expectancy, gate);
 this workstream makes the progress in it **impossible to fake**.
 
-> **STATUS (2026-07-28): Phases E1 + E2 are ✅ COMPLETE. The layer is REAL, not theatre — `reps` is no longer
-> writable by any endpoint.** E1 landed the canonical design at [[concepts/architecture/learning-enforcement]]
+> **STATUS (2026-08-02): Phases E1 + E2 + E3 are ✅ COMPLETE.** E3 added the **rubric layer + self-check** —
+> Alembic `0010` (`rubrics` + `rubric_items`), `scripts/seed_rubrics.py` projecting **44 rubrics / 104 items**
+> verbatim from the two `exercises.md` libraries (with a programmatic no-drift proof that every item text appears
+> in a wiki bullet), a **read-only** rubric API, the `self_check` grade, the self-check UI, and the targeted wiki
+> content pass (all seven named drills fixed; `seed_drills.py` orphan refs **5 → 0**; drills **53 → 58**).
+> **The decision E3 owed: an unchecked rep STILL COUNTS** — a self-check may flag but never retract, so ungraded
+> work is surfaced as an honest backlog rather than deducted (progress stays monotonic). Migrations at `0010`;
+> **160 backend tests**; Playwright 50 green at `--workers=1` with a **parallelism flake still open** (handed to
+> E4 — see its boot prompt). As-built + every divergence:
+> [[concepts/architecture/learning-enforcement]] §E3 as-built. **Phase E4's boot prompt is WRITTEN and ⏭ ACTIVE.**
+>
+> *Historical (2026-07-28): Phases E1 + E2 complete. The layer is REAL, not theatre — `reps` is no longer
+> writable by any endpoint.* E1 landed the canonical design at [[concepts/architecture/learning-enforcement]]
 > with all four forks decided (§Decisions). **E2 shipped it**: Alembic `0009` (`evidence_assets` +
 > `evidence_grades`), the R2-or-local storage service, the deterministic anti-cheat tier, paste-first capture,
 > and — the load-bearing call — **`reps` became DERIVED (`legacy_reps + Σ reps_claimed`) rather than merely
@@ -189,12 +200,14 @@ measured thresholds), the evidence endpoints, and paste-first capture on `DrillC
 Both inherited debts closed. As-built + every divergence:
 [[concepts/architecture/learning-enforcement]] §E2 as-built.
 
-### Phase E3 — Rubrics + self-check (⏭ boot prompt below, ACTIVE)
-`scripts/seed_rubrics.py` projecting each drill's ✋/🛠 bullets from the two `exercises.md` files into one
-rubric item per bullet (the `seed_drills.py` idiom — no rubric text authored in the app). Rubric API +
-self-check UI; a rep records which rubric version it was judged against. Includes the **targeted wiki content
-pass** on the drills E1 identified as ungradable/ambiguous (edit the wiki, then re-seed) — see the doc's
-§"Drills ungradable or ambiguous as written".
+### Phase E3 — Rubrics + self-check ✅ **COMPLETE 2026-08-02**
+Shipped as designed, with the parser rule refined on measurement: **one item per bullet, split only on TOP-LEVEL
+semicolons.** Sentence-splitting was tried and rejected on evidence — this corpus writes "vs." followed by a
+capital (`HOD vs. LOD`, `STL (no gap) vs. ITL`, `LRLR vs. HRLR`, `real vs. fake retracement`) and every sentence
+heuristic mangled all four; a parser that can mangle wiki text is a parser that *authors* it. Alembic `0010`,
+`seed_rubrics.py` (idempotent, stale-pruning, reports everything it could not project), the read-only rubric API,
+the `self_check` `evidence_grades` row, `SelfCheck` on the capture surface, and the wiki content pass.
+As-built + every divergence: [[concepts/architecture/learning-enforcement]] §E3 as-built.
 
 ### Phase E4 — AI vision second reader
 Claude Sonnet 5 with a structured-output verdict schema, the rubric held in a `cache_control` system prefix,
@@ -437,7 +450,182 @@ tables `neurospect-api` used.
   migration that renames a column, a stale dev server fails loudly but confusingly.
 - next: **run the E3 boot prompt** (rubrics + self-check + the targeted wiki content pass).
 
-## Next Session Boot Prompt (Phase E3 — rubrics + self-check) ⏭ ACTIVE
+### 2026-08-02 — Phase E3 ✅ rubrics + self-check + the wiki content pass
+
+- approach: ran the E3 boot prompt on Opus 5. STEP 0 as evidence first: `alembic current` = `0009 (head)`, seeds
+  **74/23/53/67**, `pytest` **142 passed**, Playwright **45 passed**, baseline captured to
+  `docs/evidence/e3-baseline-before.json` (sha256 `27ff7157…`, identical to E2's). Then **read how the bullets are
+  actually written before designing the parser** — which is what settled the phase's real decision.
+- **decided — THE PARSER RULE, on measurement not preference: one item per bullet, split ONLY on top-level
+  semicolons.** Two facts refined the design's "one item per bullet": (1) several bullets are compound
+  (aura **D0-a** is four deliverables in one), and one checkbox for four forces a **dishonest tick** — the exact
+  self-deception this workstream exists to prevent; (2) adding a sentence split **mangled four real bullets**,
+  because this corpus writes "vs." mid-sentence followed by a capital (`**which KZ sets the HOD vs. LOD**`,
+  `**STL (no gap) vs. ITL (…)**`, `Tag **LRLR vs. HRLR**`, `tag real vs. **fake retracement**`). A parser that can
+  mangle wiki text is a parser that **authors** wiki text, so the ambiguous rule was rejected and the unambiguous
+  one kept. Depth-aware, because the corpus also puts semicolons inside parens and inside a quoted bias statement.
+- **decided — an UNCHECKED rep still counts.** The prompt flagged this as the one open question and the answer
+  follows from E2: `stages.py`/`gate.py` read `reps`, so deducting on a missing or partial check would make
+  progress **non-monotonic** (a met stage exit bar could un-meet; a Gate verdict could flip backwards untouched).
+  A partial check records `flagged` + the specific unticked items and **never `failed`**; the backlog is
+  **surfaced** ("N awaiting your check", "not checked yet — the reps still count"), never deducted. The
+  adversarial case — an **empty** self-check on a 4-rep capture — is a pinned test.
+- did (code, `neurospect-learn`): Alembic `0010` (2 tables, 1 enum, 5 indexes, 2 triggers); `models/rubric.py`;
+  `scripts/seed_rubrics.py` (**44 rubrics / 104 items**, idempotent UPSERT, stale-prune, `--dry-run` and
+  `--show <drill_ref>`, and a report of everything it could not project); `routers/rubrics.py` (**read-only** —
+  POST/PATCH/PUT/DELETE all 405); the `self_check` grade write in `routers/evidence.py`; `schemas/rubric.py`;
+  frontend `lib/rubrics.ts` + `components/evidence/self-check.tsx` wired through `EvidenceCapture`. Extended
+  `scratch_migrate.py` with **separate E2/E3 object groups** so a single-step downgrade proves `0010` removes only
+  its own objects. 18 new pytests, 5 new Playwright tests.
+- **the no-drift proof is programmatic, not asserted:** `verify_no_drift()` checks that **every** item's text is a
+  contiguous substring of a whitespace-normalised wiki bullet, across the whole seed — inside every seed run *and*
+  as `test_no_rubric_text_is_authored`. `version` bumps iff a sha256 over the items changes, so provenance edits
+  don't imply the bar moved and re-seeding twice is a genuine no-op (0 bumped / 44 unchanged).
+- **flagged (Rule #6) — two bugs the DB and the corpus caught, plus a doc undercount:**
+  **(1) A phantom drill named "Evolving."** A loose inline-drill regex matched the bolded lead-in
+  `**Evolving-R reps:**` inside aura **D3-c** as a drill definition — inventing a rubric AND **stealing that bullet
+  from D3-c**. Fixed by anchoring the code pattern to the four shapes the corpus uses (`D4-a`·`T-01`·`J-a`·`S7`).
+  **(2) The version bump could not write.** Replacing a rubric's items via the ORM collection emitted the INSERTs
+  **before** the orphan DELETEs, colliding on `ux_rubric_items_key`; every re-seed with a changed bullet died with
+  an `IntegrityError`. Fixed with `clear()` + `flush()`, and the regression test was **verified to fail on exactly
+  that constraint with the fix reverted**.
+  **(3) The design said "4 aura Stage-0 drills the map omits" — there are FIVE** (D0-a…e). Corrected in the doc.
+- did (wiki content pass — the wiki is canonical, so every fix is a wiki edit + re-seed, never a code patch):
+  aura **D1-c** (bogus 50-rep floor → qualitative), **D2-a** (1 → 2), **D2-d** (→ ≥10), **D3-a** (→ ≥20 practice
+  entries), **D3-c** (→ ≥3 batches), ict **D3-d** (`Learned→applied`, not a ladder stage → `Can-mark`), and the
+  **five aura Stage-0 drills** added to the map table. Result: orphan refs **5 → 0**, drills **53 → 58**, rubrics
+  whose drill the map omits **8 → 3**. Two edits went beyond a map cell and are called out: the D2-d/D3-a **bullet
+  punctuation** (so a compound bar becomes tickable — these are the two rubrics that bumped to v2) and aura
+  D3-a/D3-c's `advances_to`, fixed alongside ict D3-d because they carried the identical non-ladder value
+  (`advances_to` is display-only, so nothing gates on it).
+- **also fixed two genuine defects the verification surfaced, neither of them E3 features:**
+  **(1) Two N+1 request storms.** `/drills` mounts an `EvidenceCapture` per drill (58), and both `useEvidence`
+  (pre-existing, E2) and the first cut of `useRubrics` keyed **per subject** — ~116 near-identical requests per page
+  load, saturating the browser's 6-connection limit and queueing the user's own upload behind the pile. Both now
+  fetch once under a shared key and slice client-side. Suite wall-clock ~47s → ~31s.
+  **(2) A latent date-dependency in `planner.spec.ts`.** The availability form ships `sun_minutes: 0`, so a plan for
+  a Sunday is **correctly empty** — and that spec, which relied on the defaults, failed *every Sunday*. This session
+  ran Wed → Sun and hit it. Fixed by giving **today** explicit capacity, making the spec date-independent.
+- verified (evidence, not inference): `0010` up/down/up/base reversible on a **scratch** DB **plus** a single-step
+  proof that `downgrade 0009` leaves E2's layer untouched; seeds intact across the migration; the no-drift proof
+  over all 104 items; idempotent re-seed; a bullet edit bumps **only** the edited rubric (`aura-d2-d` v2,
+  `aura-d3-a` v2, `aura-d1-a` still v1); a self-check attaches as an **additional** grade with the deterministic row
+  surviving; refusals name the offending key/slug/drill; **`reps` moved in neither direction** (E2's bypass test
+  plus the empty-self-check test); `/api/analytics/*` + `/api/gate` **byte-identical** to STEP 0 (same sha256
+  `27ff7157…`); all 7 invariants walked one by one (doc §Walked at E3). **160 backend tests** (142 → +18),
+  `tsc -b` + `vite build` clean, `self-check.spec.ts` 5/5 and `planner.spec.ts` 5/5.
+- **NOT closed, handed to E4 — do not call the suite green:** the **full** Playwright suite (50) passes at
+  `--workers=1` and passed once at default parallelism right after the N+1 fixes, but later default-parallelism runs
+  went flaky (2–3 rotating failures, wall-clock drifting 31s → 1.5m) with `ECONNRESET` against the dev API. The two
+  real defects found on the way are fixed; the residue is undiagnosed. Also **not done**: the live claude-in-chrome
+  walkthrough of the self-check surface (the boot prompt asked for it; the session ran out of room first).
+- next: **run the E4 boot prompt** (AI vision second reader) — which opens by closing E3's two open items.
+
+## Next Session Boot Prompt (Phase E4 — AI vision second reader) ⏭ ACTIVE
+
+Recommended launch: **Opus** (`claude --model opus[1m]`), then **`/effort high`**. Not for the API plumbing — for
+two judgement calls: the **verdict schema** (what a vision model may and may not be asked, given that
+MeasureBench puts it at ~30% on precise value readout) and **cost/latency control** (Batch API + a cached rubric
+prefix), plus the discipline that this tier **never blocks and never retracts**.
+
+Before you start: Docker `neurospect-learn-db` up on :5433 with seeds present, and start the API with `--reload`
+(a stale dev server after a migration is what cost E2 time). `ANTHROPIC_API_KEY` will be needed — **ask Paul
+before using any credential**, and never echo it.
+
+GROUNDING: `neurospect-learn` is Paul's standalone learn-to-execute app for the Neurospect ICT / Smart-Money-Concepts
+trading-mastery project — FastAPI + Postgres (`api/`) + React 19 / Vite / TanStack Query (`app/`). Phase 5, its
+Phase-6 debt, and learning-enforcement **E2 (evidence layer)** and **E3 (rubrics + self-check)** are COMPLETE and
+shipped: curriculum + three graded tracks, Study Planner, model-aligned journal, expectancy, the computed
+non-overridable Readiness-to-Live Gate, the missed-trade log, stage exit bars on real evidence, `evidence_assets`/
+`evidence_grades` with `reps` **DERIVED** from uploaded evidence, and `rubrics`/`rubric_items` **projected verbatim
+from the wiki** with a `self_check` grade that may flag but never retract. Migrations at `0010`; seeds 74 concepts /
+23 track stages / **58** drills / 67 content pages + **44 rubrics / 104 items**; **160 backend tests**, Playwright 50.
+
+STEP 0 — CLOSE E3's TWO OPEN ITEMS FIRST, before writing any E4 code:
+  1. **The Playwright parallelism flake.** `npx playwright test` is green at `--workers=1` but flaky at default
+     parallelism with `ECONNRESET` against the dev API. Diagnose it properly rather than pinning `workers: 1`:
+     start by checking the **SQLAlchemy async pool** (`create_async_engine` defaults to pool_size 5 + overflow 10,
+     shared by one uvicorn process across all Playwright workers) and whether `/api/plan/regenerate` or the
+     `/drills` page load exhausts it; also check whether the e2e debug users have accumulated enough
+     `evidence_assets` rows to slow the per-upload duplicate scan. Fix the cause, then prove **three consecutive
+     clean full runs at default parallelism**.
+  2. **The live claude-in-chrome walkthrough of the self-check surface** — E3 shipped it verified by tests but
+     never by eye. Assert the **RENDERED** result (E2's lesson: a Playwright assertion on an attribute passed while
+     every thumbnail rendered broken). Paste a capture on a drill card, open "Check against the bar", confirm the
+     wiki's own bullets render as checkboxes **with no raw `**` markers**, record a partial and a full check, and
+     confirm **NO console errors**. `CORS_ORIGINS` allows only `http://localhost:5173`.
+
+BOOT / CONTEXT — read in this order, and read the first two IN FULL:
+1. The wiki `CLAUDE.md` — Isolation Rule, Architecture Doc Integrity (**code is ground truth; ONE canonical doc per
+   topic; LINK the corpus, never restate it**), the MANDATORY post-implementation reconciliation checklist, Rules
+   #1 (**never modify `sources/`**) #3 (index.md) #4 (log.md) #6 (flag contradictions), Context Management (tell
+   Paul at >50%). **Paul handles git — NEVER commit.**
+2. `concepts/architecture/learning-enforcement.md` — especially **§2 tier 3** (your spec: advisory only), **§"Why
+   tiered — the evidence that decided it"** (MeasureBench: ~19–30% on precise value readout, >90% on unit
+   recognition, negligible gains from extended thinking **because the limit is perceptual** — this is WHY vision
+   may not arbitrate "is this swing at the right price"), **§4 lifecycle**, **§7 the data model** (`evidence_grades`
+   already has `grader='ai_vision'`, `score`, `rubric_slug`/`rubric_version`, `findings`, **and `model` /
+   `input_tokens` / `output_tokens` / `cost_usd` waiting to be filled**), **§E2 as-built**, **§E3 as-built** (the
+   rubric you will send, and why `reps` must not move), **§Invariants + §Walked at E2 / §Walked at E3**.
+3. `processes/distributed-workflow/active/learning-enforcement.md` — §Decisions (fork 1: **AI vision is a
+   NON-BLOCKING second reader**), §What already enforces the process (**DO NOT redesign these**).
+4. THE CODE TO REUSE, NOT REINVENT: `api/app/routers/evidence.py` (the `self_check` write is the shape an
+   `ai_vision` write mirrors — additive, never destructive), `api/app/models/evidence.py` (the telemetry columns),
+   `api/scripts/seed_rubrics.py` (how to load a rubric to send as the prompt's bar), `api/app/services/storage.py`
+   (reading the stored image bytes), `api/tests/{test_rubrics.py,evidence_helpers.py}` (the harness), and
+   `api/app/config.py` + `api/.env.example` (**CANONICAL** for env config).
+5. **Load the `claude-api` skill before writing any Anthropic call** — model ids, pricing, structured outputs,
+   `cache_control`, the Batch API and token counting. Do not answer from memory.
+
+BUILD — in this order:
+  1. **`services/ai_grader.py`** — a pure-ish service: given image bytes + a rubric, return a structured verdict.
+     **The schema is the load-bearing design.** Ask ONLY what a VLM is reliable at: coarse presence/structure
+     (*is this an annotated price chart · are range boundaries drawn · was a second pass done · which rubric items
+     are visibly evidenced*). It must be **incapable** of expressing "this swing is at the wrong price" — if the
+     schema cannot say it, the model cannot assert it. Rubric text goes in a **`cache_control` system prefix**.
+  2. **Async, never blocking.** A grade is requested after capture and lands later; upload latency must not change.
+     Decide and justify the mechanism (FastAPI `BackgroundTasks` vs a polled queue table vs the **Batch API**) —
+     §2 says Batch, and the cost note says ~$0.02–0.04/grade, ~$15–25 for the whole curriculum. Offline / API-down
+     must leave the row honestly `ungraded`, which is already a first-class enum value.
+  3. **Write telemetry.** `model`, `input_tokens`, `output_tokens`, `cost_usd` per grade — the design costed this
+     phase, so the code must measure it rather than trust the estimate.
+  4. **Surface it as INFORMATIONAL FEEDBACK (§6), never as a verdict on the rep.** Per-item findings beside the
+     user's own self-check, visibly labelled advisory + second-reader. Where the AI and the self-check DISAGREE is
+     the genuinely useful signal — show it, decide nothing from it.
+
+E4 IS NOT: prediction capture, the calibration score, or wiring `ict_course` M6 / emptying `stages.STAGE_UNWIRED`
+(E5); gamification, XP, or the `/gate` honesty strip (E6); deploying or provisioning R2 (storage stays local);
+re-opening that `reps` is derived, that a grade may not retract, or that rubrics are wiki-projected and read-only;
+redesigning the shipped enforcement (the non-overridable Gate, the ladder-advance gate, the watch-only cap, logged
+skips, backtest≠live) — build ON those.
+
+VERIFY (evidence, not inference — Paul's evidence-gated rule and the house standard from 5g / Phase 6 / E2 / E3):
+  · Any migration reversible via `scripts/scratch_migrate.py` (extend its object lists); ⚠️ **NEVER
+    `alembic downgrade base` against the working DB**; seeds still 74/23/58/67 + 44/104 afterwards.
+  · **An `ai_vision` grade is ADDITIVE** — the `deterministic` and `self_check` rows both survive.
+  · **It never blocks and never retracts:** prove an AI grade cannot change `reps`, `confidence`, `ladder_stage`,
+    any stage exit bar or the Gate. Re-run E2's bypass test and E3's `test_a_self_check_never_moves_a_rep`.
+  · **API-down / no-key degrades honestly** to `ungraded` with the upload path unaffected — test it with the key
+    absent, since that is Paul's normal local state.
+  · **Cost is measured, not assumed:** report real token counts and $ for a handful of grades against the design's
+    $0.02–0.04 estimate, and flag it (Rule #6) if it is wrong.
+  · **THE NO-REGRESSION EVIDENCE GATE:** `poetry run python scripts/evidence_baseline.py --seed --out
+    docs/evidence/e4-baseline-before.json` at STEP 0, re-capture at the end, prove **byte-identical** (E2 and E3
+    both hit sha256 `27ff7157…`).
+  · Walk the design's §Invariants one by one and state each explicitly (§Walked at E2 / §Walked at E3 is the format).
+  · `pytest` (report the new total vs **160**) · `tsc -b` + `vite build` clean · `npx playwright test` (vs **50**)
+    **at default parallelism, three consecutive clean runs** · a live claude-in-chrome walkthrough with **NO
+    console errors**.
+
+RECONCILE + BOOKKEEP (MANDATORY — wiki CLAUDE.md §Architecture Doc Integrity):
+  · Update **`concepts/architecture/learning-enforcement.md`** with an "§E4 as-built" section recording every
+    divergence, the real measured cost, and a §Walked at E4.
+  · Update **`concepts/architecture/learning-platform.md`** §Progress data model + §Component/API surface.
+  · In the tracker: mark Phase E4 ✅, add a Session Log entry (approach / decided / did / flagged / verified / next),
+    and write the **E5 boot prompt**.
+  · Append a row to `log.md`; bump `index.md`. **Paul handles git — NEVER commit.**
+
+## Boot Prompt Archive (Phase E3 — rubrics + self-check) ✅ RUN 2026-08-02
 
 Recommended launch: **Opus** (`claude --model opus[1m]`), then **`/effort high`**. The code is mostly a seed
 script and a form, but two things need judgement: the **parser** that projects wiki bullets into rubric items

@@ -2,7 +2,7 @@
 tags: [mastery, learning, execution, neurospect, index]
 aliases: [Mastery Layer, Learning System, Mastery Hub, Path to Live Trading]
 created: 2026-07-17
-updated: 2026-07-17
+updated: 2026-08-02
 ---
 
 # Mastery Layer — Hub
@@ -82,6 +82,23 @@ gap between "I marked it 50 times" and "I trust it live."
 
 Marking/backtest drills carry a rep target (e.g. swing points 50/50). The tracker logs progress against
 it. Reps are a *floor*, not the finish line — the ladder stage is what actually gates readiness.
+
+> **A rep is now EVIDENCE, and it is checked against the drill's own bar.** In `neurospect-learn` a rep exists
+> only where an uploaded capture exists (no endpoint writes a rep count), and each capture is self-checked against
+> the drill's own ✋/🛠 bullets, projected verbatim from the two `exercises.md` libraries. An unchecked capture
+> still counts its reps — the check is surfaced as work owed, never deducted, so progress stays monotonic.
+> Canonical: [[concepts/architecture/learning-enforcement]].
+
+**Bars that materially changed (2026-08-02, the E3 content pass).** Six drills had no usable floor or named a
+ladder stage that does not exist, so they could not be graded as written; the fixes are in the two exercise
+libraries with the before→after parse recorded in [[concepts/architecture/learning-enforcement]] §E3 as-built:
+
+- aura **D1-c** no longer parses a bogus 50-rep floor (it reuses D1-b's range set, as its heading always said).
+- aura **D2-a** → 2 · **D2-d** → ≥10 *(proposed)* · **D3-a** → ≥20 practice entries *(proposed)* · **D3-c** → ≥3
+  batches *(proposed)* — countable floors where there were none.
+- aura **D3-a** / **D3-c** and ict **D3-d** no longer advance to "applied", which is **not one of the four ladder
+  stages above**; they now read `Learned→Backtested` / `Can-mark`.
+- The five aura **Stage-0** drills (D0-a…e) are finally listed in the aura drill map, so they can carry evidence.
 
 ## The Readiness-to-Live Gate
 

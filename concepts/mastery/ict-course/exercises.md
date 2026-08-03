@@ -3,7 +3,7 @@ tags: [mastery, ict-course, exercises, drills, backtesting, tape-reading, neuros
 aliases: [ICT Drills, ICT Exercises, MrWitness-AXL Practice Library]
 sources: [concepts/course/module-1-foundations/03-homework-and-practice.md, concepts/course/module-3-session-and-bias/01-power-of-three.md, concepts/course/module-3-session-and-bias/02-session-kill-zones.md, concepts/course/module-3-session-and-bias/03-deviations.md, concepts/course/module-3-session-and-bias/04-daily-bias.md, concepts/course/module-4-market-structure/01-swing-classification.md, concepts/course/module-4-market-structure/02-fractality.md, concepts/course/module-5-order-flow-and-smt/01-htf-ltf-order-flow.md, concepts/course/module-5-order-flow-and-smt/02-smt-divergence.md, concepts/business-logic/ict-live-commentary.md, sources/neurospect/2026-04-22-youtube-1000-points-nq-2026-03-04.md, sources/neurospect/2026-04-22-youtube-first-week-march-2026-03-07.md]
 created: 2026-07-17
-updated: 2026-07-17
+updated: 2026-07-30
 ---
 
 # ICT Course Exercise Library
@@ -216,7 +216,7 @@ Readiness-to-Live Gate in [[concepts/mastery/ict-course/tracker]] and [[concepts
 | D3-a | Power of Three | Can-mark | 10 days |
 | D3-b | kill zones | Can-mark | 1 week |
 | D3-c | deviations | Can-mark | 10 days |
-| D3-d | daily bias | Learned→applied | 10 days |
+| D3-d | daily bias | Can-mark | 10 days |
 | D4-a | swing classification | Can-mark | 5 days |
 | D4-b | fractality | Can-mark | 5 days |
 | D4-c | structure deviations | Can-mark | ≥10 *(gap-fill)* |
