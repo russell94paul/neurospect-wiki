@@ -521,6 +521,53 @@ tables `neurospect-api` used.
   walkthrough of the self-check surface (the boot prompt asked for it; the session ran out of room first).
 - next: **run the E4 boot prompt** (AI vision second reader) — which opens by closing E3's two open items.
 
+### 2026-08-07 — Phase E4 STEP 0 (partial): the Playwright flake, diagnosed but NOT reproduced
+
+- context: the previous session crashed before writing anything — both repos were clean at the E3 commit
+  (`535cba3` / wiki `f3abbd4`), no stash, no untracked files, no `ai_grader.py`, no `anthropic` dep, no
+  `e4-baseline-before.json`. **Nothing was lost and nothing of E4 had been started.**
+- STEP 0 evidence: `alembic current` = `0010 (head)`; baseline captured to `docs/evidence/e4-baseline-before.json`
+  at sha256 `27ff7157…` — **the same digest as E2 and E3**.
+- **the flake did NOT reproduce.** Three consecutive clean full runs at default parallelism (41.6s / 39.7s /
+  44.2s), plus a run at **12 workers** (2× default, 46.2s) and a run under **10 competing CPU-burner processes**
+  (56.4s). Zero failures, zero `ECONNRESET`, and **zero pool timeouts in 34k+ lines of server log**. So the
+  boot prompt's closure criterion was already satisfied before any code changed.
+- **two of the three named suspects are ruled out on measurement (Rule #6):**
+  **(1) Accumulated `evidence_assets` do NOT slow the duplicate scan.** The specs soft-delete, and the scan
+  filters `is_deleted IS false`, so live rows stay ≤22 per user however many runs accumulate (`e2e-gate-5g`:
+  22 live / 654 soft-deleted after one run). Measured `check()` at n_existing = 9 / 100 / 1000 → **3.4 / 3.4 /
+  4.0 ms**. The scan is not the cost.
+  **(2) The SQLAlchemy pool is not exhausting.** Pool exhaustion surfaces as a 30 s `TimeoutError`, not a reset,
+  and no pool timeout appears in any run.
+- **what DOES reproduce E3's signature: a mid-run `--reload` restart.** Touching one `api/app/*.py` file 18 s
+  into a run took the suite from ~41 s to **1.2 m** — E3's reported "31s → 1.5m" drift almost exactly — because
+  WatchFiles restarts uvicorn and drops in-flight connections. E3's session was *editing API code while running
+  the suite*, which makes the failures both **intermittent** and **rotating** (whichever requests were in flight).
+  This points at the dev loop, not the app under test. Not proven to be the whole story: repeated touches were
+  deduped by the reloader, so I could not force the failing case on demand.
+- **found and fixed a genuine latent defect anyway** — `POST /api/evidence` ran two blocking things directly on
+  the event loop in an `async def`: `evidence_checks.check()` (sha256 + PIL decode + pHash DCT) and
+  `storage.upload_bytes()` (`Path.write_bytes`, or a synchronous boto3 PUT under R2). Worse, `perceptual_hash()`
+  did `import imagehash` / `from PIL import Image` **inside the function**, so the **first upload of every server
+  process** — including after every `--reload` restart — blocked the loop for a measured **540 ms warm / 8.3 s
+  cold**, against ~4 ms for the hash itself. While the loop is blocked nothing else is served, and **on Windows a
+  saturated accept backlog is answered with an RST**, which is what reaches a client as `ECONNRESET`. Fixed by
+  hoisting both imports to module scope (paid at startup, before serving) and wrapping both calls in
+  `run_in_threadpool`. Both packages are hard deps (`pillow`, `imagehash`), so nothing became newly required.
+- **honest limit on that fix: it is the mechanism most consistent with the reported symptom, NOT a proven cure.**
+  The flake never failed for me, so there was no red test to turn green. The loop-lag probe I wrote was too noisy
+  to serve as before/after evidence (the dedup tier 409'd the synthetic uploads, short-circuiting the path being
+  measured) and is deliberately **not** presented as proof.
+- **also hit the boot prompt's own warning, live: the dev server goes stale silently.** The edits above did not
+  reload — the uvicorn *reloader* process had already died, leaving the worker serving old code, so the first
+  "after" measurement was actually the old code. Any session measuring a change here must confirm the server
+  restarted rather than assume `--reload` did it.
+- verified: **160 backend tests** (unchanged), **three consecutive clean Playwright runs at default parallelism
+  post-fix** (49.4s / 45.7s / 46.4s), and `/api/analytics/*` + `/api/gate` **byte-identical** to STEP 0
+  (`27ff7157…`). Backend-only change, so `tsc`/`vite build` were not re-run.
+- **NOT done, still open for E4:** the live claude-in-chrome walkthrough of the self-check surface (STEP 0 item 2),
+  and all of E4 proper. Session ended on the context budget, not on a blocker.
+
 ## Next Session Boot Prompt (Phase E4 — AI vision second reader) ⏭ ACTIVE
 
 Recommended launch: **Opus** (`claude --model opus[1m]`), then **`/effort high`**. Not for the API plumbing — for
@@ -528,9 +575,18 @@ two judgement calls: the **verdict schema** (what a vision model may and may not
 MeasureBench puts it at ~30% on precise value readout) and **cost/latency control** (Batch API + a cached rubric
 prefix), plus the discipline that this tier **never blocks and never retracts**.
 
-Before you start: Docker `neurospect-learn-db` up on :5433 with seeds present, and start the API with `--reload`
-(a stale dev server after a migration is what cost E2 time). `ANTHROPIC_API_KEY` will be needed — **ask Paul
-before using any credential**, and never echo it.
+Before you start: `docker start neurospect-learn-db` (:5433, seeds present), then the API with `--reload`.
+**VERIFY THE SERVER ACTUALLY PICKED UP EVERY EDIT — do not trust `--reload`.** On 2026-08-07 the uvicorn
+*reloader* process died silently, leaving the worker serving stale code, and a whole "after" measurement was
+taken against the old build before it was caught. Confirm a restart (a `WatchFiles detected changes` line, or
+just restart it yourself) before believing any before/after number. `ANTHROPIC_API_KEY` will be needed —
+**ask Paul before using any credential**, and never echo it.
+
+**UNCOMMITTED WORK MAY BE WAITING (2026-08-07 STEP-0 session):** `api/app/services/evidence_checks.py` +
+`api/app/routers/evidence.py` (the event-loop fix) and `api/docs/evidence/e4-baseline-{before,step0-after}.json`.
+**Check `git status` first** — Paul may or may not have committed them. `e4-baseline-before.json` is ALREADY
+CAPTURED at sha256 `27ff7157…`; reuse it as the STEP-0 baseline rather than re-capturing, and if you do
+re-capture, it must still be `27ff7157…`.
 
 GROUNDING: `neurospect-learn` is Paul's standalone learn-to-execute app for the Neurospect ICT / Smart-Money-Concepts
 trading-mastery project — FastAPI + Postgres (`api/`) + React 19 / Vite / TanStack Query (`app/`). Phase 5, its
@@ -541,15 +597,17 @@ non-overridable Readiness-to-Live Gate, the missed-trade log, stage exit bars on
 from the wiki** with a `self_check` grade that may flag but never retract. Migrations at `0010`; seeds 74 concepts /
 23 track stages / **58** drills / 67 content pages + **44 rubrics / 104 items**; **160 backend tests**, Playwright 50.
 
-STEP 0 — CLOSE E3's TWO OPEN ITEMS FIRST, before writing any E4 code:
-  1. **The Playwright parallelism flake.** `npx playwright test` is green at `--workers=1` but flaky at default
-     parallelism with `ECONNRESET` against the dev API. Diagnose it properly rather than pinning `workers: 1`:
-     start by checking the **SQLAlchemy async pool** (`create_async_engine` defaults to pool_size 5 + overflow 10,
-     shared by one uvicorn process across all Playwright workers) and whether `/api/plan/regenerate` or the
-     `/drills` page load exhausts it; also check whether the e2e debug users have accumulated enough
-     `evidence_assets` rows to slow the per-upload duplicate scan. Fix the cause, then prove **three consecutive
-     clean full runs at default parallelism**.
-  2. **The live claude-in-chrome walkthrough of the self-check surface** — E3 shipped it verified by tests but
+STEP 0 — ONE ITEM LEFT (see §Session Log 2026-08-07 before re-doing any of this):
+  1. ~~**The Playwright parallelism flake.**~~ **DONE 2026-08-07 — criterion met, with a caveat you must read.**
+     The flake **never reproduced**: 3 consecutive clean runs at default parallelism, plus 12 workers, plus a run
+     under heavy CPU load. Both named suspects were **ruled out on measurement** — the duplicate scan stays O(≤22)
+     because specs soft-delete (3.4 ms at n=1000), and no pool timeout occurs in 34k+ log lines. What *does*
+     reproduce E3's 31s→1.5m drift is a **mid-run `--reload` restart**, i.e. editing API code while the suite runs.
+     A real latent defect was found and fixed regardless (blocking CPU + file IO on the event loop; a
+     function-level PIL import costing 540 ms warm / 8.3 s cold on the first upload per process) — but that is the
+     **most consistent mechanism, not a proven cure**, since there was never a red test to turn green. **If the
+     flake returns, do not re-derive this** — go straight to whether uvicorn restarted mid-run.
+  2. **The live claude-in-chrome walkthrough of the self-check surface** — STILL OPEN. E3 shipped it verified by tests but
      never by eye. Assert the **RENDERED** result (E2's lesson: a Playwright assertion on an attribute passed while
      every thumbnail rendered broken). Paste a capture on a drill card, open "Check against the bar", confirm the
      wiki's own bullets render as checkboxes **with no raw `**` markers**, record a partial and a full check, and
@@ -609,12 +667,13 @@ VERIFY (evidence, not inference — Paul's evidence-gated rule and the house sta
     absent, since that is Paul's normal local state.
   · **Cost is measured, not assumed:** report real token counts and $ for a handful of grades against the design's
     $0.02–0.04 estimate, and flag it (Rule #6) if it is wrong.
-  · **THE NO-REGRESSION EVIDENCE GATE:** `poetry run python scripts/evidence_baseline.py --seed --out
-    docs/evidence/e4-baseline-before.json` at STEP 0, re-capture at the end, prove **byte-identical** (E2 and E3
-    both hit sha256 `27ff7157…`).
+  · **THE NO-REGRESSION EVIDENCE GATE:** `docs/evidence/e4-baseline-before.json` is **already captured** (2026-08-07)
+    at sha256 `27ff7157…`, the same digest as E2 and E3 — reuse it. Re-capture at the end to
+    `docs/evidence/e4-baseline-after.json` and prove **byte-identical** via `--compare`.
   · Walk the design's §Invariants one by one and state each explicitly (§Walked at E2 / §Walked at E3 is the format).
   · `pytest` (report the new total vs **160**) · `tsc -b` + `vite build` clean · `npx playwright test` (vs **50**)
-    **at default parallelism, three consecutive clean runs** · a live claude-in-chrome walkthrough with **NO
+    **at default parallelism, three consecutive clean runs** — this was clean on 2026-08-07 at 49.4s/45.7s/46.4s,
+    so a failure now is YOUR change, not the inherited flake · a live claude-in-chrome walkthrough with **NO
     console errors**.
 
 RECONCILE + BOOKKEEP (MANDATORY — wiki CLAUDE.md §Architecture Doc Integrity):
