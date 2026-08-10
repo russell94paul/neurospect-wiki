@@ -695,9 +695,10 @@ mean there is no credential (the SDK also reads `ANTHROPIC_AUTH_TOKEN` and an `a
 Flagged for Paul (Rule #6): that profile is an **ALDC org** credential, so Neurospect grading spend bills to
 ALDC — worth revisiting if this ever runs at volume.
 
-**⚠️ THE E4 SERVICE LAYER IS ALREADY WRITTEN AND UNCOMMITTED (2026-08-09 session).** You are NOT starting
-from a blank page — you are starting from working-but-**unverified** code. **Check `git status` first**;
-Paul may or may not have committed it. On disk: `api/app/services/ai_grader.py` (new),
+**⚠️ THE E4 SERVICE LAYER IS ALREADY WRITTEN — committed 2026-08-09 as `c26bcec`.** You are NOT starting
+from a blank page; you are starting from working-but-**unverified** code. Note the commit says
+**UNVERIFIED** in its subject line for a reason: it means "on disk and importable", not "done". On disk:
+`api/app/services/ai_grader.py` (new),
 `api/app/services/ai_grade_queue.py` (new), and edits to `api/app/services/storage.py`,
 `api/app/routers/evidence.py`, `api/app/main.py`, `api/app/config.py`, `api/.env.example`,
 `api/pyproject.toml` (`poetry.lock` is regenerated but **gitignored**, so a fresh checkout needs
