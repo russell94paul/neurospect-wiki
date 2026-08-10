@@ -1,9 +1,9 @@
 ---
-tags: [architecture, frontend, backend, learning-platform, mastery, neurospect, phase5]
+tags: [architecture, frontend, backend, learning-platform, mastery, neurospect, phase5, pre-commitment, calibration]
 aliases: [Learning Platform Architecture, neurospect-learn, Learn App, Learning Platform Frontend]
 sources: [processes/distributed-workflow/active/learning-platform-ui.md, concepts/mastery/README.md, concepts/mastery/unified/learning-path.md, concepts/mastery/unified/tracker.md, concepts/architecture/phase3-frontend-structure.md, concepts/architecture/phase2-project-structure.md, concepts/architecture/trade-schema.md]
 created: 2026-07-18
-updated: 2026-07-29
+updated: 2026-08-10
 ---
 
 # Learning Platform — Architecture (Phase 5a design)
@@ -387,6 +387,27 @@ sample **and** positive expectancy; live-eligibility is gated on the established
 unbacktested confluence (`confluence_tags` are unread by the gate). Attesting (c) can never satisfy (a) or (b),
 and a missing/unseeded concept **fails closed** (an unmet requirement) rather than vanishing from the checklist.
 
+### 3b. The pre-commitment ledger (E5, as-built 2026-08-10) — `predictions`
+
+A fifth table joins the three axes: **`predictions`** (Alembic **`0011`**) holds a call — `bias` (a
+`prediction_bias` enum: long/short/**neutral**, where neutral means *stand aside* and is scored like any other) ·
+`dol` · `entry_model` (**reused** from `0003`, not re-minted) · `target` — plus a **server-stamped
+`committed_at`**, the later reveal (`resolved_at` + `outcome_bias`/`dol_hit`/`model_played_out`/`target_hit`,
+all-or-nothing by CHECK), and an optional `evidence_id` link to the chart captured with the call.
+
+Three conventions here are deliberately **different** from every other user table, and the reasons are canonical
+in [[concepts/architecture/learning-enforcement]] §E5 as-built:
+
+- **No `is_deleted` / `deleted_at`.** The calibration score is a ratio, so a shrinkable denominator would make it
+  gameable. The denominator can only grow.
+- **The call columns are immutable**, enforced by the `predictions_freeze_the_call()` trigger rather than by
+  application logic — so no future endpoint can regress the property.
+- **Nothing is stored computed.** Correctness and the calibration score are derived per read by the pure
+  `app/services/calibration.py`, the same convention `services/{stages,gate}.py` follow.
+
+It **mints no reps** — `reps` stays derived from `evidence_assets.reps_claimed` — and it is what finally grades
+`ict_course` M6, emptying `services/stages.STAGE_UNWIRED`.
+
 ### 4. Study Planner + progress-editing (Phase 5e)
 
 > **As-built: 5e-1 + 5e-2 shipped; only the planner UI (5e-3) remains design.** The `concept_progress`
@@ -656,6 +677,19 @@ record; the future is always recomputed from current state** — is the elite ad
   a per-capture ROW layout when a bar exists. `lib/rubrics.ts` holds `rubricKeys` + `useRubricCatalog`/`useRubrics`
   + `useSelfCheck` and the grading-state helpers; a self-check invalidates **only** `evidenceKeys.all` — not
   `learningKeys`/`plannerKeys` — because a grade deliberately moves no rep.
+- **Pre-commitment components (E5, as-built 2026-08-10):** `PredictionCommit`
+  (`components/predictions/prediction-commit.tsx`) renders on **tape drills only** (`ict-course T-01`…`T-14`, via
+  `isTapeStudyDrill`) and sits **above** `EvidenceCapture` on the card, because the call comes first and a surface
+  that reads top-to-bottom teaches that order. It is deliberately **two steps that never coexist**: while
+  committing, no outcome field is on screen at all — if both halves were visible together nothing would stop them
+  being filled in after the fact, which is the whole anti-cheat. A committed call renders frozen (lock icon, server
+  timestamp) with **no edit/delete affordance of any kind**, not even a disabled one. `CalibrationPanel`
+  (`components/predictions/calibration-panel.tsx`) is on `/drills` and renders **nothing** until a call exists;
+  it shows per-component ratios each carrying its denominator, publishes the unresolved gap, states that it gates
+  nothing, and has **no ring, target, streak or grade** (§6, Deci/Koestner/Ryan 1999). `lib/predictions.ts` holds
+  `predictionKeys` + `usePredictions`/`useCalibration`/`useCommitPrediction`/`useResolvePrediction`; a write
+  invalidates `learningKeys.all` (M6's bar is derived from the ledger) but there is **no update or delete
+  mutation**, so the UI cannot imply one exists.
 - **AI second-reader components (E4, as-built 2026-08-10):** `AiReading` (`components/evidence/ai-reading.tsx`) sits
   **under** `SelfCheck` in the same capture row — the user's own check first, because that is what makes the rep
   graded; the advisory read second and quieter, so it can never be mistaken for the bar. It renders **counts, never a
@@ -733,11 +767,23 @@ record; the future is always recomputed from current state** — is the elite ad
     **Deliberately read-only — POST/PATCH/PUT/DELETE all 405**, so no rubric text can be authored in the app; a
     bar changes by editing the wiki and re-seeding. Schemas in `app/schemas/rubric.py`. Seeded by
     `scripts/seed_rubrics.py`.
-  - **Shared loaders (6a):** `routers/learning.py` owns `load_concepts_and_ladder` (all tracks × the user's ladder —
+  - `predictions` (E5, as-built 2026-08-10 — `app/routers/predictions.py`, prefix `/api`, auth-gated +
+    user-scoped): **`POST /api/predictions`** (commit a call — bias · DOL · model · target; `committed_at` is
+    server-stamped and sending one is a 422 that names the field), **`GET /api/predictions`**
+    (`?drill_ref=` / `?resolved=`), **`POST /api/predictions/{id}/resolve`** (the reveal, accepted **exactly
+    once** — a second attempt is a 409), and **`GET /api/calibration`** (computed per read, never stored).
+    **Deliberately has NO PATCH and NO DELETE** — a call that can be edited proves nothing and a call that can be
+    deleted lets a ratio be inflated by dropping failures; Alembic `0011` enforces both with a freeze trigger and
+    by having **no `is_deleted` column** at all. Schemas in `app/schemas/prediction.py`; the pure scorer is
+    `app/services/calibration.py`. Mints **no reps**. Canonical rationale:
+    [[concepts/architecture/learning-enforcement]] §9 + §E5 as-built.
+  - **Shared loaders (6a; extended at E5):** `routers/learning.py` owns `load_concepts_and_ladder` (all tracks × the user's ladder —
     **moved here from `routers/gate.py`**, which now imports it: gate already depended on learning, so this removes
     a duplicate query rather than adding one) and `load_stage_evidence` (the gate-attestation / pooled-expectancy /
     gate-verdict bundle; `with_gate=False` skips the verdict for the planner). They live in a router, not
-    `app/services/*`, because that package is deliberately pure and DB-free.
+    `app/services/*`, because that package is deliberately pure and DB-free. **E5** added
+    `routers/predictions.py::load_tape_coverage`, which `load_stage_evidence` calls to fill
+    `stages.Evidence.tape_reads` — the ledger that grades `ict_course` M6.
 
 ## Implementation split (5b → 6)
 

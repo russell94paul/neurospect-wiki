@@ -223,7 +223,7 @@ Readiness-to-Live Gate in [[concepts/mastery/ict-course/tracker]] and [[concepts
 | D4-d | Model 2022 / OTE / CSD | Can-mark | ≥10 *(gap-fill)* |
 | D5-a | order flow | Can-mark | 1 week |
 | D5-b | SMT divergence | Can-mark | 5 days |
-| T-01…14 | whole-model tape read | Learned→Can-mark | 13 studies + live |
+| T-01…14 | whole-model tape read | Learned→Can-mark | 1 per drill *(T-01…T-13 studies + the T-14 live read)* |
 | Stage 7 | all 7 entry models | Backtested | ≥50 setups / ≥100 trades |
 | Stage 8 | journaling | (habit) | weekly / continuous |
 

@@ -1,9 +1,9 @@
 ---
-tags: [distributed-workflow, active, neurospect, mastery, enforcement, grading, gamification]
+tags: [distributed-workflow, active, neurospect, mastery, enforcement, grading, gamification, pre-commitment, calibration]
 aliases: [Learning Enforcement Tracker, Drill Grading, Anti-Cheat, Gamification Workstream]
 sources: []
 created: 2026-07-25
-updated: 2026-08-09
+updated: 2026-08-10
 ---
 
 # Learning Enforcement — Workstream Tracker
@@ -35,8 +35,33 @@ this workstream makes the progress in it **impossible to fake**.
 > for the curriculum, about half this doc's estimate — flagged under Rule #6. Two defects that made the *documented*
 > setup impossible were found and fixed (`extra="forbid"` crashed the app on an `ANTHROPIC_API_KEY` in `.env`; and
 > `.env` never reached the SDK at all). **181 backend tests**, baseline byte-identical (`27ff7157…`), live
-> walkthrough clean. **Playwright is blocked on a port conflict with another project and is E5's STEP 0.**
-> E5's boot prompt is ⏭ ACTIVE below.
+> walkthrough clean. **Playwright was blocked on a port conflict and became E5's STEP 0 — now CLOSED.**
+>
+> ## 🎯 **STATUS (2026-08-10): Phases E1–E5 are ✅ COMPLETE. `STAGE_UNWIRED` IS EMPTY — the workstream's
+> acceptance test from E1 is MET.** E5 shipped the **pre-commitment ledger + calibration score**: Alembic `0011`
+> (`predictions`, the `prediction_bias` enum, and a `predictions_freeze_the_call()` trigger), the
+> commit/resolve/calibration API, the pure `services/calibration.py`, the `tape_studies` stage wiring, and the
+> two-step capture surface. `ict_course` **M6** — the one row Phase 6 deliberately handed this workstream as debt
+> (see the 2026-07-25 note below) — is now **earned from evidence** instead of being a dead checkbox.
+>
+> **The decision E5 owed: which form of "cannot be back-dated" to actually build.** The app cannot see the user's
+> TradingView replay, so *preventing a peek is not achievable* — and claiming otherwise would have been the
+> dishonest option. What is achievable is that **the record cannot lie**, enforced structurally in three places:
+> `committed_at` is server-stamped and refused from the client, the call is **frozen by a DB trigger** (verified by
+> disabling it — the test then fails on `DID NOT RAISE`), and `resolved_at >= committed_at` is a schema CHECK with
+> the reveal accepted exactly once. **`predictions` deliberately has NO `is_deleted` column** — breaking this
+> repo's soft-delete convention on purpose, because a ratio whose denominator can shrink is gameable by deleting
+> failures. **M6 grades COMMITMENT, not correctness**: pinned by a test that scores all 14 calls as complete
+> misses and asserts the bar is met while calibration reports 0.0 — gating a stage on accuracy would make the score
+> a currency and teach the user to stop writing down calls they might lose.
+>
+> **E4's open item is closed:** the Playwright battery ran at STEP 0 — **50/50, three consecutive clean runs** at
+> default parallelism (66s / 52.9s / 50.5s), so the 2026-08-07 flake did not recur and its diagnosis was not
+> needed. Migrations at **`0011`**; **213 backend tests** (181 → +32); **Playwright 57** (50 → +7), three
+> consecutive clean runs; `tsc -b` + `vite build` clean; baseline byte-identical (`27ff7157…`, re-captured after a
+> re-seed); live walkthrough with **zero console errors**. One defect the *rendered* surface caught that the query
+> layer could not, and one wiki content fix (the tape drills' 13-rep parse artifact) are both recorded in
+> [[concepts/architecture/learning-enforcement]] §E5 as-built. **Only E6 remains. Its boot prompt is ⏭ ACTIVE below.**
 >
 > *Historical (2026-07-28): Phases E1 + E2 complete. The layer is REAL, not theatre — `reps` is no longer
 > writable by any endpoint.* E1 landed the canonical design at [[concepts/architecture/learning-enforcement]]
@@ -45,7 +70,7 @@ this workstream makes the progress in it **impossible to fake**.
 > and — the load-bearing call — **`reps` became DERIVED (`legacy_reps + Σ reps_claimed`) rather than merely
 > guarded**, so the planner's mark-done bypass cannot exist rather than being remembered. Both inherited
 > screenshot debts are **closed** (journal + missed trade attach to the same polymorphic layer). Migrations are
-> at `0009`; 142 backend tests, Playwright 45. **Phase E3's boot prompt is WRITTEN and ⏭ ACTIVE (below)** —
+> at `0009`; 142 backend tests, Playwright 45. **Phase E3's boot prompt was written and active at the time** —
 > rubrics + self-check, plus the targeted wiki content pass.
 >
 > *Historical (2026-07-25): scoped, and Phase E1's boot prompt written.* By Paul's sequencing the first session's boot prompt (a **deep-research + design session, Opus 5**) is
@@ -411,7 +436,7 @@ Consequences a future session should not re-litigate:
 
 ### 2026-07-28 — Phase E2 boot prompt authored (wiki only, no code)
 - trigger: Paul asked for it in the same session as the E1 sign-off so he can run E2 fresh.
-- did: wrote the **Phase E2 boot prompt** below in §Next Session Boot Prompt (⏭ ACTIVE) and updated the STATUS
+- did: wrote the **Phase E2 boot prompt** in §Next Session Boot Prompt (active at the time; now archived) and updated the STATUS
   block + the E2 Plan entry. It
   is built to CONSUME the E1 design rather than restate it — the canonical doc's §7 is the DDL spec, §8 the
   storage spec, and §Invariants becomes the verification checklist.
@@ -733,7 +758,164 @@ Consequences a future session should not re-litigate:
   **recommend rotating it.**
 - next: **run the E5 boot prompt below.**
 
-## Next Session Boot Prompt (Phase E5 — pre-commitment + calibration) ⏭ ACTIVE
+### 2026-08-10 — Phase E5 BUILT: pre-commitment + calibration, and `STAGE_UNWIRED` is finally empty
+- approach: ran **STEP 0 first** (E4's outstanding Playwright battery) before adding any surface, exactly as the
+  boot prompt ordered. Then built backend-first — migration → model → pure scorer → router → stage wiring → tests —
+  and only then the two frontend surfaces, so every claim below rests on a test rather than on a screenshot.
+- **STEP 0 closed, and the boot prompt's premise about :5173 was WRONG.** The port was held by
+  `repos\neurospect-learn\app\node_modules\...\vite.js` — **this repo's own orphan from 2026-08-07**, not "a
+  different project of Paul's" as the E4 log and the stored session memory both claimed. Reading the command line
+  was what settled it. With Paul's approval that orphan was stopped and the battery ran: **50/50, three consecutive
+  clean runs** at default parallelism (66s / 52.9s / 50.5s). The 2026-08-07 flake did not recur, so its diagnosis
+  was never needed. **`reuseExistingServer` was the real hazard** — left running, Playwright would have attached to
+  the 3-day-old process and skipped `webServer.env` (`VITE_DEBUG`, `VITE_API_URL`) entirely.
+- decided (the phase's real content): **build the honest form of "cannot be back-dated".** The app cannot observe a
+  TradingView replay, so it cannot prove the user did not peek — and pretending otherwise would have been the one
+  unrecoverable mistake here. So the guarantee is narrower and *actually true*: the **record** cannot lie.
+  `committed_at` is server-stamped and refused from the client (a 422 that names the field); the call is frozen by a
+  **DB trigger**, not router discipline; `resolved_at >= committed_at` is a schema CHECK; the reveal is accepted
+  exactly once. `seconds_to_reveal` is surfaced, not judged.
+- decided: **`predictions` has NO `is_deleted` column** — deliberately breaking this repo's soft-delete convention.
+  The calibration score is a ratio, so the attack is not adding volume but deleting failures. No delete path and no
+  edit path ⇒ **the denominator can only grow**. Cost accepted and documented: a mistyped call cannot be corrected.
+- decided: **M6 grades commitment, not correctness.** `test_m6_is_met_even_when_every_single_call_was_wrong` scores
+  all 14 calls as complete misses and asserts the bar is met while `/api/calibration` reports **0.0**. Gating a
+  stage on accuracy would make the score a currency and teach the user to stop writing down losing calls (§6).
+- did: Alembic **`0011`** + `models/prediction.py` + `schemas/prediction.py` + **pure** `services/calibration.py` +
+  `routers/predictions.py` (no PATCH, no DELETE — pinned by a test that fails if either is added) + the
+  `tape_studies` wiring in `services/stages.py` (`TapeReads`, `TAPE_STUDY_DRILLS`) + `load_tape_coverage` in
+  `load_stage_evidence`; frontend `lib/predictions.ts` + `PredictionCommit` (tape drills only, above the capture)
+  + `CalibrationPanel`. Reversibility harness extended with an `_E5` group **including its trigger function**.
+- **restated the Goodhart claim so it could be tested.** "More reps cannot inflate accuracy" is untestable as
+  written; as **scale invariance** (multiply the record by k, every percentage identical) it is
+  `test_scale_invariance_is_what_makes_more_reps_worthless` at k = 2, 3, 10, 97. The one bias that survives —
+  resolving only your winners — is **named and published** (`resolution_rate` beside every accuracy) rather than
+  claimed away; a test pins the honest failure case of 100% accuracy over 15% of the calls.
+- flagged (Rule #6) **and fixed**: `| T-01…14 | … | 13 studies + live |` parsed to a **13-rep floor on each of the
+  14 tape drills** — 182 reps for 14 sessions, the same class as aura D1-c and on the exact drills E5 wires. Fixed
+  in the wiki and re-seeded (`1 per drill *(…)*` → reps=1); seeds still 74/23/58/67 + 44/104 and **0 rubric
+  versions bumped**, as E3's `content_hash` design predicts.
+- flagged: **the `--reload` reloader died again**, precisely as the boot prompt warned. It printed
+  `Reloading...` for the migration file and never completed — `/api/predictions` returned **404, indistinguishable
+  from a nonexistent route**, while the worker served pre-E5 code. Caught by probing route liveness (403 = live and
+  auth-gated) *against a 404 control* rather than trusting the flag. Restarted **without `--reload`** for all
+  verification, so no reloader existed to die mid-measurement.
+- flagged: **one defect only the rendered surface could catch.** The calibration panel printed "0% of your calls
+  have an outcome recorded" one line under "no outcome has been recorded" — both true, together a contradiction
+  that destroyed the measured-vs-missing distinction the panel exists to draw. A query-layer check passes here,
+  because `resolution_rate: 0.0` is a correct measurement. Fixed, and pinned by asserting **no percentage of any
+  kind** appears on a record with nothing scored.
+- verified: **213 backend tests** (181 → +32) · `0011` reversible on a **scratch** DB with a single-step
+  `downgrade 0010` proof that leaves E3, E2 **and `0001`'s shared `update_updated_at()`** intact · the freeze
+  trigger **verified by disabling it** (test fails on `DID NOT RAISE`, passes with it on) · `STAGE_UNWIRED == {}`
+  asserted in a test · `tsc -b` + `vite build` clean · **Playwright 57/57, three consecutive clean runs** ·
+  `/api/analytics/*` + `/api/gate` **byte-identical** (`27ff7157…`, **re-captured after the re-seed** so the
+  comparison covers the content change) · live walkthrough: commit form with no outcome field → frozen call with no
+  edit/delete → mixed reveal rendering ✗ Bias · ✗ DOL · ✓ Model · ✗ Target and "Scored 83s later" → calibration
+  **25% of 4 judgements across 1 scored call** → M6 reading **FROM YOUR LOG** "1/14 called before the reveal" where
+  it previously said "no gate attestation covers this bar" → **reps held at 0/1 throughout** → **0 console errors**.
+- reconciled: [[concepts/architecture/learning-enforcement]] §E5 as-built + §Walked at E5 + status + §Implementation
+  split + a new contradiction flag; [[concepts/architecture/learning-platform]] §3b (new), §Component/API surface,
+  §Shared loaders; this tracker; `log.md`; `index.md`.
+- next: **run the E6 boot prompt below** — the last phase in the workstream.
+
+## Next Session Boot Prompt (Phase E6 — gamification + honesty surfaces) ⏭ ACTIVE
+
+Recommended launch: **Opus** (`claude --model opus[1m]`), then **`/effort high`**. Not for the CRUD — for the fact
+that this is the phase most likely to *undo* the workstream. Every prior phase made progress harder to fake; E6 adds
+the surfaces that make it feel rewarding, and §6 is explicit that the wrong reward **undermines** the Gate
+(Deci/Koestner/Ryan 1999, d ≈ −0.34 on tangible performance-contingent rewards). A badge shipped here would cost
+more than E2–E5 gained.
+
+Before you start: `docker start neurospect-learn-db` (:5433). ⚠️ Docker Desktop wedged hard on 2026-08-10 (engine
+died, `docker desktop restart` failed with `context deadline exceeded`, needed a force-kill of four
+`Docker Desktop.exe` + `com.docker.build.exe` then a relaunch). It was healthy all of the E5 session, so treat that
+as a known hazard, not an expectation.
+
+⚠️ **DO NOT TRUST `--reload`, and prove your routes are live before measuring anything.** It failed AGAIN at E5: the
+reloader printed `Reloading...` and never finished, so a new router 404'd exactly like a nonexistent route while the
+worker served stale code. **Run uvicorn WITHOUT `--reload`** (`poetry run uvicorn app.main:app --port 8000
+--log-level warning`) and restart it yourself after backend edits. Probe liveness discriminatingly: an auth-gated
+route answering **403** while `/api/nonexistent` answers **404** proves the app you think is loaded is loaded.
+
+⚠️ **:5173 — check the command line, do not assume.** The E4 prompt asserted it belonged to a different project of
+Paul's; at E5 `Get-CimInstance Win32_Process -Filter "ProcessId = N" | Select CommandLine, CreationDate` showed it
+was **this repo's own orphaned vite from three days earlier**. Playwright's `reuseExistingServer` is true locally, so
+a stale server means the battery silently runs without `webServer.env`. **Ask Paul before killing anything** — he
+approves a kill that is identified and explained, and declines a bare `Stop-Process`.
+
+STEP 0 — **capture the before-baseline**: `poetry run python scripts/evidence_baseline.py --out
+docs/evidence/e6-baseline-before.json`, and confirm it is still sha256 **`27ff7157…`** (unchanged across E2, E3, E4
+and E5). E6 touches *surfaces*, so a moved analytics or gate number is the single loudest possible signal that
+something went wrong. Re-capture at the end and prove byte-identical via `--compare`.
+
+GROUNDING: `neurospect-learn` is Paul's standalone learn-to-execute app for the Neurospect ICT / Smart-Money-Concepts
+trading-mastery project — FastAPI + Postgres (`api/`) + React 19 / Vite / TanStack Query (`app/`). Phase 5, its
+Phase-6 debt, and learning-enforcement **E2 · E3 · E4 · E5** are COMPLETE and shipped: curriculum + three graded
+tracks, Study Planner, model-aligned journal, expectancy, the computed non-overridable Readiness-to-Live Gate, the
+missed-trade log, stage exit bars on real evidence, `evidence_assets`/`evidence_grades` with `reps` **DERIVED**,
+wiki-projected `rubrics` + a `self_check` that may flag but never retract, the **AI vision second reader**
+(advisory, queued, cost-telemetered), and the **pre-commitment ledger + calibration score** — which emptied
+`stages.STAGE_UNWIRED` and closed E1's acceptance test. Migrations at **`0011`**; seeds 74 concepts / 23 track
+stages / 58 drills / 67 content pages / 44 rubrics / 104 items; **213 backend tests**, **Playwright 57**.
+
+BOOT / CONTEXT — read in this order, and read the first two IN FULL:
+1. The wiki `CLAUDE.md` — Isolation Rule, Architecture Doc Integrity (**code is ground truth; ONE canonical doc per
+   topic; LINK the corpus, never restate it**), the MANDATORY post-implementation reconciliation checklist, Rules #1
+   (**never modify `sources/`**) #3 (index.md) #4 (log.md) #6 (flag contradictions), Context Management (tell Paul at
+   >50%). **Paul handles git — NEVER commit.**
+2. `concepts/architecture/learning-enforcement.md` — **§6 is E6's entire specification, and it is mostly a list of
+   things NOT to build** (no XP, no badges, no points on rep count; informational feedback only; declared rest days
+   *in advance*, never a retroactive streak freeze). Then **§5 §Surfaced** — the honesty strip is the other half:
+   implausible rep pacing, back-dated `captured_at`, bulk marking, ungraded backlog, flagged-grade count, **computed
+   per read, never stored**, rendered on `/gate` "in the same *corroboration, not threshold* idiom §5g established:
+   shown in the face of the record, gating nothing on an invented rule." Also **§E2–§E5 as-built** and **§Invariants
+   + the four §Walked sections** — you owe a §Walked at E6 in the same format.
+3. THE CODE TO REUSE, NOT REINVENT: `api/app/services/gate.py` + `app/src/components/gate/` (the 5g surface the strip
+   attaches to), `api/app/routers/planner.py::_adherence` (the shipped streak / adherence / pace the design says to
+   make evidence-backed rather than replace), `api/app/services/calibration.py` (E5's pure computed-per-read scorer —
+   the exact shape a computed honesty signal should take), `api/app/models/evidence.py` (`captured_at` is
+   user-asserted, which is what makes back-dating a *signal* rather than a block), `api/app/models/study_preferences.py`
+   (where declared rest days belong).
+
+BUILD:
+  1. **The honesty strip on `/gate`** — the five §5 signals, computed per read, never stored, gating nothing. Each
+     one must state what it measured; a signal that cannot distinguish "clean" from "not measured" must say so
+     rather than render a reassuring zero (E5's `accuracy: None` is the precedent to copy).
+  2. **Make the shipped surfaces evidence-backed** — streak, adherence %, days-behind, pace already exist in
+     `_adherence`. §6 says no new currency, so **nothing new is minted**: they get re-derived from evidence, and
+     `reps_legacy > 0` is the ready-made honesty signal E2 left for exactly this phase.
+  3. **Declared rest days** in `study_preferences` — declared *in advance*, which is what keeps a streak honest.
+  4. Verify the whole thing did not become a score-chase. §6's own test: could a user raise any number here without
+     doing the work?
+
+E6 IS NOT: XP, badges, points, leaderboards or a retroactive streak freeze; re-opening that `reps` is derived, that
+a grade may not retract, that rubrics are wiki-projected and read-only, or that a prediction is frozen; making the
+calibration score gate anything; adding an override to the Gate.
+
+VERIFY (evidence, not inference):
+  · Any migration reversible via `scripts/scratch_migrate.py` (extend it with an `_E6` group, as E5 did — and if you
+    add a trigger function, assert `0001`'s `update_updated_at()` survives your downgrade); ⚠️ **NEVER
+    `alembic downgrade base` against the working DB**; seeds still 74/23/58/67 + 44/104 afterwards.
+  · **`STAGE_UNWIRED` stays empty** — E5 emptied it; a regression here is a regression of the whole workstream.
+  · **No honesty signal is stored**, and none of them gates anything — assert both, don't eyeball them.
+  · A signal that has not measured anything reports **NOT-MEASURED, never zero** — pin it like
+    `test_nothing_committed_reports_none_never_zero` does.
+  · `pytest` (report the new total vs **213**) · `tsc -b` + `vite build` clean · `npx playwright test` (vs **57**) at
+    default parallelism, three consecutive clean runs · a live claude-in-chrome walkthrough with **NO console
+    errors** — and read the RENDERED page, since E5's only real defect was a contradiction two correct API responses
+    could not have shown.
+  · `docs/evidence/e5-baseline-after.json` is the new before-baseline; re-capture and prove **byte-identical** via
+    `--compare` (still sha256 `27ff7157…`).
+  · Walk §Invariants one by one (§Walked at E2 / E3 / E4 / E5 is the format).
+
+RECONCILE + BOOKKEEP (MANDATORY — wiki CLAUDE.md §Architecture Doc Integrity): §E6 as-built + §Walked at E6 in
+`concepts/architecture/learning-enforcement.md`; `concepts/architecture/learning-platform.md` §Component/API surface;
+tracker phase status + Session Log; a row in `log.md`; bump `index.md`. **E6 is the LAST phase — so also write a
+short §Workstream retrospective rather than another boot prompt, and say plainly what remains unbuilt** (the
+`neurospect-learn` deployment is still unscoped — see §Contradiction flags). **Paul handles git — NEVER commit.**
+
+## Boot Prompt Archive (Phase E5 — pre-commitment + calibration) ✅ RUN 2026-08-10
 
 Recommended launch: **Opus** (`claude --model opus[1m]`), then **`/effort high`**. Not for the CRUD — for the one
 genuinely new mechanic in the whole workstream: a **calibration score** that is Goodhart-resistant, and a

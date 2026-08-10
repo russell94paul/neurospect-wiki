@@ -1,6 +1,6 @@
 ---
-tags: [architecture, learning-enforcement, evidence, grading, rubrics, self-check, ai-vision, anti-cheat, gamification, mastery, neurospect, phase-e1, phase-e2, phase-e3, phase-e4]
-aliases: [Learning Enforcement Architecture, Evidence Layer, Drill Grading, Verified Reps, Anti-Cheat Design, Rubric Layer, Self-Check]
+tags: [architecture, learning-enforcement, evidence, grading, rubrics, self-check, ai-vision, pre-commitment, calibration, anti-cheat, gamification, mastery, neurospect, phase-e1, phase-e2, phase-e3, phase-e4, phase-e5]
+aliases: [Learning Enforcement Architecture, Evidence Layer, Drill Grading, Verified Reps, Anti-Cheat Design, Rubric Layer, Self-Check, Pre-Commitment Ledger, Calibration Score]
 sources:
   - processes/distributed-workflow/active/learning-enforcement.md
   - concepts/architecture/learning-platform.md
@@ -15,7 +15,7 @@ created: 2026-07-28
 updated: 2026-08-10
 ---
 
-# Learning Enforcement — Architecture (E1 design · E2 + E3 as-built)
+# Learning Enforcement — Architecture (E1 design · E2–E5 as-built)
 
 Canonical design doc for the layer that makes progress in `neurospect-learn` **impossible to fake**: a rep
 counts only when **evidence of the work** exists, that evidence is **graded**, and the loop is **gamified**
@@ -23,16 +23,21 @@ without rewarding activity over mastery. It extends the shipped platform describ
 [[concepts/architecture/learning-platform]] and is sequenced by
 [[processes/distributed-workflow/active/learning-enforcement]].
 
-> **Status: E2 BUILT (2026-07-28) · E3 BUILT (2026-08-02) · E4 BUILT (2026-08-10); E5–E6 are still design.** The
-> evidence layer, the deterministic tier, the derived `reps`, the rubric layer, the self-check **and the AI vision
-> second reader** ship in `neurospect-learn` at Alembic `0010` (E4 needed no migration) — per [[CLAUDE]]
-> §Architecture Doc Integrity the **code is ground truth** for everything E2–E4 cover, and §E2/§E3/§E4 as-built below
-> record every divergence from the design in this doc. §§1–5 and §7–8 now describe *what is running*; **§9
-> (pre-commitment) and §6's mechanics remain unbuilt design for E5–E6.**
+> **Status: E2 BUILT (2026-07-28) · E3 BUILT (2026-08-02) · E4 BUILT (2026-08-10) · E5 BUILT (2026-08-10); only E6
+> remains design.** The evidence layer, the deterministic tier, the derived `reps`, the rubric layer, the self-check,
+> the AI vision second reader **and the pre-commitment ledger + calibration score** ship in `neurospect-learn` at
+> Alembic `0011` — per [[CLAUDE]] §Architecture Doc Integrity the **code is ground truth** for everything E2–E5 cover,
+> and §E2/§E3/§E4/§E5 as-built below record every divergence from the design in this doc. §§1–5, §7–9 now describe
+> *what is running*; **only §6's honesty surfaces + declared rest days remain unbuilt design, for E6.**
+>
+> 🎯 **`stages.STAGE_UNWIRED` IS EMPTY (E5) — the workstream's acceptance test from E1 is MET.** `ict_course` M6 was
+> its last entry; it is now derived from the pre-commitment ledger. Asserted, not eyeballed:
+> `tests/test_predictions.py::test_stage_unwired_is_empty_which_is_the_workstreams_acceptance_test`.
 >
 > ⚠️ **§2 tier 3's "cached rubric prefix" is WITHDRAWN, on measurement** — the stable prefix is 981 tokens against
 > Sonnet 5's 1024-token minimum, so it cached nothing. See §E4 as-built before re-adding any `cache_control`.
-> **One item is NOT closed:** the Playwright battery has not run since E4 landed (port conflict, §E4 as-built).
+> **E4's one open item is now CLOSED:** the Playwright battery ran at E5 STEP 0 — **50/50, three consecutive clean
+> runs** at default parallelism (66s / 52.9s / 50.5s), then **57/57** after E5's own spec landed.
 
 > **No-drift.** This doc states *structure and decisions*. It does not restate the mastery ladder, the
 > confidence scale, the Readiness-to-Live Gate, any drill definition, or any rubric text — it **links** them,
@@ -251,8 +256,11 @@ Each phase is a boot-promptable unit; sequenced in
   queue, advisory grades and cost telemetry, and the advisory surface with its disagreement signal. **No migration.**
   The design's *cached rubric prefix* and *Batch API* were both **rejected on evidence** — see §E4 as-built. Cost
   measured at **$0.0167/grade**, about half this doc's estimate. **Playwright not yet re-run.**
-- **E5 — Pre-commitment + calibration.** Prediction capture before reveal; calibration score; wires M6 and
-  empties `STAGE_UNWIRED`.
+- **E5 — Pre-commitment + calibration.** ✅ **BUILT 2026-08-10** — Alembic `0011` (`predictions` + the
+  `prediction_bias` enum + a freeze trigger); the commit/resolve/list API; the pure `services/calibration.py`;
+  `stages` `tape_studies` wiring that **emptied `STAGE_UNWIRED`**; and the two-step capture surface + calibration
+  panel. Backend tests **181 → 213**, Playwright **50 → 57**. The design's *soft-delete convention* was
+  **deliberately broken** here — see §E5 as-built.
 - **E6 — Gamification + honesty surfaces.** Computed honesty signals on `/gate`; evidence-backed streak /
   adherence; declared rest days.
 
@@ -610,6 +618,128 @@ correctly produced none) → **reps stayed at 2 throughout**, across an `ai_visi
 `npm run dev -- --port 5173 --strictPort`, and :5173 is held by a *different* project of Paul's; letting Playwright
 reuse that server would test the wrong codebase. The suite has not been run since E4 landed.
 
+## E5 as-built (2026-08-10) — code is now ground truth
+
+Shipped in `neurospect-learn`: Alembic **`0011`** (`predictions`, the `prediction_bias` enum, and the
+`predictions_freeze_the_call()` trigger), `models/prediction.py`, `schemas/prediction.py`,
+`services/calibration.py`, `routers/predictions.py`, the `tape_studies` wiring in `services/stages.py`
+(+ `TapeReads`, `TAPE_STUDY_DRILLS`), the ledger load in `routers/learning.py::load_stage_evidence`, and the
+frontend `lib/predictions.ts` + `components/predictions/{prediction-commit,calibration-panel}.tsx` wired into
+`DrillCard` (tape drills only) and `/drills`. Tests: `test_calibration.py` (10, DB-free) +
+`test_predictions.py` (19) + a rewritten M6 block in `test_stages.py`; **181 → 213 backend**, Playwright
+**50 → 57**. Reversibility harness extended with an `_E5` group in `scripts/scratch_migrate.py`.
+
+### THE LOAD-BEARING CALL — the anti-cheat is STRUCTURAL, and it required breaking a convention
+
+E5's one real decision was **which form of "cannot be back-dated" to actually build.** The design asks for a
+call "timestamped before the replay steps forward", but the app cannot see TradingView, so *preventing a peek
+is not achievable* — and claiming otherwise would have been the dishonest option. What IS achievable is that
+**the record cannot lie**, and that is enforced in three places, none of them application logic:
+
+1. **`committed_at` is `server_default now()`** and appears in no request schema. `PredictionCommit` has
+   `extra="forbid"` plus a validator so sending one is a 422 that *names* the field and says the server owns the
+   clock — the courtesy E2 established for a `reps` write.
+2. **The call is frozen by a DB trigger**, not by router discipline. `predictions_freeze_the_call()` raises on any
+   UPDATE touching `bias`/`dol`/`entry_model`/`target`/`drill_ref`/`committed_at`, and refuses a *second* reveal.
+   This is the §E2 argument reapplied: a guard must be remembered at every new write path, a structural property
+   cannot be forgotten. **Verified by removing it** — with the trigger disabled the freeze test fails on
+   `DID NOT RAISE`; with it enabled it passes (E3's "prove the guard is what makes the test pass" precedent).
+3. **`resolved_at >= committed_at` is a schema CHECK**, and resolution is all-or-nothing
+   (`ck_predictions_resolution_complete`, fails closed like `0009`'s subject CHECK).
+
+**⚠️ DIVERGENCE, deliberate: `predictions` has NO `is_deleted` column** — unlike `evidence_assets`,
+`journal_entries` and `missed_trades`, which all soft-delete. The reason is arithmetic: the calibration score is a
+**ratio**, so the way to inflate it is not to add volume but to make failures *disappear*. With no delete path and
+no edit path the **denominator can only grow**, which is what makes the score Goodhart-resistant *structurally*
+rather than by policy. There is also no PATCH and no DELETE route, pinned by a test that fails if one is ever
+added. Cost accepted: a mistyped call cannot be corrected — you commit a fresh one and the mistake stays in the
+record as unresolved, which the surface reports.
+
+### The calibration score, and the one bias it cannot remove
+
+Design §6 asserts the score is Goodhart-resistant "because more reps cannot inflate accuracy". Stated that way it
+is untestable, so E5 restated it as **scale invariance**: multiply the whole record by *k* and every percentage is
+identical. That is `test_scale_invariance_is_what_makes_more_reps_worthless` (k = 2, 3, 10, 97), and it is the test
+to read to know whether the property holds. Two more follow from it: an unresolved call moves no accuracy at all,
+and adding a wrong call can only lower it.
+
+**The one remaining bias is named rather than fixed:** resolving only the calls that went your way. The app cannot
+force a resolution, so `resolution_rate` is **published beside every accuracy** and the unresolved count is shown.
+`test_the_resolution_rate_exposes_the_one_remaining_bias` pins the honest failure case — a record can read 100%
+while only 15% of its calls were ever scored, and the surface says so.
+
+**A zero is not a nothing.** With nothing resolved, every accuracy is `None`, never `0.0` — an instrument that has
+seen nothing cannot report a zero. The panel says "committed, none scored yet — nothing to measure".
+
+### M6 is graded on COMMITMENT, not correctness
+
+`STAGE_EVIDENCE[("ict_course","M6")] = "tape_studies"`, met when all **14** of `TAPE_STUDY_DRILLS`
+(`ict-course T-01`…`T-14`) carry a call that was committed and then resolved. **Not when the calls were right** —
+pinned by `test_m6_is_met_even_when_every_single_call_was_wrong`, which scores all 14 as complete misses and
+asserts the bar is met while `/api/calibration` reports **0.0**. Gating a stage on accuracy would make calibration
+a currency and teach the user to stop writing down calls they might lose (§6, Deci/Koestner/Ryan 1999).
+
+M6 is concept-less, so `auto_met` stays False and the ict_course lock chain is **byte-identical** — wiring the bar
+moves `met` only. Also kept: `TapeReads.loaded` distinguishes "no calls committed" from "the ledger was not loaded
+for this call" (the planner's cheaper bundle), mirroring `gate_computed` — the row never guesses.
+
+### Divergences from the design
+
+- **The prediction is its own table, not an `evidence_asset`.** §1 makes `prediction` a first-class `evidence_kind`
+  and it stays one, but a bias/DOL/model/target call is structured data an image cannot hold. `predictions.evidence_id`
+  links the marked chart captured *with* the call. **The link is not a rep** — reps still come only from
+  `evidence_assets.reps_claimed`.
+- **`neutral` is a first-class bias, not "unsure".** T-04's Fed-speaker day names *standing aside* explicitly, and
+  it is scored like any other call — right when nothing trended, wrong when something did
+  (`test_a_neutral_call_is_scored_not_excused`). Forcing a long/short call there would train the opposite of the lesson.
+- **`entry_model` is REUSED from `0003`**, not re-minted. One model vocabulary, so a prediction and a journal entry
+  cannot disagree about what "london" means.
+- **The verdict is computed per read, never stored** — the `stages.py`/`gate.py` convention. There is no
+  `bias_correct` column to write.
+- **`seconds_to_reveal` is surfaced, not judged.** The app cannot prove a peek did not happen, so it reports the
+  interval and claims nothing more ("block the certain, surface the rest", §5).
+
+### The defect the rendered surface caught (the query layer was correct)
+
+The calibration panel printed **"0% of your calls have an outcome recorded"** one line beneath **"no outcome has
+been recorded"** — both true, but together they read as a contradiction and destroyed the very
+measured-vs-missing distinction the panel exists to draw. **A query-layer check would have passed**, because
+`resolution_rate: 0.0` is a perfectly correct measurement of "0 of 1 resolved". Fixed by rendering the backlog line
+only when something has actually been scored (it is a *qualifier on a score*, meaningless without one), and pinned
+by an assertion that **no percentage of any kind** appears on a record with nothing scored.
+
+### Wiki content fix — the tape drills' rep target (Rule #6)
+
+`| T-01…14 | … | 13 studies + live |` parsed via `services/rep_targets.py` to a **13-rep floor on EACH of the 14
+tape drills** — a 182-rep bar for what the page describes as 14 sessions. Same class as aura **D1-c**'s bogus
+50-rep floor, fixed at E3, and on the exact drills E5 wires. Fixed **in the wiki and re-seeded**, never patched
+around in code: `1 per drill *(T-01…T-13 studies + the T-14 live read)*` → **reps=1** (the `T-NN` forms are
+rejected by the parser's `(?<!-)` lookbehind, so no stray number binds). Seeds still **74/23/58/67 + 44/104**, and
+**0 rubric versions bumped** — exactly as E3 documented, since `content_hash` excludes rep targets, so a
+map-table cell cannot imply the bar moved.
+
+### Verified
+
+**213 backend tests** (181 → +32). `0011` up/down/up/base reversible on a **scratch** DB, including a tightened
+single-step proof that `downgrade 0010` removes exactly E5's objects — table, enum, both triggers **and its own
+trigger function** — while leaving E3's rubric layer, E2's evidence layer *and* `0001`'s shared
+`update_updated_at()` intact. Working-DB seeds intact across the migration and the re-seed
+(**74/23/58/67 + 44/104**). `tsc -b` + `vite build` clean. `/api/analytics/*` + `/api/gate` **byte-identical** to
+the STEP-0 baseline (sha256 `27ff7157…` — the same digest as E2, E3 and E4), **re-captured after the re-seed** so
+the comparison covers the content change too. **Playwright 57** (50 → +7): E4's outstanding battery ran first at
+50/50 over three consecutive clean runs, then 57/57.
+
+**Live walkthrough** (`neurospect-learn/api/docs/evidence/e5/`): on `ict-course T-01` the card showed the corrected
+`target: 1 per drill` and `0 / 1 reps` → the commit form rendered with **no outcome field anywhere** → a committed
+call rendered frozen (lock icon, server timestamp, no edit/delete affordance) reading "awaiting its outcome.
+Nothing is scored yet" → the reveal step appeared only then, *below* the unchanged call → recording a mixed outcome
+produced exactly **✗ Bias — Short · ✗ DOL · ✓ Model · ✗ Target** and "Scored 83s later — the call above could not
+change in between" → the calibration panel read **25% of 4 judgements across 1 scored call** with every figure
+carrying its denominator and no ring, target or streak → `/path/ict_course/M6` showed the row as **FROM YOUR LOG**
+(derived) reading "1/14 called before the reveal, then scored · not yet called: T-02, T-03, T-04, T-05…" where
+before E5 it read "no gate attestation covers this bar" and could never be met → **reps held at 0/1 throughout** →
+**zero console errors** (9 messages, all vite/React-DevTools info).
+
 ## Invariants this layer must preserve (checked at every phase)
 
 1. The Gate stays **non-overridable and computed per read** — no `cleared` column, and evidence adds no write
@@ -684,6 +814,34 @@ reuse that server would test the wrong codebase. The suite has not been run sinc
    the request body. Kept at the surface too: the panel renders **counts, not a percentage**, so it cannot read as a
    competing mark.
 
+### Walked at E5 (2026-08-10) — each one, explicitly
+
+1. **Gate non-overridable ✔** — no `cleared` column, request field or endpoint was added; `services/gate.py` is
+   **untouched** (confirmed in the diff) and reads no prediction. `/api/gate` is byte-identical to the STEP-0
+   baseline (`27ff7157…`), re-captured after the re-seed.
+2. **Frontier never gate-eligible ✔** — `watch_only` handling is untouched. A prediction is **drill-scoped** and
+   writes only the `predictions` table; M6's row is a stage requirement, so nothing here can reach a concept's
+   Can-mark cap or lift a frontier concept.
+3. **Skips still logged ✔** — `plan_item_status` and `_adherence` are unmodified; `routers/planner.py` is untouched
+   (diff), and E5 added no planner path. `load_stage_evidence` gained the ledger load, which the planner's
+   `with_gate=False` bundle also gets — and `TapeReads.loaded` keeps it honest either way.
+4. **Backtest ≠ live ✔** — nothing in E5 touches `journal_entries.mode`, `expectancy.py` or `opportunity_cost.py`
+   (all three untouched in the diff); the byte-identical analytics snapshot is the proof. A prediction is not a
+   trade: it never enters expectancy, and `predictions` has no R, no fill and no P&L.
+5. **`reps` strictly harder, never easier ✔ — and unchanged in E5.** The `predictions` table mints no rep and the
+   derivation is untouched. Pinned by `test_committing_and_resolving_a_call_mints_no_rep` (commit + resolve on three
+   tape drills, drill reps identical before/after) and shown at the surface: reps held at **0 / 1** through a
+   committed *and* scored call. E2's three-endpoint bypass test and E3's `test_a_self_check_never_moves_a_rep` both
+   still pass inside the 213.
+6. **`auto_met` / `locked` still concept-based ✔** — M6 is concept-less, so `_generic_reqs` returns `auto_met=False`
+   as before and wiring the bar moves `met` only. Pinned twice: `test_wiring_m6_moves_met_only_never_auto_met_or_the_lock_chain`
+   compares the whole `(stage_code, auto_met, locked)` signature across all 14 calls being committed and resolved,
+   and `predictions.spec.ts` asserts the same signature on the rendered track.
+7. **Advisory score never writes `confidence` / `ladder_stage` ✔** — the calibration score is **computed per read and
+   never stored at all**: there is no column to write and nothing reads it into either user-owned field, which stay
+   written exclusively by `PATCH /api/progress` from the request body. Kept at the surface too: the panel states
+   that it gates nothing, and M6's bar is deliberately indifferent to whether the calls were right.
+
 ## Contradiction flags (per [[CLAUDE]] Rule #6)
 
 1. **Cost — now MEASURED, and lower than this doc's own estimate.** The tracker warned that per-rep vision calls
@@ -707,7 +865,11 @@ reuse that server would test the wrong codebase. The suite has not been run sinc
    [[concepts/architecture/learning-platform]] made for `phase3-frontend-structure`. Note the spec also describes
    the older `neurospect-app` `trades` schema, where a child table is still the right shape; what is stale is
    only the implication that `neurospect-learn` will grow one.
-5. **Unverified sources, labelled.** Duolingo's streak-freeze figures (≈21% churn reduction, +14% D14
+5. **The tape drills' rep target was a parse artifact — FIXED at E5.** `| T-01…14 | … | 13 studies + live |` gave
+   **every one** of the 14 tape drills a 13-rep floor (182 reps for 14 sessions). Same class as aura D1-c, fixed the
+   same way: in the wiki, re-seeded, `1 per drill *(T-01…T-13 studies + the T-14 live read)*` → reps=1. Recorded here
+   because it changed a *published bar*, and because the flag is the audit trail for why the number moved.
+6. **Unverified sources, labelled.** Duolingo's streak-freeze figures (≈21% churn reduction, +14% D14
    retention) come only from vendor and secondary blogs — **unverified**, and no decision here rests on them.
    MeasureBench and Deci/Koestner/Ryan 1999 are primary and are what the design leans on.
 

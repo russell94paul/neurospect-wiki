@@ -670,7 +670,7 @@ migration) — record-keeping only. Verified: 114 backend tests, Playwright 36/3
 - ops note: the stale uvicorn on :8000 predated the gate router, so it was restarted (`poetry run uvicorn
   app.main:app --port 8000`); the DB container + dev server on :5173 were already up and are left running.
 - next: **Phase 5 is complete.** *(Amended 2026-07-25: the candidate follow-ups listed here were scoped with
-  Paul into **Phase 6 — Phase-5 debt**, now ⏭ ACTIVE below — the stage-attestation wiring, the missed-trade log,
+  Paul into **Phase 6 — Phase-5 debt** (active at the time; ✅ EXECUTED 2026-07-25) — the stage-attestation wiring, the missed-trade log,
   and `position_size`. Screenshots were deliberately excluded and, with the grading/anti-cheat/gamification
   vision, moved to [[processes/distributed-workflow/active/learning-enforcement]]. Deploy/hosting and live
   commentary remain unscoped.)*
