@@ -688,12 +688,18 @@ Before you start: `docker start neurospect-learn-db` (:5433, seeds present), the
 taken against the old build before it was caught. Confirm a restart (a `WatchFiles detected changes` line, or
 just restart it yourself) before believing any before/after number.
 
-**CREDENTIAL:** run `ant auth status` **before** asking for a key — an unset `ANTHROPIC_API_KEY` does NOT
-mean there is no credential (the SDK also reads `ANTHROPIC_AUTH_TOKEN` and an `ant auth login` profile). On
-2026-08-09 the profile existed but its token had **expired on 2026-06-29**, and Paul chose to refresh it via
-`ant auth login` rather than put a key in `.env`. **Ask Paul before using any credential**, and never echo it.
-Flagged for Paul (Rule #6): that profile is an **ALDC org** credential, so Neurospect grading spend bills to
-ALDC — worth revisiting if this ever runs at volume.
+**CREDENTIAL — ⛔ THE `ant` PROFILE IS A DEAD END. MEASURED 2026-08-09, do not retry it.**
+`ant auth login` succeeds and the profile is valid, but the ALDC org **has no API credit balance**, so every
+call returns `400 invalid_request_error: "Your credit balance is too low to access the Anthropic API"`
+(request_id `req_011CdtCdBB6Mzf7iRobnMDkw`). Auth is not the blocker — **billing is**. Re-running
+`ant auth login` will not help.
+
+**A PERSONAL `ANTHROPIC_API_KEY` IS THE PATH** (and is the better answer anyway — it keeps this personal
+project's spend off the ALDC org, which was already flagged as questionable before the balance turned out
+to be zero). Paul sets `ANTHROPIC_API_KEY` in the environment or in `neurospect-learn/api/.env`; the SDK
+picks it up ahead of the profile with no code change. **Ask Paul before using any credential**, never echo
+it, and note an unset `ANTHROPIC_API_KEY` does NOT by itself mean there is no credential — check
+`ant auth status` too.
 
 **⚠️ THE E4 SERVICE LAYER IS ALREADY WRITTEN — committed 2026-08-09 as `c26bcec`.** You are NOT starting
 from a blank page; you are starting from working-but-**unverified** code. Note the commit says
