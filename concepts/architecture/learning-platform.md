@@ -438,6 +438,13 @@ tables (`drills`, `drill_progress`) + the `drill_variant` enum; 5e-2 added two m
   projected items) changes, so a historical grade's `rubric_version` still names the bar it was judged against.
   **E3 added NO grading table** — the user's answer is an `evidence_grades` row with `grader='self_check'`, which
   `0009` already provided. Canonical in [[concepts/architecture/learning-enforcement]] §3 + §E3 as-built.
+- **E4 added NO table and NO migration either (as-built 2026-08-10).** The AI second reader is an `evidence_grades`
+  row with `grader='ai_vision'`, and it is also the **queue**: the row is written `state='pending'` inside the
+  upload's own transaction (so a rolled-back capture takes its queue entry with it) and drained by an in-process
+  worker, with a startup sweep for rows orphaned by a restart. `pending`/`ungraded` have been first-class
+  `evidence_grade_state` values since `0009`, and `model`/`input_tokens`/`output_tokens`/`cost_usd` have been
+  waiting on that table since then — E4 is the first thing to fill them (**measured $0.0167/grade**). Queued for
+  **drill** subjects only. Canonical in [[concepts/architecture/learning-enforcement]] §2 tier 3 + §E4 as-built.
 - **`study_preferences` (5e-2, as-built — Alembic 0006)** — user-scoped, soft-deleted, one active row/user
   (`UNIQUE (user_id) WHERE NOT is_deleted`): `timezone` (IANA text, default `UTC`), `mon_minutes … sun_minutes`
   (7 `SMALLINT`, 0 = day off; `CHECK ≥ 0`), `max_session_minutes` (`CHECK > 0`, default 60), `blackout_dates`
@@ -649,6 +656,22 @@ record; the future is always recomputed from current state** — is the elite ad
   a per-capture ROW layout when a bar exists. `lib/rubrics.ts` holds `rubricKeys` + `useRubricCatalog`/`useRubrics`
   + `useSelfCheck` and the grading-state helpers; a self-check invalidates **only** `evidenceKeys.all` — not
   `learningKeys`/`plannerKeys` — because a grade deliberately moves no rep.
+- **AI second-reader components (E4, as-built 2026-08-10):** `AiReading` (`components/evidence/ai-reading.tsx`) sits
+  **under** `SelfCheck` in the same capture row — the user's own check first, because that is what makes the rep
+  graded; the advisory read second and quieter, so it can never be mistaken for the bar. It renders **counts, never a
+  percentage** ("could see 3 of 4"): the grade carries an advisory `score`, and showing it beside the self-check's own
+  "%" would read as a competing mark on the work. States: `pending` → "Second reader is looking at this…",
+  `ungraded` → "couldn't read this one — your reps are unaffected", **no grade at all → renders nothing** (silence
+  beats an empty panel). Its real content is the **disagreement** signal, computed in both directions and deciding
+  nothing — `unseen` (ticked but the reader could not see it, usually a fact about the *capture*) and `unclaimed`
+  (the reader saw it, the user did not tick it); `possibly_present` is never a disagreement because a hedge is not
+  evidence, and when the user has not self-checked at all **no disagreements are shown**, since there is nothing to
+  disagree with. `RubricText` was **extracted to `components/evidence/rubric-text.tsx`** so both surfaces share one
+  renderer — the live walkthrough caught `AiReading` printing raw `*actual*` / `**two**` markers, the exact defect E3
+  verified the self-check against, and a second copy of the parser would have been free to drift. `lib/ai-grade.ts`
+  holds the closed vocabularies + helpers; `useEvidenceCatalog` gained a `refetchInterval` that polls **only while a
+  read is outstanding** (the grade resolves asynchronously) and stops otherwise, so the steady state on `/drills` —
+  where 58 capture panels share that one query — is still zero background traffic.
 - **E3 perf note — two N+1 query fixes:** `/drills` mounts an `EvidenceCapture` per drill (58 of them), and both
   `useEvidence` and the first cut of `useRubrics` keyed per subject, so a single page load fired **~116**
   near-identical requests, saturated the browser's 6-connection-per-origin limit and queued the user's own upload

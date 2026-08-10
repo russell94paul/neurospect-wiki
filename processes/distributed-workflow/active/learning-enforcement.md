@@ -25,14 +25,18 @@ this workstream makes the progress in it **impossible to fake**.
 > E4 — see its boot prompt). As-built + every divergence:
 > [[concepts/architecture/learning-enforcement]] §E3 as-built.
 >
-> **Phase E4 is PART-BUILT and NOT verified (2026-08-09).** STEP 0 is fully closed (the flake diagnosed
-> 2026-08-07; the live self-check walkthrough passed 2026-08-09). The E4 **service layer is written and
-> uncommitted** — `ai_grader.py` + `ai_grade_queue.py` + the wiring — with four decisions recorded in the
-> session log, two of which **correct the design**: the **Batch API is rejected** (it would trade the phase's
-> own reward mechanism for ~$10) and the **cached prefix holds the instructions, not the rubric** (a rubric
-> prefix is per-drill and under Sonnet 5's 1024-token minimum, so it would cache *nothing*, silently).
-> **No tests, no frontend, no live call — so cost is still unmeasured and the caching claim unproven.**
-> E4's continuation boot prompt is ⏭ ACTIVE below and starts from that code, not a blank page.
+> **Phase E4 is BUILT (2026-08-10) — with ONE item open: the Playwright battery has not run.** The AI vision
+> second reader ships: closed-enum verdict schema, a durable `pending`-row queue (no migration), live cost
+> telemetry, and the advisory surface with a two-directional **disagreement** signal. **Two of the design's three
+> mechanisms were rejected on evidence** — the Batch API (it would trade the phase's own reward mechanism for ~$10),
+> and then the **cached prefix itself**: measured at **981 tokens against Sonnet 5's 1024-token minimum**, it cached
+> *nothing and reported no error*. Withdrawn rather than padded (chasing it was worth ~$1.35 across the curriculum,
+> and the 1.25× write premium would likely have made it a net loss). Cost is now **measured: $0.0167/grade ⇒ ~$8.37**
+> for the curriculum, about half this doc's estimate — flagged under Rule #6. Two defects that made the *documented*
+> setup impossible were found and fixed (`extra="forbid"` crashed the app on an `ANTHROPIC_API_KEY` in `.env`; and
+> `.env` never reached the SDK at all). **181 backend tests**, baseline byte-identical (`27ff7157…`), live
+> walkthrough clean. **Playwright is blocked on a port conflict with another project and is E5's STEP 0.**
+> E5's boot prompt is ⏭ ACTIVE below.
 >
 > *Historical (2026-07-28): Phases E1 + E2 complete. The layer is REAL, not theatre — `reps` is no longer
 > writable by any endpoint.* E1 landed the canonical design at [[concepts/architecture/learning-enforcement]]
@@ -218,10 +222,19 @@ heuristic mangled all four; a parser that can mangle wiki text is a parser that 
 the `self_check` `evidence_grades` row, `SelfCheck` on the capture surface, and the wiki content pass.
 As-built + every divergence: [[concepts/architecture/learning-enforcement]] §E3 as-built.
 
-### Phase E4 — AI vision second reader
-Claude Sonnet 5 with a structured-output verdict schema, the rubric held in a `cache_control` system prefix,
-run through the Batch API. Advisory `score` + per-item findings + flags, with model/token cost telemetry.
-**Never blocks, never retracts, and never writes `confidence` or `ladder_stage`.**
+### Phase E4 — AI vision second reader ✅ **COMPLETE 2026-08-10** (one item open: Playwright)
+Shipped with **two of the design's three mechanisms rejected on evidence**. The Batch API went first (a 50%
+discount on a curriculum already priced at not-the-binding-constraint, bought with up-to-24h latency that blunts
+the very informational-feedback mechanism §6 rests on). Then the **cached prefix went too, on measurement**: the
+stable instruction block is **981 tokens against Sonnet 5's 1024-token minimum**, so it cached *nothing and
+reported no error* — the exact silent no-op the phase existed to prevent. Withdrawn rather than padded, because
+chasing it was worth **~$1.35 across the whole curriculum** and the write premium would likely have made it a net
+loss. What survived is what mattered: the grade is **queued** (a durable `pending` DB row, so no migration), the
+verdict schema is closed enums with **no numeric field anywhere** so a price claim is unrepresentable, and cost is
+now **measured at $0.0167/grade** (~half this doc's estimate). Advisory surface ships with a **disagreement**
+signal in both directions. **Never blocks, never retracts, never writes `confidence` or `ladder_stage`** — held at
+the surface too, where it renders counts rather than a percentage. As-built + every divergence:
+[[concepts/architecture/learning-enforcement]] §E4 as-built.
 
 ### Phase E5 — Pre-commitment + calibration
 `prediction` evidence captured **before** the outcome is revealed (bias · DOL · model · target, timestamped),
@@ -675,7 +688,130 @@ Consequences a future session should not re-litigate:
 - next: **run the E4 continuation boot prompt below.** It starts from working-but-unverified code, not a
   blank page.
 
-## Next Session Boot Prompt (Phase E4 — AI vision second reader) ⏭ ACTIVE
+### 2026-08-10 — Phase E4 BUILT: the second reader ships, and two of its three mechanisms were rejected on measurement
+
+- approach: ran STEP 6 (measure) **first**, exactly as the boot prompt insisted, because it was the only step that
+  could invalidate committed code. It did.
+- **decided (Paul, AskUserQuestion) — WITHDRAW the caching claim.** Measured: the stable instruction block is
+  **981 tokens** against Sonnet 5's **1024**-token minimum cacheable prefix — 43 short, so `cache_control` there
+  cached nothing and said nothing. Measured as a *difference* (988 whole-request − 7 baseline), because
+  `count_tokens` reports the entire request and reading the combined figure against the threshold can report a
+  false PASS. Options were grow-the-block or withdraw; withdrawn on the numbers — a cache read saves ~$0.0027/grade
+  (**~$1.35 across the whole ~500-unit curriculum**) against a ~2,700-token image, and at a 5-minute TTL with
+  sporadic uploads most grades would pay the **1.25× write premium** and never be read, so as designed it likely
+  cost *more* than not caching. Padding to 1024 would be writing instruction text to satisfy a token threshold.
+  The probe now **guards** the conclusion (`⚠ REOPENED` if the block ever clears the minimum) rather than asserting
+  the old claim. Note 981 already clears **Opus 5's 512** — the conclusion is model-specific.
+- **flagged (Rule #6) — cost is about half the design's estimate.** Measured on a live 1920×1080 grade:
+  **$0.0167/grade ⇒ ~$8.37** for ~500 units, against the design's $0.02–0.04 and $15–25. Two causes worth keeping:
+  the closed-enum schema makes the verdict tiny (**204** output tokens vs an assumed ~500), and there is no cache
+  write. **The counting basis is stated because it changes the answer** — the 900×520 test fixture understates a
+  real capture by ~2,000 input tokens, and projecting from `count_tokens` understates by a further ~680 because
+  `output_config.format` renders the schema into the prompt. The headline is a live grade, not a projection.
+- **found + fixed two defects that made the documented setup impossible.** (1) `Settings` used pydantic-settings'
+  default `extra="forbid"`, so `ANTHROPIC_API_KEY` in `api/.env` crashed the app at import — alembic, uvicorn *and*
+  pytest all died on `extra_forbidden`. (2) Even fixed, the key never reached the SDK: pydantic-settings reads
+  `.env` into `Settings` and never populates `os.environ`, where the SDK looks (verified: `in process env: False`).
+  **The boot prompt's own claim that the SDK picks it up from `api/.env` with no code change was false.** Fixed with
+  `extra="ignore"` (which *preserves* the no-api-key-setting decision) + an anchored `load_dotenv(..., override=False)`.
+- did: reviewed the committed service layer rather than rewriting it; **21 new tests**, all DB-free and network-free
+  by design (Paul's normal local state has no credential, and a suite that needed one would fail for the wrong
+  reason); the frontend `lib/ai-grade.ts` + `AiReading` + the extracted `RubricText`; probe rewritten to measure
+  honestly and to use **two different drills** so a cache read would have been discriminating.
+- **the live walkthrough caught a real defect the query layer could not**: `AiReading` printed
+  `write your *actual* daily routine` with literal asterisks — the *exact* thing E3 verified the self-check against.
+  `RubricText` now lives in its own module serving both surfaces, because a second copy would drift.
+- verified: **181 backend tests** (160 → +21) · `tsc -b` + `vite build` clean · `/api/analytics/*` + `/api/gate`
+  **byte-identical** to STEP 0 (`27ff7157…`) · live walkthrough: paste → `pending` "looking at this…" → resolved in
+  ~10s with full telemetry (`in=4563 out=212 $0.016869`) → per-item findings with emphasis rendered and no raw `**`
+  → a 2-of-4 self-check produced exactly **2 disagreements** → **reps held at 2** through a 0.00/flagged AI grade
+  *and* a 50% partial check → the older capture kept "Meets the bar · 100%" with no reader row → **0 console errors**.
+- **NOT done — do not call E4 fully green:** the **Playwright battery has not run**. Its `webServer` is
+  `npm run dev -- --port 5173 --strictPort`, and :5173 is held by a *different* project of Paul's; reusing that
+  server would have tested the wrong codebase, and killing it was not mine to do. This is E5's first STEP 0 item.
+- also flagged: the API key was partially echoed into the session transcript by a pydantic validation error —
+  **recommend rotating it.**
+- next: **run the E5 boot prompt below.**
+
+## Next Session Boot Prompt (Phase E5 — pre-commitment + calibration) ⏭ ACTIVE
+
+Recommended launch: **Opus** (`claude --model opus[1m]`), then **`/effort high`**. Not for the CRUD — for the one
+genuinely new mechanic in the whole workstream: a **calibration score** that is Goodhart-resistant, and a
+pre-commitment primitive whose whole value is that it is *timestamped before the reveal*. Get those two wrong and
+E5 is theatre.
+
+Before you start: `docker start neurospect-learn-db` (:5433). ⚠️ **Docker Desktop wedged hard on 2026-08-10** — the
+engine died mid-session, `docker desktop restart` failed with `context deadline exceeded`, and it took a force-kill
+of four `Docker Desktop.exe` + `com.docker.build.exe` then a relaunch. If `npipe:////./pipe/dockerDesktopLinuxEngine`
+is missing, go straight to that; `wsl --shutdown` alone did not fix it.
+
+⚠️ **CHECK FOR STALE SERVERS BEFORE BELIEVING ANYTHING.** On 2026-08-10 both :8000 and :5173 were held by processes
+from **2026-08-07** — a uvicorn `--reload` whose reloader had died, and an orphaned vite. The stale uvicorn silently
+blocked the new one from binding. `Get-NetTCPConnection -LocalPort 8000 -State Listen` then
+`Get-CimInstance Win32_Process -Filter "ProcessId = N" | Select CommandLine, CreationDate` tells you *what* and
+*how old* before you trust a measurement. **:5173 belongs to a DIFFERENT neurospect project of Paul's — do not kill
+it.** This is the same class of trap that cost E3 a whole before/after measurement.
+
+STEP 0 — **run the Playwright battery E4 could not.** It is the one E4 item left open, and it must close before E5
+adds surfaces. `npx playwright test` at **default parallelism, three consecutive clean runs** (E3 baseline: 50 tests;
+2026-08-07 timings 49.4s / 45.7s / 46.4s). Its `webServer` needs **:5173 free** — ask Paul to stop the other
+project's server for the run, or temporarily point `webServer.command` + `BASE_URL` at another port. **If it flakes,
+do NOT re-derive the 2026-08-07 diagnosis** — go straight to whether uvicorn restarted mid-run (that reproduced the
+signature exactly; the duplicate-scan and pool-exhaustion suspects were both ruled out on measurement).
+
+GROUNDING: `neurospect-learn` is Paul's standalone learn-to-execute app for the Neurospect ICT / Smart-Money-Concepts
+trading-mastery project — FastAPI + Postgres (`api/`) + React 19 / Vite / TanStack Query (`app/`). Phase 5, its Phase-6
+debt, and learning-enforcement **E2 · E3 · E4** are COMPLETE and shipped: curriculum + three graded tracks, Study
+Planner, model-aligned journal, expectancy, the computed non-overridable Readiness-to-Live Gate, the missed-trade log,
+stage exit bars on real evidence, `evidence_assets`/`evidence_grades` with `reps` **DERIVED** from uploaded evidence,
+`rubrics`/`rubric_items` **projected verbatim from the wiki** with a `self_check` that may flag but never retract, and
+the **AI vision second reader** (advisory, queued, cost-telemetered, non-blocking). Migrations at `0010`; seeds
+74 concepts / 23 track stages / 58 drills / 67 content pages / 44 rubrics / 104 items; **181 backend tests**,
+Playwright 50 (unverified since E4).
+
+BOOT / CONTEXT — read in this order, and read the first two IN FULL:
+1. The wiki `CLAUDE.md` — Isolation Rule, Architecture Doc Integrity (**code is ground truth; ONE canonical doc per
+   topic; LINK the corpus, never restate it**), the MANDATORY post-implementation reconciliation checklist, Rules #1
+   (**never modify `sources/`**) #3 (index.md) #4 (log.md) #6 (flag contradictions), Context Management (tell Paul at
+   >50%). **Paul handles git — NEVER commit.**
+2. `concepts/architecture/learning-enforcement.md` — especially **§9 (the M6 case)**, which is E5's specification;
+   **§6** (the calibration score is the ONE new mechanic, and it is informational feedback, not a reward);
+   **§1** (`prediction` is already a first-class `evidence_kind`); **§E2/§E3/§E4 as-built**; **§Invariants + the three
+   §Walked sections** — you owe a §Walked at E5 in the same format.
+3. THE CODE TO REUSE, NOT REINVENT: `api/app/services/stages.py` (**`STAGE_UNWIRED` is the acceptance test — E5 must
+   empty it**), `api/app/services/rep_targets.py`, `api/app/routers/evidence.py` (the additive-grade write shape),
+   `api/app/models/evidence.py`, `api/tests/{test_ai_grader.py,evidence_helpers.py}` (the harness, and the fake-transport
+   pattern that keeps tests off the network).
+
+BUILD:
+  1. **`prediction` capture that is worthless unless it precedes the reveal.** Bias · DOL · model · target, committed
+     and timestamped BEFORE the user steps the replay forward. The anti-cheat value is entirely in that ordering, so
+     the design must make a *late* prediction either impossible or visibly late — decide which, and say why.
+  2. **The calibration score.** §6 calls it Goodhart-resistant *because more reps cannot inflate accuracy* — hold that
+     property and state how you verified it. It is **informational feedback**, so it must not become a currency.
+  3. **Wire `ict_course` M6** on T-01…T-14 and **empty `stages.STAGE_UNWIRED`** — E1's acceptance test, unmet since 5e.
+  4. Surface it without turning it into a score-chase (§6, Deci/Koestner/Ryan 1999).
+
+E5 IS NOT: gamification, XP, or the `/gate` honesty strip (E6); re-opening that `reps` is derived, that a grade may not
+retract, or that rubrics are wiki-projected and read-only; redesigning the shipped enforcement — build ON those.
+
+VERIFY (evidence, not inference):
+  · Any migration reversible via `scripts/scratch_migrate.py`; ⚠️ **NEVER `alembic downgrade base` against the working
+    DB**; seeds still 74/23/58/67 + 44/104 afterwards.
+  · **`STAGE_UNWIRED` is empty** — the phase's acceptance test, asserted in a test rather than eyeballed.
+  · **A prediction cannot be back-dated into a win**; prove the ordering property directly.
+  · `pytest` (report the new total vs **181**) · `tsc -b` + `vite build` clean · `npx playwright test` (vs **50**) at
+    default parallelism, three consecutive clean runs · a live claude-in-chrome walkthrough with **NO console errors**.
+  · `docs/evidence/e4-baseline-after.json` is the new before-baseline; re-capture at the end and prove **byte-identical**
+    via `--compare` (still sha256 `27ff7157…` — unchanged across E2, E3 and E4).
+  · Walk §Invariants one by one (§Walked at E2 / E3 / E4 is the format).
+
+RECONCILE + BOOKKEEP (MANDATORY — wiki CLAUDE.md §Architecture Doc Integrity): §E5 as-built + §Walked at E5 in
+`concepts/architecture/learning-enforcement.md`; `concepts/architecture/learning-platform.md` §Progress data model +
+§Component/API surface; tracker phase status + Session Log + the **E6 boot prompt**; a row in `log.md`; bump `index.md`.
+**Paul handles git — NEVER commit.**
+
+## Boot Prompt Archive (Phase E4 — AI vision second reader) ✅ RUN 2026-08-10
 
 Recommended launch: **Opus** (`claude --model opus[1m]`), then **`/effort high`**. Not for the API plumbing — for
 two judgement calls: the **verdict schema** (what a vision model may and may not be asked, given that

@@ -1,5 +1,5 @@
 ---
-tags: [architecture, learning-enforcement, evidence, grading, rubrics, self-check, anti-cheat, gamification, mastery, neurospect, phase-e1, phase-e2, phase-e3]
+tags: [architecture, learning-enforcement, evidence, grading, rubrics, self-check, ai-vision, anti-cheat, gamification, mastery, neurospect, phase-e1, phase-e2, phase-e3, phase-e4]
 aliases: [Learning Enforcement Architecture, Evidence Layer, Drill Grading, Verified Reps, Anti-Cheat Design, Rubric Layer, Self-Check]
 sources:
   - processes/distributed-workflow/active/learning-enforcement.md
@@ -12,7 +12,7 @@ sources:
   - "MeasureBench — Do Vision-Language Models Measure Up? Benchmarking Visual Measurement Reading (arXiv 2510.26865)"
   - "Deci, Koestner & Ryan (1999) — A meta-analytic review of experiments examining the effects of extrinsic rewards on intrinsic motivation (128 studies)"
 created: 2026-07-28
-updated: 2026-08-02
+updated: 2026-08-10
 ---
 
 # Learning Enforcement — Architecture (E1 design · E2 + E3 as-built)
@@ -23,12 +23,16 @@ without rewarding activity over mastery. It extends the shipped platform describ
 [[concepts/architecture/learning-platform]] and is sequenced by
 [[processes/distributed-workflow/active/learning-enforcement]].
 
-> **Status: E2 BUILT (2026-07-28) · E3 BUILT (2026-08-02); E4–E6 are still design.** The evidence layer, the
-> deterministic tier, the derived `reps`, the rubric layer and the self-check **ship** in `neurospect-learn` at
-> Alembic `0010` — per [[CLAUDE]] §Architecture Doc Integrity the **code is ground truth** for everything E2 and
-> E3 cover, and §E2 as-built / §E3 as-built below record every divergence from the design in this doc. §§1–5 and
-> §7–8 now describe *what is running*; **§2 tier 3 (AI vision), §9 (pre-commitment) and §6's mechanics remain
-> unbuilt design for E4–E6.**
+> **Status: E2 BUILT (2026-07-28) · E3 BUILT (2026-08-02) · E4 BUILT (2026-08-10); E5–E6 are still design.** The
+> evidence layer, the deterministic tier, the derived `reps`, the rubric layer, the self-check **and the AI vision
+> second reader** ship in `neurospect-learn` at Alembic `0010` (E4 needed no migration) — per [[CLAUDE]]
+> §Architecture Doc Integrity the **code is ground truth** for everything E2–E4 cover, and §E2/§E3/§E4 as-built below
+> record every divergence from the design in this doc. §§1–5 and §7–8 now describe *what is running*; **§9
+> (pre-commitment) and §6's mechanics remain unbuilt design for E5–E6.**
+>
+> ⚠️ **§2 tier 3's "cached rubric prefix" is WITHDRAWN, on measurement** — the stable prefix is 981 tokens against
+> Sonnet 5's 1024-token minimum, so it cached nothing. See §E4 as-built before re-adding any `cache_control`.
+> **One item is NOT closed:** the Playwright battery has not run since E4 landed (port conflict, §E4 as-built).
 
 > **No-drift.** This doc states *structure and decisions*. It does not restate the mastery ladder, the
 > confidence scale, the Readiness-to-Live Gate, any drill definition, or any rubric text — it **links** them,
@@ -243,8 +247,10 @@ Each phase is a boot-promptable unit; sequenced in
   no-drift proof; the read-only rubric API; the `self_check` grade; the self-check UI; and the targeted wiki
   content pass (all seven named drills fixed, orphan refs 5 → 0). **An unchecked rep still counts** — see §E3
   as-built.
-- **E4 — AI vision second reader.** Sonnet 5 + structured outputs + cached rubric prefix + Batch API;
-  advisory grades, flags, cost telemetry.
+- **E4 — AI vision second reader.** ✅ **BUILT 2026-08-10** — Sonnet 5 + structured outputs, a durable `pending`-row
+  queue, advisory grades and cost telemetry, and the advisory surface with its disagreement signal. **No migration.**
+  The design's *cached rubric prefix* and *Batch API* were both **rejected on evidence** — see §E4 as-built. Cost
+  measured at **$0.0167/grade**, about half this doc's estimate. **Playwright not yet re-run.**
 - **E5 — Pre-commitment + calibration.** Prediction capture before reveal; calibration score; wires M6 and
   empties `STAGE_UNWIRED`.
 - **E6 — Gamification + honesty surfaces.** Computed honesty signals on `/gate`; evidence-backed streak /
@@ -485,6 +491,125 @@ genuine defects found on the way — the N+1 request storms and a **latent date-
 Sunday, fixed by giving *today* explicit capacity) — are both fixed. What remains is unproven and must not be
 called green: see the tracker's E4 boot prompt for the first diagnostic step.
 
+## E4 as-built (2026-08-10) — code is now ground truth
+
+Shipped in `neurospect-learn`: `services/ai_grader.py` + `services/ai_grade_queue.py`, `storage.storage_read_bytes()`,
+the enqueue in `routers/evidence.py`, the startup sweep in `main.py`, four settings in `config.py` + `.env.example`,
+`scripts/ai_grader_probe.py`, `tests/test_ai_grader.py` (**21 new**), and the frontend `lib/ai-grade.ts` +
+`components/evidence/{ai-reading,rubric-text}.tsx` wired into `EvidenceCapture`. **NO migration** — `pending` and
+`ungraded` have been first-class `evidence_grade_state` values since `0009`. Backend tests **160 → 181**.
+
+### THE MEASUREMENT THAT OVERTURNED A DESIGN DECISION: the prefix does not cache
+
+Design §2 says the rubric rides "in a cached system prefix". The 2026-08-09 session corrected *which half* carries
+the breakpoint (stable instructions, not the per-drill rubric — caching is a prefix match). **Measured 2026-08-10,
+that fix does not work either:**
+
+| Measured (`count_tokens`, `claude-sonnet-5`) | Value |
+|---|---|
+| Stable instruction block | **981 tokens** |
+| Sonnet 5 minimum cacheable prefix | **1024 tokens** |
+| Margin | **−43 — caches NOTHING, and reports no error** |
+
+Measured as a **difference** (988 whole-request − 7 baseline), because `count_tokens` reports the entire request:
+reading the combined figure against the minimum counts the user turn and per-request overhead toward a threshold
+they do not contribute to, and can report a PASS for a block that is actually under it.
+
+**Withdrawn rather than padded**, on the numbers: a cache read would save ~981 × $2.70/MTok ≈ **$0.0027/grade**, or
+**~$1.35 across the whole ~500-unit curriculum** — against a ~2,700-token image that dominates every call. Worse, a
+cache *write* costs 1.25×, so at a 5-minute TTL with a single user uploading sporadically most grades would pay the
+write premium and never live to be read: **as designed it would likely have cost more than not caching.** Padding the
+block to 1024+ would mean writing instruction text to satisfy a token threshold rather than to inform the reader, and
+would leave the prompt permanently hostage to it. The two-block split is KEPT (it marks the stable/volatile boundary),
+and `scripts/ai_grader_probe.py` now **guards** the conclusion instead of asserting the old claim — it re-measures every
+run and prints `⚠ REOPENED` if the block ever clears the configured model's minimum.
+
+**Model-specific, not universal:** 981 already clears Claude Opus 5's **512**-token minimum. If `AI_GRADER_MODEL`
+changes, re-measure before concluding anything.
+
+### Cost is ~half the design's estimate — flagged (Rule #6)
+
+| Basis | Input | Output | Cost/grade | ~500 units |
+|---|---|---|---|---|
+| Test fixture 900×520 | 2,499 | 204 | $0.0106 | ~$5.30 |
+| **TradingView 1920×1080 (the real basis)** | **4,563** | **204** | **$0.0167** | **~$8.37** |
+
+The design says **$0.02–0.04/grade** and **$15–25** total. Measured on a realistic desktop capture it is **$0.0167 and
+~$8.37** — roughly half. Two reasons, both worth keeping: the closed-enum schema makes the verdict **tiny** (204 output
+tokens against the design's assumed ~500), and there is no cache-write premium. The design's *image* estimate was good
+(~2,765 assumed vs **2,694** measured at 1920×1080).
+
+**The counting basis is stated because it changes the answer.** `chart_png`'s 900×520 default understates a real
+capture by ~2,000 input tokens, and a projection from `count_tokens` understates it by a further ~680 because
+`output_config.format` renders the JSON schema into the prompt. The headline figure above is a **live grade at
+1920×1080**, not a projection.
+
+### Two defects that made the documented setup impossible
+
+Both were found because the credential was finally supplied, and both would have blocked any user following the docs:
+
+1. **`extra="forbid"` crashed the whole app.** `Settings` used pydantic-settings' default, so `ANTHROPIC_API_KEY` in
+   `api/.env` raised `extra_forbidden` at import — `alembic`, `uvicorn` *and* `pytest` all died. Fixed with
+   `extra="ignore"`, which **preserves** the "no api-key setting" decision: the app still declares none, it merely stops
+   rejecting keys belonging to other consumers.
+2. **`.env` never reached the SDK.** pydantic-settings reads `.env` into `Settings` and stops; it does not populate
+   `os.environ`, which is where the Anthropic SDK looks. Verified directly (`ANTHROPIC_API_KEY in process env: False`).
+   Fixed with an anchored `load_dotenv(api/.env, override=False)` — `override=False` keeps a real exported variable
+   winning, matching the SDK's own precedence. **The E4 boot prompt's claim that the SDK "picks it up from `api/.env`
+   with no code change" was false.**
+
+### The surface: advisory by construction, and the disagreement is the point
+
+`AiReading` renders **counts, never a percentage** — the grade carries an advisory `score`, and "75%" beside the
+self-check's own "75%" would read as a competing mark. Invariant 7 is enforced server-side; not *showing* it as a score
+is the same commitment kept at the surface. States: `pending` → "Second reader is looking at this…", `ungraded` →
+"couldn't read this one — your reps are unaffected", no grade at all → **renders nothing** (silence beats an empty panel).
+
+**Disagreement is computed in both directions and decides nothing:** `unseen` (you ticked it, the reader could not see
+it — usually a fact about the *capture*, since one image rarely shows everything a drill asks) and `unclaimed` (the
+reader saw it, you did not tick it — you being stricter than it). `possibly_present` is never a disagreement: a hedge is
+not evidence. When the trader has **not** self-checked, no disagreements are shown at all — there is nothing to disagree
+with, and inventing a conflict would be worse than silence.
+
+### Divergences from the design
+
+- **No Batch API** (design §2 says to use it). It buys a 50% discount on a curriculum §"Why tiered" already prices at
+  not-the-binding-constraint, at the cost of up-to-24h latency — blunting the informational-feedback mechanism §6 rests
+  on. Kept from it: the grade is **queued**, never awaited on the upload path.
+- **No caching at all** — see above. This supersedes both §2's rubric-prefix and the 2026-08-09 instructions-prefix fix.
+- **The queue is a DB row**, not `BackgroundTasks`: restart-safe, queryable, and needed no migration.
+- **Drill subjects only.** A concept's bar is the union of several drills' bars and E3 makes the *user* pick which; the
+  reader may not pick for them, and journal / missed-trade evidence has no bar. Queueing those would only mint rows that
+  resolve to `ungraded`.
+- **`RubricText` was extracted to its own module.** The live walkthrough caught the advisory panel printing
+  `write your *actual* daily routine` with literal asterisks — the exact defect E3 verified the self-check against. One
+  renderer now serves both surfaces, because a second copy would be free to drift.
+- **`_resolve_rubric` uses `scalar_one_or_none()`**, so a `drill_ref` with two rubrics would raise. Measured: **0 such
+  drill_refs** today. Left as-is deliberately — `drain()` turns it into an honest `ungraded`, which is better than
+  silently grading against an arbitrary bar (the same refusal-to-guess E3 built into `routers/evidence.py`).
+
+### Verified
+
+**181 backend tests** (160 → +21), all DB-free for the new ones — deliberately, since Paul's normal local state has no
+credential and a suite that depended on one would fail for the wrong reason. The schema tests walk `VERDICT_SCHEMA`
+structurally (no numeric type anywhere; `item_key` the only unconstrained string; every object closed) and
+`test_ai_vision_can_never_write_failed` walks **every combination** of the item vocabulary rather than one example.
+`tsc -b` + `vite build` clean. `/api/analytics/*` + `/api/gate` **byte-identical** to the STEP-0 baseline
+(sha256 `27ff7157…`, the same digest as E2 and E3).
+
+**Live walkthrough** (screenshot: `neurospect-learn/api/docs/evidence/e4/e4-second-reader-walkthrough.jpg`): a real
+1920×1080 capture pasted via a genuine `ClipboardEvent` → `pending` row rendered "looking at this…" → the worker
+resolved it in **~10s** with full telemetry (`model=claude-sonnet-5 in=4563 out=212 $0.016869`) → the panel rendered
+per-item findings with the wiki's own emphasis, mapped observation labels, and **no raw `**` markers** → a deliberate
+2-of-4 self-check produced exactly **2 disagreements** (the two ticked-but-unseen items; the two where both said "no"
+correctly produced none) → **reps stayed at 2 throughout**, across an `ai_vision` grade scoring **0.00/flagged** *and* a
+50% partial self-check → the older capture beside it kept "Meets the bar · 100%" with **no** second-reader row at all →
+**zero console errors**.
+
+**NOT done, and not to be called green:** the **Playwright battery**. Its `webServer` runs
+`npm run dev -- --port 5173 --strictPort`, and :5173 is held by a *different* project of Paul's; letting Playwright
+reuse that server would test the wrong codebase. The suite has not been run since E4 landed.
+
 ## Invariants this layer must preserve (checked at every phase)
 
 1. The Gate stays **non-overridable and computed per read** — no `cleared` column, and evidence adds no write
@@ -540,11 +665,32 @@ called green: see the tracker's E4 boot prompt for the first diagnostic step.
    `evidence_grades.score` (k/N × 100, informational feedback per §6), and nothing reads it into either
    user-owned column; both remain written exclusively by `PATCH /api/progress` from the request body.
 
+### Walked at E4 (2026-08-10) — each one, explicitly
+
+1. **Gate non-overridable ✔** — no `cleared` column, request field or endpoint was added; `services/gate.py` is
+   untouched and reads no grade. `/api/gate` is byte-identical to the STEP-0 baseline (`27ff7157…`).
+2. **Frontier never gate-eligible ✔** — `watch_only` handling is untouched. The reader is queued for **drill** subjects
+   only and writes one `evidence_grades` row, so it cannot reach a concept's Can-mark cap.
+3. **Skips still logged ✔** — `plan_item_status` and `_adherence` are unmodified; E4 added no planner path.
+4. **Backtest ≠ live ✔** — nothing in this tier touches `journal_entries.mode`, `expectancy.py` or
+   `opportunity_cost.py`; the byte-identical analytics snapshot is the proof.
+5. **`reps` strictly harder, never easier ✔ — and unchanged in E4.** `ai_grade_queue` writes only the `ai_vision` row it
+   created; it never touches `evidence_assets`. Proven at the surface: reps held at 2 through a **0.00/flagged** AI grade
+   plus a 50% partial self-check. E2's three-endpoint bypass test and E3's `test_a_self_check_never_moves_a_rep` both
+   still pass inside the 181.
+6. **`auto_met` / `locked` still concept-based ✔** — `services/stages.py` is unmodified and reads no grade.
+7. **Advisory score never writes `confidence` / `ladder_stage` ✔** — the tier writes `evidence_grades.score` (0.00 in the
+   walkthrough) and nothing reads it into either column; both remain written exclusively by `PATCH /api/progress` from
+   the request body. Kept at the surface too: the panel renders **counts, not a percentage**, so it cannot read as a
+   competing mark.
+
 ## Contradiction flags (per [[CLAUDE]] Rule #6)
 
-1. **Cost.** The tracker warned that per-rep vision calls "across ~50-rep targets × 53 drills is a real token
-   bill." The curriculum is ~500 evidence units (rep targets are per **drill**, not per drill-per-concept) at
-   ~$0.02–0.04 each ⇒ **~$15–25 total**. Latency and false negatives bind; spend does not.
+1. **Cost — now MEASURED, and lower than this doc's own estimate.** The tracker warned that per-rep vision calls
+   "across ~50-rep targets × 53 drills is a real token bill." The curriculum is ~500 evidence units (rep targets are per
+   **drill**, not per drill-per-concept). This doc estimated ~$0.02–0.04 each ⇒ ~$15–25 total. **Measured 2026-08-10 on
+   a live 1920×1080 grade: $0.0167 each ⇒ ~$8.37 total** (§E4 as-built). The conclusion is unchanged and strengthened —
+   latency and false negatives bind; spend does not.
 2. **Deploy is not unscoped in every tracker.**
    [[processes/distributed-workflow/active/deployment]] holds a proven, pitfall-annotated Render + Cloudflare
    Pages runbook — `neurospect-app` / `neurospect-api` have been live since 2026-04-25 — and its `render.yaml`
