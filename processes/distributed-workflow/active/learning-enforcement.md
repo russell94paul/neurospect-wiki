@@ -763,7 +763,15 @@ BOOT / CONTEXT — read in this order, and read the first two IN FULL:
 5. **Load the `claude-api` skill before writing any Anthropic call** — model ids, pricing, structured outputs,
    `cache_control`, the Batch API and token counting. Do not answer from memory.
 
-BUILD — steps 1–3 are WRITTEN; your job is to finish, prove, and surface them:
+BUILD — steps 1–3 are WRITTEN; your job is to finish, prove, and surface them.
+
+⚠️ **DO STEP 6 (MEASURE) FIRST, before writing any test or any frontend.** It costs two API calls and a
+`count_tokens`, and it is the ONLY step that can invalidate what is already committed: if the instruction
+block does not clear Sonnet 5's 1024-token minimum then the cached-prefix design does not work and
+`ai_grader.py` changes — so tests and UI written against it first would be rewritten. Measure, then build on
+what survives. (`ant auth login` should already have been run; if it hasn't, ask Paul before using any
+credential.)
+
   1. ~~**`services/ai_grader.py`**~~ — **WRITTEN.** Verdict schema (closed enums, no free text, no numbers),
      cached instruction prefix, the call (thinking off, effort `low`), list-rate cost maths over all four
      token classes, `summarise()`. **Review it, don't rewrite it.**
