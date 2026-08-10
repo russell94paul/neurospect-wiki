@@ -264,6 +264,36 @@ studies: tangible contingent rewards undermine intrinsic motivation at d ≈ −
 informational feedback do not); and the evidence layer is **one polymorphic table**, not the per-owner child
 tables `neurospect-api` used.
 
+### 2026-08-09 (Paul — project scope, in his framing)
+
+> "In the future we may integrate all these different neurospect repos, to create a master platform. But for
+> now we remain focused on getting this learning platform completed."
+
+**This lane is THE focus. Repo integration is deferred, not cancelled.** Raised because a survey of the
+twelve active trackers found that seven of them — [[processes/distributed-workflow/active/ai-coach]],
+[[processes/distributed-workflow/active/broker-integration]],
+[[processes/distributed-workflow/active/course-and-kb]],
+[[processes/distributed-workflow/active/journal-analytics]],
+[[processes/distributed-workflow/active/journaling-ux]],
+[[processes/distributed-workflow/active/deployment]] and
+[[processes/distributed-workflow/active/monorepo-migration]] — describe the **earlier** `neurospect-api` /
+`neurospect-app` generation and have been untouched since April–May 2026, while nothing recorded a decision
+about how that generation relates to `neurospect-learn`. It now does.
+
+Consequences a future session should not re-litigate:
+
+- **Finish E4 → E5 → E6 here before opening any other lane.** The remaining arc is small and known: E4 is
+  part-built, E5 empties `stages.STAGE_UNWIRED` (E1's own acceptance test, and the last unfinished piece of
+  the mastery/gate story), E6 makes the shipped streak/adherence surfaces evidence-backed.
+- **The seven dormant trackers are deferred, not dead.** Leave them in `active/` — a later "master platform"
+  workstream is the thing that will consume them — but do not treat them as available work.
+- **`neurospect-learn` is deployed nowhere, and that is accepted for now.** The deployment tracker covers
+  only the earlier api/app pair. Design decision #4 already established that hosting is not a prerequisite:
+  every drill's tooling is desktop TradingView bar-replay, so capture is paste-first on localhost. Deploying
+  this app belongs to the integration work, not to E4–E6.
+- **`monorepo-migration` is stale on its face** — it plans to merge *three* repos and predates
+  `neurospect-learn` entirely. Whoever revives it must rescope it first; flagged there too.
+
 ## Session Log
 
 ### 2026-07-25 — workstream created (scoping only)

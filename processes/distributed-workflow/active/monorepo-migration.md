@@ -3,12 +3,27 @@ tags: [distributed-workflow, active, neurospect, monorepo, migration, repo-struc
 aliases: [Monorepo Migration, Repo Consolidation]
 sources: []
 created: 2026-05-02
-updated: 2026-05-02
+updated: 2026-08-09
 phases:
   phase_0: scoping
 ---
 
 # Monorepo Migration — Workstream Tracker
+
+> **⏸ DEFERRED (2026-08-09, Paul) — and STALE ON ITS FACE. Do not pick this up as-is.**
+>
+> Project scope was settled on 2026-08-09: the **learning platform is the focus** and repo integration is
+> deferred until it is complete. Paul's framing — *"In the future we may integrate all these different
+> neurospect repos, to create a master platform. But for now we remain focused on getting this learning
+> platform completed."* Recorded in
+> [[processes/distributed-workflow/active/learning-enforcement]] §Decisions (2026-08-09).
+>
+> **Rescope before reviving.** This tracker was written 2026-05-02 and plans to merge **three** repos
+> (`neurospect-wiki`, `neurospect-api`, `neurospect-app`). **`neurospect-learn` did not exist yet** — it was
+> built from 2026-07-18 and is now the primary app, with its own wiki (this one) as a separate checkout. So
+> the repo inventory, the `wiki/ api/ app/` target layout, and the "active workstream trackers to update"
+> list in Goal item 5 are all incomplete. Treat the Phase 0 scoping as **unstarted**, not as design to
+> execute.
 
 Consolidate the three Neurospect repos (`neurospect-wiki`, `neurospect-api`, `neurospect-app`) into a single `neurospect` monorepo with `wiki/`, `api/`, `app/` as sibling top-level directories.
 
