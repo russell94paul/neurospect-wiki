@@ -3,7 +3,7 @@ tags: [distributed-workflow, active, neurospect, mastery, enforcement, grading, 
 aliases: [Learning Enforcement Tracker, Drill Grading, Anti-Cheat, Gamification Workstream]
 sources: []
 created: 2026-07-25
-updated: 2026-08-02
+updated: 2026-08-09
 ---
 
 # Learning Enforcement — Workstream Tracker
@@ -23,7 +23,16 @@ this workstream makes the progress in it **impossible to fake**.
 > work is surfaced as an honest backlog rather than deducted (progress stays monotonic). Migrations at `0010`;
 > **160 backend tests**; Playwright 50 green at `--workers=1` with a **parallelism flake still open** (handed to
 > E4 — see its boot prompt). As-built + every divergence:
-> [[concepts/architecture/learning-enforcement]] §E3 as-built. **Phase E4's boot prompt is WRITTEN and ⏭ ACTIVE.**
+> [[concepts/architecture/learning-enforcement]] §E3 as-built.
+>
+> **Phase E4 is PART-BUILT and NOT verified (2026-08-09).** STEP 0 is fully closed (the flake diagnosed
+> 2026-08-07; the live self-check walkthrough passed 2026-08-09). The E4 **service layer is written and
+> uncommitted** — `ai_grader.py` + `ai_grade_queue.py` + the wiring — with four decisions recorded in the
+> session log, two of which **correct the design**: the **Batch API is rejected** (it would trade the phase's
+> own reward mechanism for ~$10) and the **cached prefix holds the instructions, not the rubric** (a rubric
+> prefix is per-drill and under Sonnet 5's 1024-token minimum, so it would cache *nothing*, silently).
+> **No tests, no frontend, no live call — so cost is still unmeasured and the caching claim unproven.**
+> E4's continuation boot prompt is ⏭ ACTIVE below and starts from that code, not a blank page.
 >
 > *Historical (2026-07-28): Phases E1 + E2 complete. The layer is REAL, not theatre — `reps` is no longer
 > writable by any endpoint.* E1 landed the canonical design at [[concepts/architecture/learning-enforcement]]
@@ -568,6 +577,74 @@ tables `neurospect-api` used.
 - **NOT done, still open for E4:** the live claude-in-chrome walkthrough of the self-check surface (STEP 0 item 2),
   and all of E4 proper. Session ended on the context budget, not on a blocker.
 
+### 2026-08-09 — Phase E4 STEP 0 ✅ closed + the E4 service layer written (NOT verified)
+
+- **STEP 0 is now fully closed.** Item 1 (the flake) was already done on 2026-08-07. Item 2 — the live
+  claude-in-chrome walkthrough of the self-check surface — **ran this session and passed**. Evidence, on the
+  RENDERED surface rather than an attribute (E2's lesson): pasted a capture on `aura D0-a` via a real
+  `paste` ClipboardEvent → 201, "1 captured · 1 reps · **1 awaiting your check**"; the thumbnail genuinely
+  **decoded** (`naturalWidth` 900 × `naturalHeight` 520, served from `:8000`, so E2's `evidenceSrc()` fix
+  holds); the panel rendered the wiki's own four bullets as checkboxes with **no raw `**` markers** — and
+  that assertion is meaningful because the *source* text does carry them (`write your *actual* daily
+  routine`, `implement **two** environment changes`) while the DOM's `textContent` contains none; a
+  **partial** check recorded "Partly met · 50%" and a **full** check "Meets the bar · 100%"; `reps` read
+  **1 → 1 → 1** across both; the grade rows ended `deterministic/passed` + `self_check/flagged 50%` +
+  `self_check/passed 100%`, so grading stayed additive; **zero console errors** (only `[vite] connected`
+  and the React DevTools notice).
+- STEP 0 environment evidence re-proved: `alembic current` = `0010 (head)`; seeds **74/23/58/67 + 44/104**;
+  `pytest` **160 passed**; `e4-baseline-before.json` **reused, not re-captured**, and confirmed still at
+  sha256 `27ff7157…`. Worth recording: that digest is over the **LF-normalised** text the script reads back,
+  so the raw file on disk hashes differently (Windows writes CRLF) — the two are consistent, not a mismatch.
+- **decided — REJECT the Batch API, on the design's own §6.** Design §2 specifies the advisory tier runs
+  "through the Batch API". Built as written that is wrong here. Batch buys a **50% discount** — but
+  §"Why tiered" already puts the whole curriculum at **~$15–25**, so batching saves single-digit dollars
+  across the life of the project, and §2 says in as many words that cost is *not* the binding constraint.
+  What it costs is **latency**: most batches land within an hour, the ceiling is 24. And §6 makes
+  **informational feedback the reward mechanism**, on Deci/Koestner/Ryan 1999. A reward delivered up to a
+  day after the work is a far weaker reinforcer than one delivered in seconds — so Batch would save ~$10 by
+  blunting the exact mechanism the phase exists to deliver. **Kept from the Batch design is the part that
+  mattered:** the grade is *queued*, never awaited on the upload path, so upload latency is unchanged.
+- **decided — the queue is a DB ROW, not `BackgroundTasks`.** The `pending` row is written in the same
+  transaction as the upload, which buys restart-safety (a `--reload` restart no longer loses in-flight
+  work), an honest queryable state, and **no migration at all** — `pending` and `ungraded` have been
+  first-class `evidence_grade_state` values since `0009`. It also leaves the Batch API a later swap rather
+  than a rewrite.
+- **decided — CORRECTED what goes in the cached prefix (design §2 says "the rubric").** Caching is a
+  **prefix match**, and Claude Sonnet 5's minimum cacheable prefix is **1024 tokens**. A rubric is 4–10
+  short bullets and changes per drill, so a rubric-first breakpoint would (a) mint a fresh entry per drill
+  and (b) sit under the minimum, caching **nothing** and reporting no error — a silent no-op. So the
+  **stable instructions** (identical for every grade in the curriculum) carry the breakpoint and the
+  per-drill rubric goes *after* it, uncached. Every grade then reads the cache rather than only repeat
+  visits to one drill. **This is asserted, not yet measured** — see NOT DONE.
+- **decided — the schema is the enforcement, and `item_key` was the one hole.** `VERDICT_SCHEMA` is closed
+  enums throughout (`subject_matter`, `annotation_density`, per-item `visible_evidence`, and a fixed
+  `observations` vocabulary) with **no free-text and no numeric field anywhere**, so "this swing is at the
+  wrong price" is unrepresentable rather than merely discouraged. The exception found on review:
+  `item_key` is a free-form string. Closed by having `summarise()` **drop** any key the app did not itself
+  supply, so nothing reaches storage or the screen that the app had no words for.
+- decided: **thinking is OFF and effort is `low`** — the same MeasureBench finding the design leans on says
+  extended thinking gives *negligible* gains here because the limit is perceptual. Paying for thinking
+  tokens to answer "are range boundaries drawn" buys nothing.
+- decided: **no api-key setting in `config.py`.** The Anthropic SDK resolves credentials itself
+  (`ANTHROPIC_API_KEY` → `ANTHROPIC_AUTH_TOKEN` → an `ant auth login` profile), so a second copy in `.env`
+  could only drift from it. `AI_GRADING_ENABLED` defaults to **false**, so the app still runs with no LLM
+  dependency and the upload path is identical either way.
+- did (code, `neurospect-learn`, **UNCOMMITTED and UNVERIFIED**): `app/services/ai_grader.py` (the verdict
+  schema, the cached system prefix, the call, list-rate cost maths over all four token classes incl. cache
+  read/write, `summarise()`); `app/services/ai_grade_queue.py` (enqueue / drain / kick / startup sweep);
+  `app/services/storage.py` +`storage_read_bytes()` (E2 only ever *wrote* to R2 — the reader is the first
+  server-side consumer of the bytes); `app/routers/evidence.py` (enqueue in the upload transaction, drill
+  subjects only); `app/main.py` (lifespan sweep); `app/config.py` + `.env.example` (four new settings);
+  `pyproject.toml` + `poetry.lock` (`anthropic ^0.116`). Imports and app boot verified; **nothing else is.**
+- **flagged (Rule #6) — the credential.** `ant auth status` shows an **ALDC org** OAuth profile whose token
+  **expired 2026-06-29**. Paul chose `ant auth login` to refresh it; note that routes Neurospect grading
+  spend to the ALDC organisation, which is a billing decision worth revisiting if this ever runs at volume.
+- **NOT DONE — do not treat E4 as built:** no tests at all (0 new), no frontend surface, no live model call,
+  **so the ~$0.02–0.04/grade estimate is still unmeasured and the "the prefix caches" claim is unproven**;
+  no `tsc`/`vite build`, no Playwright run, no invariants walk, no §E4 as-built section, no reconciliation.
+- next: **run the E4 continuation boot prompt below.** It starts from working-but-unverified code, not a
+  blank page.
+
 ## Next Session Boot Prompt (Phase E4 — AI vision second reader) ⏭ ACTIVE
 
 Recommended launch: **Opus** (`claude --model opus[1m]`), then **`/effort high`**. Not for the API plumbing — for
@@ -579,14 +656,31 @@ Before you start: `docker start neurospect-learn-db` (:5433, seeds present), the
 **VERIFY THE SERVER ACTUALLY PICKED UP EVERY EDIT — do not trust `--reload`.** On 2026-08-07 the uvicorn
 *reloader* process died silently, leaving the worker serving stale code, and a whole "after" measurement was
 taken against the old build before it was caught. Confirm a restart (a `WatchFiles detected changes` line, or
-just restart it yourself) before believing any before/after number. `ANTHROPIC_API_KEY` will be needed —
-**ask Paul before using any credential**, and never echo it.
+just restart it yourself) before believing any before/after number.
 
-**UNCOMMITTED WORK MAY BE WAITING (2026-08-07 STEP-0 session):** `api/app/services/evidence_checks.py` +
-`api/app/routers/evidence.py` (the event-loop fix) and `api/docs/evidence/e4-baseline-{before,step0-after}.json`.
-**Check `git status` first** — Paul may or may not have committed them. `e4-baseline-before.json` is ALREADY
-CAPTURED at sha256 `27ff7157…`; reuse it as the STEP-0 baseline rather than re-capturing, and if you do
-re-capture, it must still be `27ff7157…`.
+**CREDENTIAL:** run `ant auth status` **before** asking for a key — an unset `ANTHROPIC_API_KEY` does NOT
+mean there is no credential (the SDK also reads `ANTHROPIC_AUTH_TOKEN` and an `ant auth login` profile). On
+2026-08-09 the profile existed but its token had **expired on 2026-06-29**, and Paul chose to refresh it via
+`ant auth login` rather than put a key in `.env`. **Ask Paul before using any credential**, and never echo it.
+Flagged for Paul (Rule #6): that profile is an **ALDC org** credential, so Neurospect grading spend bills to
+ALDC — worth revisiting if this ever runs at volume.
+
+**⚠️ THE E4 SERVICE LAYER IS ALREADY WRITTEN AND UNCOMMITTED (2026-08-09 session).** You are NOT starting
+from a blank page — you are starting from working-but-**unverified** code. **Check `git status` first**;
+Paul may or may not have committed it. On disk: `api/app/services/ai_grader.py` (new),
+`api/app/services/ai_grade_queue.py` (new), and edits to `api/app/services/storage.py`,
+`api/app/routers/evidence.py`, `api/app/main.py`, `api/app/config.py`, `api/.env.example`,
+`api/pyproject.toml` (`poetry.lock` is regenerated but **gitignored**, so a fresh checkout needs
+`poetry lock && poetry install`). Imports, app boot and the **existing 160 tests** are verified — the
+upload path did not regress; **nothing about E4 itself is** — zero tests,
+zero frontend, zero live calls. **Read that code before changing it**, and read the 2026-08-09 session-log
+entry for the four decisions baked into it (Batch API rejected · queue is a DB row · the cached prefix is
+the INSTRUCTIONS not the rubric · `item_key` is the schema's one free-text hole and is dropped-if-unknown).
+Re-derive none of that; overturn it only with evidence.
+
+`e4-baseline-before.json` is ALREADY CAPTURED at sha256 `27ff7157…` — reuse it, do not re-capture. (That
+digest is over the LF-normalised text `evidence_baseline.py` reads back; the file on disk hashes
+differently because Windows writes CRLF. Consistent, not a mismatch — use `--compare`, never `Get-FileHash`.)
 
 GROUNDING: `neurospect-learn` is Paul's standalone learn-to-execute app for the Neurospect ICT / Smart-Money-Concepts
 trading-mastery project — FastAPI + Postgres (`api/`) + React 19 / Vite / TanStack Query (`app/`). Phase 5, its
@@ -597,7 +691,10 @@ non-overridable Readiness-to-Live Gate, the missed-trade log, stage exit bars on
 from the wiki** with a `self_check` grade that may flag but never retract. Migrations at `0010`; seeds 74 concepts /
 23 track stages / **58** drills / 67 content pages + **44 rubrics / 104 items**; **160 backend tests**, Playwright 50.
 
-STEP 0 — ONE ITEM LEFT (see §Session Log 2026-08-07 before re-doing any of this):
+STEP 0 — ✅ **BOTH ITEMS CLOSED. DO NOT REDO EITHER.** Kept below only so the closure is auditable; the
+2026-08-07 and 2026-08-09 session-log entries hold the evidence. Your STEP 0 is now just: confirm
+`alembic current` = `0010 (head)`, seeds **74/23/58/67 + 44/104**, `pytest` == **160 passed**, and reuse
+the existing baseline.
   1. ~~**The Playwright parallelism flake.**~~ **DONE 2026-08-07 — criterion met, with a caveat you must read.**
      The flake **never reproduced**: 3 consecutive clean runs at default parallelism, plus 12 workers, plus a run
      under heavy CPU load. Both named suspects were **ruled out on measurement** — the duplicate scan stays O(≤22)
@@ -607,11 +704,11 @@ STEP 0 — ONE ITEM LEFT (see §Session Log 2026-08-07 before re-doing any of th
      function-level PIL import costing 540 ms warm / 8.3 s cold on the first upload per process) — but that is the
      **most consistent mechanism, not a proven cure**, since there was never a red test to turn green. **If the
      flake returns, do not re-derive this** — go straight to whether uvicorn restarted mid-run.
-  2. **The live claude-in-chrome walkthrough of the self-check surface** — STILL OPEN. E3 shipped it verified by tests but
-     never by eye. Assert the **RENDERED** result (E2's lesson: a Playwright assertion on an attribute passed while
-     every thumbnail rendered broken). Paste a capture on a drill card, open "Check against the bar", confirm the
-     wiki's own bullets render as checkboxes **with no raw `**` markers**, record a partial and a full check, and
-     confirm **NO console errors**. `CORS_ORIGINS` allows only `http://localhost:5173`.
+  2. ~~**The live claude-in-chrome walkthrough of the self-check surface.**~~ **DONE 2026-08-09 — passed.**
+     Paste → thumbnail **decoded** (`naturalWidth` 900×520, not just an `src` attribute) → wiki bullets as
+     checkboxes with **no raw `**` markers** (meaningful: the source text *does* carry `*actual*` and
+     `**two**`) → partial check "Partly met · 50%" → full check "Meets the bar · 100%" → `reps` **1 → 1 → 1**
+     → grades additive (`deterministic` + both `self_check` rows survive) → **zero console errors**.
 
 BOOT / CONTEXT — read in this order, and read the first two IN FULL:
 1. The wiki `CLAUDE.md` — Isolation Rule, Architecture Doc Integrity (**code is ground truth; ONE canonical doc per
@@ -635,21 +732,31 @@ BOOT / CONTEXT — read in this order, and read the first two IN FULL:
 5. **Load the `claude-api` skill before writing any Anthropic call** — model ids, pricing, structured outputs,
    `cache_control`, the Batch API and token counting. Do not answer from memory.
 
-BUILD — in this order:
-  1. **`services/ai_grader.py`** — a pure-ish service: given image bytes + a rubric, return a structured verdict.
-     **The schema is the load-bearing design.** Ask ONLY what a VLM is reliable at: coarse presence/structure
-     (*is this an annotated price chart · are range boundaries drawn · was a second pass done · which rubric items
-     are visibly evidenced*). It must be **incapable** of expressing "this swing is at the wrong price" — if the
-     schema cannot say it, the model cannot assert it. Rubric text goes in a **`cache_control` system prefix**.
-  2. **Async, never blocking.** A grade is requested after capture and lands later; upload latency must not change.
-     Decide and justify the mechanism (FastAPI `BackgroundTasks` vs a polled queue table vs the **Batch API**) —
-     §2 says Batch, and the cost note says ~$0.02–0.04/grade, ~$15–25 for the whole curriculum. Offline / API-down
-     must leave the row honestly `ungraded`, which is already a first-class enum value.
-  3. **Write telemetry.** `model`, `input_tokens`, `output_tokens`, `cost_usd` per grade — the design costed this
-     phase, so the code must measure it rather than trust the estimate.
-  4. **Surface it as INFORMATIONAL FEEDBACK (§6), never as a verdict on the rep.** Per-item findings beside the
-     user's own self-check, visibly labelled advisory + second-reader. Where the AI and the self-check DISAGREE is
-     the genuinely useful signal — show it, decide nothing from it.
+BUILD — steps 1–3 are WRITTEN; your job is to finish, prove, and surface them:
+  1. ~~**`services/ai_grader.py`**~~ — **WRITTEN.** Verdict schema (closed enums, no free text, no numbers),
+     cached instruction prefix, the call (thinking off, effort `low`), list-rate cost maths over all four
+     token classes, `summarise()`. **Review it, don't rewrite it.**
+  2. ~~**Async, never blocking**~~ — **WRITTEN** as `services/ai_grade_queue.py`: a `pending` grade row
+     written in the upload's own transaction, drained by an in-process worker, swept at startup. Batch API
+     deliberately rejected (see the 2026-08-09 log). **No migration was needed** — `pending`/`ungraded` have
+     existed since `0009`.
+  3. ~~**Write telemetry**~~ — **WRITTEN** (`model` / `input_tokens` / `output_tokens` / `cost_usd`), but
+     **never yet exercised against the live API. Proving it is yours.**
+  4. **THE FRONTEND — nothing exists yet.** Surface it as INFORMATIONAL FEEDBACK (§6), never as a verdict on
+     the rep. Per-item findings beside the user's own self-check, visibly labelled advisory + second-reader,
+     with a "reading…" state for `pending` and an honest "couldn't read this one" for `ungraded`. **Where the
+     AI and the self-check DISAGREE is the genuinely useful signal** — show it, decide nothing from it.
+  5. **TESTS — none exist yet (0 new).** At minimum: the schema **structurally** cannot carry a price (walk
+     `VERDICT_SCHEMA`; assert no numeric type anywhere and no unconstrained string but `item_key`); an
+     unknown `item_key` is dropped; `summarise()` can never return `failed`; an `ai_vision` grade moves
+     neither `reps` nor `confidence` nor `ladder_stage`; it is **additive** (deterministic + self_check rows
+     survive); grading **disabled** creates no row and leaves the upload path identical; grading **enabled
+     but the API failing** lands `ungraded` — test with a fake transport so the suite never needs a network.
+  6. **MEASURE what is currently only asserted:** (a) real tokens + $ for a handful of grades against the
+     design's $0.02–0.04 estimate — flag it (Rule #6) if wrong; (b) that the cached prefix **actually
+     caches** — `cache_read_input_tokens` must be **non-zero on the second call**, and the instruction block
+     must clear Sonnet 5's **1024-token minimum** (`count_tokens`). If it doesn't clear it, the block needs
+     to grow or the caching claim must be withdrawn — a silent no-op is exactly what this phase must not ship.
 
 E4 IS NOT: prediction capture, the calibration score, or wiring `ict_course` M6 / emptying `stages.STAGE_UNWIRED`
 (E5); gamification, XP, or the `/gate` honesty strip (E6); deploying or provisioning R2 (storage stays local);
