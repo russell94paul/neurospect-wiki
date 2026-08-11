@@ -3,12 +3,17 @@ tags: [roadmap, planning, neurospect, index]
 aliases: [Roadmap Ideas Index, Idea Backlog]
 sources: []
 created: 2026-04-25
-updated: 2026-04-25
+updated: 2026-08-10
 ---
 
 # Roadmap Ideas — Index
 
 One stub per brainstormed feature/concept. Each stub is intentionally short; the page grows when the idea earns commitment and graduates into a spec or tracker. Lifecycle defined in [[concepts/roadmap/README]] § *Lifecycle*.
+
+## Active lane (outside the horizons — see [[concepts/roadmap/README]] staleness flag)
+
+- [[concepts/roadmap/ideas/backtest-companion-layer]] — Neurospect as the discipline + insight layer around
+  backtesting done in another tool (Tradezella); companion rather than replacement · **`designing`**
 
 ## Next horizon
 

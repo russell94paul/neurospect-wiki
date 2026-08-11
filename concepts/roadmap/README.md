@@ -3,10 +3,26 @@ tags: [roadmap, planning, neurospect, strategic]
 aliases: [Neurospect Roadmap, Product Roadmap]
 sources: []
 created: 2026-04-25
-updated: 2026-04-25
+updated: 2026-08-10
+stale_warning: "Horizons + the Now-gate predate `neurospect-learn` entirely (written 2026-04-25 for the neurospect-api/app generation). The 'no new features until deployed' operating principle was overtaken by two completed workstreams; re-horizon before trusting any assignment below."
 ---
 
 # Neurospect Roadmap
+
+> **STALE (flagged 2026-08-10, Rule #6): the horizons below predate `neurospect-learn`.** This page was written
+> on 2026-04-25 for the earlier `neurospect-api` / `neurospect-app` generation and has not been re-horizoned
+> since. Two complete workstreams have shipped against a *different* codebase in the meantime — the Phase 5 arc
+> ([[processes/distributed-workflow/active/learning-platform-ui]]) and the full E1–E6 enforcement arc
+> ([[processes/distributed-workflow/active/learning-enforcement]], complete 2026-08-10) — and neither appears
+> anywhere below. **In particular the §Now operating principle ("no new features until the existing build is
+> deployed") was overtaken rather than followed**, and reading it literally today would retroactively forbid
+> everything actually built since April. The 2026-08-09 decision that the learning platform is THE focus
+> (recorded in the enforcement tracker's §Decisions) never propagated here either.
+>
+> **The idea catalogue below is still good; the horizon assignments and the Now-gate are not.** Treat status
+> pills as authoritative and horizons as historical until this page is re-horizoned against `neurospect-learn`.
+> Nothing here has been silently rewritten — see [[concepts/roadmap/ideas/backtest-companion-layer]] and
+> [[processes/distributed-workflow/active/backtest-companion]] for the lane that surfaced this.
 
 Forward-looking product roadmap for Neurospect. The destination is a **vertical AI platform for retail and prop-firm traders**: one place that absorbs the work currently spread across journaling tools, charting platforms, broker UIs, Discord communities, and risk dashboards — with an ICT-fluent AI coach as the connective tissue.
 
@@ -95,6 +111,21 @@ Behavioural and intelligence layers. Most of these depend on **Next** items havi
 - **Auto-tagging from chart/image/context** *(original v1 Phase 3.)*
 - **Narrative consistency analysis** *(original v1 Phase 3.)*
 - **Confidence/emotion tracking + rule violation tracking** *(original v1 Phase 2.)*
+
+## Active lane — Companion positioning (added 2026-08-10, outside the stale horizons above)
+
+Placed here rather than in a horizon because the horizons are flagged stale and this lane is **committed and
+scoped**, not backlogged. It is also the first idea on this page that argues *against* the Strategic bets below.
+
+- [[concepts/roadmap/ideas/backtest-companion-layer]] — `neurospect-learn` as the **discipline + insight layer
+  around a backtesting session held in another tool** (Tradezella), and the companion/integration positioning
+  that follows from it · **`designing`** · tracker:
+  [[processes/distributed-workflow/active/backtest-companion]] (Phase B1 research + design, boot prompt ACTIVE)
+
+  **Note the tension, deliberately unresolved:** this is close to the opposite of
+  [[concepts/roadmap/ideas/platform-consolidation]] and [[concepts/roadmap/ideas/vertical-ai-platform]] below,
+  which both assume Neurospect *absorbs* the tools a trader uses. B1 is required to argue the two positions
+  against each other on merit rather than quietly supersede them.
 
 ## Strategic — Platform Bets
 
