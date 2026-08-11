@@ -24,16 +24,22 @@ has already chosen rather than replacing them.
 > three of the 17 are internal design questions no external lens should touch, one needs splitting, and the
 > skill asks three questions the 17 do not. See §Dry-run of `prospect` against the 17 questions.
 >
-> **Phase B1 — the deep-research + design session — is now the ACTIVE lane.** Its boot prompt sits at the
-> bottom of this file and carries the marker. It can be run without the skill using its prompt alone; it will
-> simply be more vulnerable to the three failures §Recommended tooling names.
+> **⭐ B1 IS COMPLETE (2026-08-11) AND THE ANSWER WAS NO.** Gate 3 returned `OPEN`; the five-lens `⛏ prospect`
+> council returned **DON'T BUILD the Tradezella importer**. Read **§COUNCIL VERDICT** before anything else on
+> this page — several sections above it were written while the bet was still open and read as though it were.
 >
-> **⭐ B1's STEP 0 IS ALREADY DONE — DO NOT RE-RUN IT.** The boundary probe was executed 2026-08-11 against
-> Paul's reactivated Pro account and the verdict is **`OPEN`** (a manual per-trade CSV hatch; no API, no
-> webhooks, no developer programme). The full contract — 48-column payload, what does *not* cross, and the
-> ToS reading — is in **§Gate 3 — Boundary probe**. Read it before designing anything. Its headline finding:
-> **the export carries simulated market time, not wall-clock work time**, which is decisive for anything that
-> touches the E5 ledger or the E6 evidence streak. Q1, Q2, Q3a and Q5 are answered there.
+> The one-line reason: **the boundary is `OPEN` and points downstream, while both genuine differentiators
+> (pre-trade intent, behavioural scoring) live upstream of it.** The decisive evidence was a measurement, not
+> an argument — three shipped, free, one-click discipline instruments inside Tradezella all read **genuine
+> ZERO** for the only user, with the instrument proved live.
+>
+> **Phase B3 — deploy `neurospect-learn` — is now the ACTIVE lane** (boot prompt at the bottom of this file).
+> **B2 sits before it and is Paul's own work, not a session's**: define rules in the Playbook Rules tab and
+> run ~20 backtesting sessions using the in-product fields that already exist. That test is free, gates
+> everything else, and has not been run.
+>
+> Boundary facts expire. This verdict is scoped to **2026-08-11, Pro tier**; Tradezella ships weekly — see
+> §The re-check trigger before acting on this page after ~2026-11.
 >
 > **Why this lane, and why now.** [[processes/distributed-workflow/active/learning-enforcement]] closed on
 > 2026-08-10 with E1–E6 complete, and its retrospective recommended the repo-integration lane next. Paul
@@ -151,6 +157,62 @@ RE-CHECK:       Any pricing-page change, any ToS revision (it is 6 years stale a
   `Add to strategies`**. The export is trade-level, not session-level. Same UI idiom, different menu —
   which is what makes the positive finding discriminating rather than incidental.
 
+### The export surface, enumerated (2026-08-11, Pro, manual backtesting only)
+
+| Surface | Export? | Evidence |
+|---|---|---|
+| Sessions | ✗ | Bulk menu = `Delete` / `Add to strategies` |
+| **Trade View** | ✅ **the only data crossing** | `Bulk actions → Export trades to CSV` |
+| Reports | ✗ | The `…` control is a *which-stats-to-display* picker |
+| Notebook | ✗ | No export control |
+| Session results → Trade Log | ✅ same control, session-scoped | Same `Bulk actions`, session filter applied |
+| Share (session dashboard) | **image only** | `Style image` · `Download image` · `Copy image`. **No URL, no hosted page** |
+
+⚠️ **SCOPE CORRECTION to the line above.** "The only export surface" is true of the surfaces **reachable
+with zero automated-backtest runs**, which is Paul's state — *not* of everything the product has.
+First-party docs describe a **separate `Export CSV` button in the Automated Backtesting Trade Log**
+(help art. 16140732), which could not be reached without spending a Pro run. Unresolved, and deliberately
+so: Paul does **manual** backtesting, so that surface informs **Bet B only**. Recorded because an
+unqualified "only" would have been an over-claim.
+
+### ⭐ Per-session export IS achievable — the session identity rides on the filter, not the data
+
+The session-scoped Dashboard (`⋮ → Session results`) has its own `Trade Log` tab with the same
+`Bulk actions`, and a session filter in the top right. So: **filter to one session → select → export.**
+
+**Consequence for the design:** the file still contains no session identifier, so the *importer must be
+told* which session it is receiving, and importing two sessions in one file makes them permanently
+unseparable. A one-session-per-import discipline is therefore a hard requirement, not a nicety.
+
+### Tradezella already ships a rules/adherence mechanism — and Paul has not used it
+
+`Strategies → <playbook> → Rules` offers "groups and rules"; per the help centre a trader defines rules
+up front and ticks compliance **on a completed trade**, after the fact. Paul's `Macro Model` playbook
+("Liquidity Sweep at Key Levels + iFVG/CISD + Strong Displacement") reads **"No Strategy Rules"**, and
+his `Backtesting Session Notes` folder is empty.
+
+**Both halves of that matter and they cut in opposite directions.** The discipline space is *not* empty —
+which is `devil`'s material. But the mechanism is self-reported and post-hoc, structurally unlike E5's
+frozen ledger, and the "Rule Adherence Score" exists **only in marketing copy**, never in the 42-article
+help centre (`MARKETED`, therefore not a design premise).
+
+**NOT-DETERMINED, and the access is named:** whether a ticked rule-checkmark can be **re-toggled later**.
+Testing it requires creating rule groups in Paul's live account and ticking adherence on his real trade —
+a write to his data, so it was not done. This is the question of whether Tradezella has anything
+resembling a frozen commitment, and it needs one sentence of permission to settle.
+
+### Other boundary facts established
+
+- **CSV export is NOT tier-gated.** Manual backtesting is available on Essential ($35), and it populates
+  the same Trade Log. Automated backtesting is the Pro/Ultra gate (10 / 100 runs per month).
+- **Strategy-level peer sharing exists** (`Shared with me` tab, `Shared strategies` column) even though
+  *session* sharing does not — the session-sharing help article still says "under development… coming
+  weeks" and is dated **September 2024**, i.e. ~23 months stale. Docs rot is the norm here; re-check.
+- **Tradezella tracks "Missed trades"** as a strategy-level column, overlapping `neurospect-learn`'s own
+  missed-trade log.
+- **No API, no Zapier/Make/n8n connector, no confirmed mobile app.** `api.tradezella.com` resolves to a
+  bare branded page with no developer surface.
+
 ### ⭐ Two things the public docs got wrong — both caught only by pressing the buttons
 
 1. **The 42-article "Backtesting & Replay" help collection contains NO export article at all**, and the
@@ -236,6 +298,129 @@ decide which it is designing for rather than treating them as one bet.
 `Q3b` (has anyone built and *abandoned* a Tradezella companion — the `TRIED-AND-FAILED` check) and all of
 the incumbent/learning-science/demand/kill-shot questions. Those need the council.
 
+## ⭐ COUNCIL VERDICT (2026-08-11) — **DON'T BUILD THE IMPORTER.** Bet A redirected, Bet B dead.
+
+Five lenses ran with `⛏ prospect` after Gate 3 returned `OPEN`. **`OPEN` was the right boundary verdict and
+it does not save the bet** — that distinction is the whole finding, and it is the failure mode the skill
+was written to catch: *a beautiful design for a boundary that opens onto the wrong thing.*
+
+| Lens | Verdict |
+|---|---|
+| `claimant` — boundary | Weakens anything beyond CSV. Share is an image, not data. No API, no connector, no inbound path. |
+| `scout` — incumbent | **Supports the premise.** No pre-trade intent capture anywhere; Zella Score is 100% P&L-derived. The gaps are real. |
+| `scholar` — literature | **Supports Bet A, weakens Bet B.** The frozen ledger has the strongest evidential warrant in the platform — but for a different reason than assumed. |
+| `canvasser` — demand | **Weakens Bet B.** Tradezella's own feature board: 0 of the top 10 requests concern discipline. Bet A untouched (n=1). |
+| `devil` — kill-shot | **KILLS.** |
+
+### The convergence that decides it, reached from two independent directions
+
+- **`devil`:** the two genuine differentiators (pre-trade intent, behavioural scoring) sit **upstream** of a
+  **downstream-only** crossing. *The gap is real and the crossing cannot reach it.*
+- **`scholar`, independently and from the literature:** what a companion **can** deliver is cue-usage (`CI`)
+  and **consistency**; what the evidence says actually drives improvement is **task information (`TI`)** —
+  which needs ground truth about which cues predict, and is out of reach. And CI/consistency require data
+  captured **during** the session, which the export does not carry.
+
+Two lenses, different evidence bases, same conclusion: **the value is upstream of the export.** This is not
+correlated brief-error — `scholar` reached it from meta-analyses that never saw the brief's product facts.
+
+### ⭐ The decisive measurement: three live instruments, all reading genuine ZERO
+
+`devil`'s strongest finding, and it is a **measurement**, not an impression. Three shipped, free, one-click
+discipline surfaces exist inside the tool Paul already pays $59/mo for:
+
+1. `Mistakes` / `Custom Tags` / `Rating` — **empty**
+2. Playbook → Rules — **"No Strategy Rules"**, none defined
+3. Backtesting Session Notes folder — **zero notes**
+
+Against 2 sessions, 1 trade, 8 minutes. **The instrument is PROVED LIVE** — a trade completed, so the fields
+rendered and would have recorded input. Per the estate rule, these are **ZERO**, not `NOT-RECORDED`.
+
+**The implication is not "weak demand" — it is counter-evidence, and it inverts the order of operations.**
+You build the automated version because the manual version is being done so often it hurts. Here the manual
+version has **never been done once**, at zero cost. And with zero rules defined, an adherence-grading layer
+would import a CSV and **grade it against nothing**.
+
+### ⭐ The contamination argument — why this is worse than underdelivering
+
+The six E-phases are worth something **precisely because no endpoint can mint a rep.** A CSV importer *is*
+that endpoint: reps derived from a file the user hand-produced, at a time they chose, with a column set they
+selected, carrying **no key, no wall-clock stamp, no attestation**. In a replay the outcome already exists in
+history, so a "pre-commitment" can be authored *after reading the answer* with no ordering evidence in the
+file.
+
+**That is self-report in CSV clothing, rendering with the authority of "evidence-backed."** The bet does not
+merely underdeliver — it launders assertion through the one property that made the platform credible.
+
+### The incumbent shipped into this exact space during the research window — VERIFIED
+
+Orchestrator re-verified `devil`'s claim directly at https://tradezella.canny.io/changelog (2026-08-11).
+Confirmed, and **understated**. Weekly release cadence:
+
+| Date | Shipped |
+|---|---|
+| **2026-08-04** | **"SMT divergence signature labels on backtesting trades"** — one week ago, in Paul's own methodology |
+| 2026-08-04 | Filters and sorting in backtesting Trade Log |
+| 2026-07-28 | **"Scenario Sharing — share scenarios by link or email"** |
+| 2026-07-21 | **"ICT/SMC Concept Library (Tier 1) for Automated Backtesting"** |
+| 2026-07-21 | "Zella AI Analysis panel in backtesting is now collapsible" |
+| 2026-07-14 | "Automated Backtesting now live for all users" |
+| **2026-07-07** | **"Zella AI: improved 'check trades against my playbook' prompt"** — AI rubric-checking, shipped |
+| 2026-06-16 | **"Zella AI Session Review summary now appears in Notebook journal"** |
+| 2026-06-02 | "Zella AI + Agents now live for all users" |
+
+*"What stops them shipping it next quarter"* is the wrong question. **They shipped the load-bearing parts last
+quarter**, including Paul's own ICT/SMC concepts three weeks ago and SMT labels one week ago. They hold what
+the file cannot carry — wall-clock time, notes, screenshots, stable IDs — and they need no export: they own
+the database. Treat the Zella-Score behavioural gap as **perishable**: they already collect rule ticks, so
+adding adherence to the weights is a weights change over data they have.
+
+### Two corrections the synthesiser owes `devil` (both reduce its case; neither rescues the bet)
+
+1. **The backtesting export is NOT a 48-checkbox picker.** `devil` costed the friction with one. **OBSERVED:
+   the modal is a single dropdown — `Active columns` / `All columns` → `Download`.** Its 17-step friction
+   count is overstated at that step.
+2. **`devil`'s own "single check that could rescue the bet" has already been run, and it fails.** It asked
+   whether the picker offers a creation-timestamp or session-ID column. The orchestrator exported with
+   **`All columns` selected** and got **48 columns containing neither.** The rescue is closed, by
+   measurement, against the fullest column set the product offers.
+
+### What `scholar` establishes that changes the CLAIM, not the verdict
+
+The frozen ledger is **strongly supported as an INSTRUMENT and weakly supported as a TRAINER** — and the
+design has been conflating them.
+
+- **Strong (the real warrant):** hindsight bias — Guilbault et al. 2004, `META`, 95 studies, Md = .39; outcome
+  bias — Baron & Hershey replicated at N = 692, **d = 0.77–1.10**, *larger* than the original. A retrospective
+  "was that a good decision?" is known-corrupted at effect sizes near d = 1.0, and an immutable prior record
+  is the only thing that removes the corruption. **This is the best-evidenced element in the whole platform.**
+- **And it is a literature-grounded competitive claim:** Tradezella's adherence is ticked *after the fact* on a
+  completed trade and its only quality signal is P&L-derived — **precisely the condition under which hindsight
+  and outcome bias operate at maximum strength.**
+- **Weak:** that calibration scoring improves decision quality. Chang et al. 2016 `RCT` (Brier +6–12%) was
+  *training content plus practice*, not scoring alone; Martin 2025 is a `REPLICATED-NULL` at N = 610/871. **No
+  study anywhere links calibration training to trading P&L.**
+- **So the honest claim is "an uncontaminated record of what you actually believed", NOT "this makes you a
+  better trader."** Claim 1 survives scrutiny; claim 2 does not.
+- **DKR 1999 STANDS** — no XP, no badges, no points. Nothing overturns it; Sailer & Homner 2020's gamification
+  effects were weakest exactly for reward-and-status mechanics. **And positive informational feedback is
+  affirmatively supported (d ≈ 0.31–0.33)** — the rubric grade and the AI reader are the evidence-backed side
+  of that meta, not merely tolerated.
+- **Constraint the design must respect:** process-focus is *not* unconditionally supported. Sharon et al. 2022
+  `META` finds **outcome** accountability better at *high* task complexity (SMD −0.48). Do not market
+  process-focus as proven.
+
+### Verdict, plainly
+
+**`DON'T BUILD` the Tradezella importer** — boundary `OPEN` but pointing downstream, demand measured at ZERO
+in the one user across three live instruments, and the import path would contaminate the platform's only
+genuine asset. **Bet B is additionally dead**: ToS §20, a market that ignored a shipped analogue (Temper,
+$12.99/mo, "not enough ratings to display an overview"), and an incumbent shipping AI agents weekly.
+
+**This is a success, not a failure.** The lane cost one skill, one boundary probe, one council and zero code —
+and it stopped a four-week build that would have degraded the evidence layer. That is exactly what a
+boundary-first divergent council is for.
+
 ## Lane
 
 - **This wiki** produces the design artifacts: a canonical spec under `concepts/architecture/`, updates to
@@ -252,9 +437,65 @@ the incumbent/learning-science/demand/kill-shot questions. Those need the counci
 Answer the 17 questions above from **external evidence**, decide the positioning, and produce ONE canonical
 design doc plus a boot-promptable B2+ split. **Writes no app code.**
 
-### Phase B2+ — TBD
-Deliberately unwritten. E1's precedent: the phase split is B1's own output, and inventing it now would bake in
-the assumption that the research is supposed to overturn.
+### Phase B2+ — **the importer is NOT built.** Three things replace it, in this order.
+
+The council's phase split. B1's research killed the phase it was supposed to design, which is the outcome
+E1's precedent explicitly allows for.
+
+#### B2 — ⭐ THE FREE TEST, and it gates everything else. Zero code. Paul only.
+
+**Before any build: define rules in the Tradezella Playbook → Rules tab, and run ~20 backtesting sessions
+using the in-product fields that already exist** — `Mistakes`, `Custom Tags`, `Rating`, `Reviewed`, and the
+Backtesting Session Notes folder.
+
+This is `devil`'s success criterion #1 and it is the honest gate. Three live, free, one-click discipline
+instruments currently read **ZERO**. If they stay empty after twenty sessions, **no companion of any design
+survives** — and that will have been established for the price of the practice Paul was going to do anyway.
+If they fill up, the residue that Tradezella *still* cannot do becomes the real, evidenced spec.
+
+**Note what this phase actually is: it asks the trader to use the incumbent properly before building
+anything beside it.** A council that recommends its sponsor do nothing for twenty sessions is doing its job.
+
+#### B3 — Deploy `neurospect-learn`. This is the binding constraint, not integrations.
+
+Six enforcement phases of real work are reachable only from one laptop. There is no Dockerfile, no CI, no
+container, no deploy config. **Until this is fixed the platform cannot be used away from the desk, cannot be
+shown to a second user, and every "high-friction flow" argument is moot because there is no flow.**
+`devil`'s success criterion #5. This is the highest-value phase available today and it depends on nobody else.
+
+#### B4 — Capture in `neurospect-learn` FIRST, not imported after.
+
+`scholar`'s deliverable targets are **cue-usage (`CI`)** and **consistency** — both require data captured
+*during* the session, which is exactly what the export cannot carry. So the correct surface is the
+platform's **own** paste-first capture, before/while a Tradezella session runs:
+
+- A **pre-session pre-commitment** in the existing frozen ledger (E5), authored *before* the replay is
+  advanced. This is the one artifact whose ordering can be trusted, because `neurospect-learn` stamps it.
+- **Consistency across similar setups** — one rubric, many captures, measure variance in cue usage. Needs
+  N and interleaved presentation (Brunmair & Richter 2019, `META`, g = .67 for visual category induction —
+  the material class chart-setup recognition actually belongs to).
+- Tradezella stays the **execution surface**. Nothing is imported; the screenshot Paul already pastes is the
+  evidence, and it carries a real wall-clock timestamp because the platform created it.
+
+**If backtest-derived data is ever imported, it must be permanently and visibly quarantined as
+`SELF-REPORTED`** and excluded from the evidence streak, the calibration score and the Readiness Gate.
+`devil`'s criterion #2 — and the design must then state what value remains, because that residue *is* the bet.
+
+#### Deferred, with the reason recorded
+
+- **The repo-integration lane is strictly better on the platform's core axis** and should be reconsidered
+  ahead of any journaling integration: git commits carry **authenticated wall-clock timestamps and content
+  hashes** — exactly the provenance property the CSV structurally cannot supply — from data Paul owns, with
+  no vendor who can change the schema on a Tuesday.
+- **Bet B (a product for other traders) is closed** pending: written permission under ToS §20, and evidence
+  that a market which ignored Temper at $12.99/mo would pay for a second subscription that adds work.
+
+### The re-check trigger on this whole verdict
+
+Per `prospect`'s rule that **boundary facts expire**, this verdict is scoped to **2026-08-11, Pro tier**, and
+is invalidated by any of: a Tradezella API or webhook appearing; a session-ID or record-creation-timestamp
+column entering the export; the ToS being revised from its 2020-10-29 text; or B2 returning full instruments
+after twenty sessions. Tradezella ships **weekly** — re-run Gate 3 before acting on this page after ~2026-11.
 
 ## Session Log
 
@@ -393,6 +634,49 @@ the assumption that the research is supposed to overturn.
   discriminating rather than incidental.
 - next: **the council.** Q3b (`TRIED-AND-FAILED` — has anyone built a Tradezella companion and abandoned it)
   plus the incumbent / learning-science / demand / kill-shot lenses. Paul's call whether to convene.
+
+### 2026-08-11 (later still) — B1 COMPLETE. Council ran; verdict **DON'T BUILD**. No app code written.
+
+- **approach:** five lenses (`claimant`/`scout`/`scholar`/`canvasser`/`devil`) spawned in parallel with ONE
+  shared brief file, after Gate 3 had already settled the boundary. Sonnet for the three search-heavy lenses,
+  Opus for `scholar` and `devil`. **Conflict rule written into the brief: the browser and Paul's live account
+  had a single owner (the orchestrator)** — five agents driving one logged-in session would have corrupted
+  each other's reads and could have mutated his data. Lenses got WebSearch/WebFetch only, and each named what
+  it needed in-product; the orchestrator ran those.
+- **decided: DON'T BUILD the Tradezella importer.** Bet A redirected to capture-first (B4); Bet B closed.
+  Full reasoning in §COUNCIL VERDICT. The one-line version: **the boundary is `OPEN` and points downstream,
+  while both genuine differentiators live upstream of it.**
+- **⭐ the finding that decided it was a measurement, not an argument:** three shipped, free, one-click
+  discipline instruments inside Tradezella all read **genuine ZERO** for the only user — instrument proved
+  live, so `ZERO` not `NOT-RECORDED`. Demand for structured discipline capture, at zero friction, in a tool
+  already paid for, is **0 for 3**.
+- **verified rather than stapled.** Re-ran `devil`'s load-bearing external claim myself against
+  https://tradezella.canny.io/changelog — **confirmed and understated**: they shipped ICT/SMC concepts
+  (Jul 21), AI playbook-checking (Jul 7), AI session review into the journal (Jun 16), and **SMT divergence
+  labels on 2026-08-04, one week ago**, on a weekly cadence, directly into Paul's own methodology.
+- **corrected two of `devil`'s claims** (both reduce its case; neither rescues the bet): the backtesting
+  export is a two-option dropdown, **not** a 48-checkbox picker, so its friction count is overstated; and its
+  self-nominated "single check that could rescue the bet" **had already been run and failed** — the export
+  was taken with `All columns` and the 48-column header contains no session ID and no creation timestamp.
+- **flagged — `scholar` changed the CLAIM, not the verdict.** The frozen ledger is strongly supported as an
+  **instrument** (hindsight bias `META` Md = .39; outcome bias replicated at **d = 0.77–1.10**) and weakly
+  supported as a **trainer** (calibration-training evidence is contested; Martin 2025 is a replicated null;
+  **no study links calibration training to trading P&L**). The honest claim is *"an uncontaminated record of
+  what you actually believed"*, not *"this makes you a better trader"*. **The platform's own docs should be
+  corrected accordingly** — this is a Rule #6 contradiction against any page claiming the latter.
+- **flagged — DKR 1999 STANDS**, checked adversarially. No XP/badges/points. And **positive informational
+  feedback is affirmatively supported (d ≈ .31–.33)**, so the rubric grade and AI reader are the
+  evidence-backed side of that meta, not merely tolerated. New constraint: process-focus is **not**
+  unconditionally supported (Sharon et al. 2022 `META`: outcome accountability better at high complexity),
+  so it must not be marketed as proven.
+- **flagged — boundary nuance found late:** Tradezella shipped **"Scenario Sharing — share scenarios by link
+  or email"** (2026-07-28). So link-sharing exists for *scenarios* even though session-dashboard Share is
+  image-only. Recorded because it partially qualifies the §Gate 3 share finding.
+- **NOT done, deliberately:** the automated-backtest probe (would spend a Pro credit and informs Bet B only,
+  which is now closed); the rule-checkmark lock test (needs a write to Paul's live account); the Zella AI
+  Analysis panel inspection (needs an automated run). None change the verdict.
+- next: **B2 is Paul's** — define rules in the Playbook Rules tab, run ~20 sessions using the existing
+  in-product fields. **B3 (deploy) is the next session's work and now carries the marker.**
 
 ## Dry-run of `prospect` against the 17 questions (2026-08-11) — B1 MUST READ THIS
 
@@ -588,7 +872,11 @@ breaks the next session's entry point. Before signing off:
    status is worse than an unfinished phase.
 4. Bump `log.md` and `index.md` if the skill landed.
 
-## Boot Prompt (Phase B1 — deep research + design) ⏭ ACTIVE
+## Boot Prompt (Phase B1 — deep research + design) — ✅ RUN 2026-08-11
+
+> **HISTORY — do not execute.** Ran 2026-08-11 with `⛏ prospect`. Gate 3 returned `OPEN`; the five-lens
+> council returned **DON'T BUILD the importer**. See §COUNCIL VERDICT and §Phase B2+. The marker now sits on
+> the **B3 deployment** prompt at the bottom of this file — B2 is Paul's own free test, not a session's work.
 
 Recommended launch: **Opus** (`claude --model opus[1m]`), then **`/effort xhigh`**, in **plan mode**. This is a
 research and design session and its output is a document, not code. **Write no app code in this session** —
@@ -696,3 +984,58 @@ DELIVERABLES: ONE canonical design doc under `concepts/architecture/` (added to 
 idea page moved forward; `log.md` + `index.md` bumped. **Every claim carries its source; anything unverified is
 labelled unverified. Answer all 17 questions or defer them explicitly with a reason.** Then write the B2 boot
 prompt. **Paul handles git — commit only when he asks.**
+
+---
+
+## Boot Prompt (Phase B3 — deploy `neurospect-learn`) ⏭ ACTIVE
+
+> **B2 is NOT a session's work — it is Paul's.** Define rules in the Tradezella Playbook → Rules tab and run
+> ~20 backtesting sessions using the existing in-product fields. Do not build anything that depends on that
+> test until it has produced data. **Do not build the Tradezella importer** — see §COUNCIL VERDICT.
+
+**Launch:** `claude --model sonnet[1m]` is sufficient (this is execution against a known runbook, not
+design), `/effort medium`. Escalate to Opus only if the hosting decision turns out to be genuinely open.
+
+**Task: make `neurospect-learn` reachable from somewhere that is not Paul's laptop.**
+
+**Why this phase, and why now.** The B1 council closed the integration lane and named deployment as the
+**actual binding constraint**. Six enforcement phases (E1–E6) of real, working code — derived reps, a frozen
+pre-commitment ledger, an advisory AI second reader, a non-overridable Readiness Gate — are reachable only by
+starting Postgres + uvicorn + vite by hand. Until that changes: the platform cannot be used away from the
+desk, cannot be shown to a second person, and **every argument about capture friction is moot, because there
+is no flow to have friction in.** `devil` made this its success criterion #5 and it is the highest-value work
+available that depends on nobody else.
+
+READ FIRST:
+1. The wiki `CLAUDE.md` — Isolation Rule, **code is ground truth**, the MANDATORY post-implementation
+   reconciliation checklist, Rules #3/#4/#6, Context Management (tell Paul at >50%).
+   **Paul handles git — commit only when he asks.**
+2. This tracker — §COUNCIL VERDICT (why integration was dropped) and §Phase B2+ (why this phase exists).
+3. [[processes/distributed-workflow/active/deployment]] — a **proven, pitfall-annotated Render + Cloudflare
+   Pages runbook**. ⚠️ It covers the *earlier* `neurospect-api`/`neurospect-app` pair, live since 2026-04-25,
+   and **its Phase-5 boot prompt is unrun**. Treat it as a template to adapt, not a script to replay, and say
+   plainly where `neurospect-learn` differs.
+4. [[concepts/architecture/learning-enforcement]] §Invariants — nothing in this phase may weaken them.
+
+ESTABLISHED (do not re-derive): the repo has **no Dockerfile, no `.github/workflows`, no deploy config**.
+Migrations at **`0012`**; **263 backend tests**, Playwright 68. Local DB is `neurospect-learn-db` on **:5433**;
+CORS currently allows **only** `http://localhost:5173`. R2 was never wired for `neurospect-learn` (screenshots
+still 503 there) — decide explicitly whether storage is in scope for B3 or deferred.
+
+⚠️ **Known traps, both of which have already cost a session here:**
+- **Never run `alembic downgrade base` against the working DB.** An exported `DATABASE_URL` does *not*
+  redirect Alembic — `.env` also sets `DATABASE_URL_SYNC`, which wins. This has wiped the seed twice. Use
+  `scripts/scratch_migrate.py`.
+- **Do not trust `--reload`.** The uvicorn reloader has died silently, leaving a worker serving stale code
+  through a whole before/after measurement.
+- **:5173 is held by a different project of Paul's.** Playwright's `webServer` reuse would test the wrong
+  codebase — the E4 session left the suite unrun for exactly this reason.
+
+DELIVERABLES: a deployed, reachable instance with its auth story stated; the CORS origin list updated away
+from localhost-only; a **rollback path**; secrets handled per Paul's global rule (**ask before retrieving any
+credential, name the secret and source, never echo a value**); the runbook written or adapted under
+`processes/`; and this tracker + `log.md` + `index.md` reconciled. **Render the deployed surface and confirm
+it paints** — a query-layer pass is not a deployment check (the E2/E3/E5/E6 sessions each caught a defect that
+only the rendered surface showed). Then write the B4 boot prompt.
+
+**THIS PHASE IS NOT:** building the Tradezella importer; adding features; or reopening any E1–E6 invariant.
