@@ -1,6 +1,6 @@
 ---
-tags: [architecture, learning-enforcement, evidence, grading, rubrics, self-check, ai-vision, pre-commitment, calibration, anti-cheat, gamification, mastery, neurospect, phase-e1, phase-e2, phase-e3, phase-e4, phase-e5]
-aliases: [Learning Enforcement Architecture, Evidence Layer, Drill Grading, Verified Reps, Anti-Cheat Design, Rubric Layer, Self-Check, Pre-Commitment Ledger, Calibration Score]
+tags: [architecture, learning-enforcement, evidence, grading, rubrics, self-check, ai-vision, pre-commitment, calibration, anti-cheat, gamification, honesty-signals, rest-days, mastery, neurospect, phase-e1, phase-e2, phase-e3, phase-e4, phase-e5, phase-e6, complete]
+aliases: [Learning Enforcement Architecture, Evidence Layer, Drill Grading, Verified Reps, Anti-Cheat Design, Rubric Layer, Self-Check, Pre-Commitment Ledger, Calibration Score, Honesty Strip, Declared Rest Days, Evidence-Backed Streak]
 sources:
   - processes/distributed-workflow/active/learning-enforcement.md
   - concepts/architecture/learning-platform.md
@@ -15,7 +15,7 @@ created: 2026-07-28
 updated: 2026-08-10
 ---
 
-# Learning Enforcement — Architecture (E1 design · E2–E5 as-built)
+# Learning Enforcement — Architecture (E1 design · E2–E6 as-built)
 
 Canonical design doc for the layer that makes progress in `neurospect-learn` **impossible to fake**: a rep
 counts only when **evidence of the work** exists, that evidence is **graded**, and the loop is **gamified**
@@ -23,12 +23,12 @@ without rewarding activity over mastery. It extends the shipped platform describ
 [[concepts/architecture/learning-platform]] and is sequenced by
 [[processes/distributed-workflow/active/learning-enforcement]].
 
-> **Status: E2 BUILT (2026-07-28) · E3 BUILT (2026-08-02) · E4 BUILT (2026-08-10) · E5 BUILT (2026-08-10); only E6
-> remains design.** The evidence layer, the deterministic tier, the derived `reps`, the rubric layer, the self-check,
-> the AI vision second reader **and the pre-commitment ledger + calibration score** ship in `neurospect-learn` at
-> Alembic `0011` — per [[CLAUDE]] §Architecture Doc Integrity the **code is ground truth** for everything E2–E5 cover,
-> and §E2/§E3/§E4/§E5 as-built below record every divergence from the design in this doc. §§1–5, §7–9 now describe
-> *what is running*; **only §6's honesty surfaces + declared rest days remain unbuilt design, for E6.**
+> ## 🏁 **Status: THE WORKSTREAM IS COMPLETE. E2 · E3 · E4 · E5 · E6 are ALL BUILT** (2026-07-28 → 2026-08-10).
+> The evidence layer, the deterministic tier, the derived `reps`, the rubric layer, the self-check, the AI vision
+> second reader, the pre-commitment ledger + calibration score **and the honesty strip + evidence-backed streak +
+> declared rest days** all ship in `neurospect-learn` at Alembic `0012` — per [[CLAUDE]] §Architecture Doc Integrity
+> the **code is ground truth for this entire document**, and the §E2–§E6 as-built sections record every divergence
+> from the design above them. **Every section now describes what is running; nothing here is unbuilt design.**
 >
 > 🎯 **`stages.STAGE_UNWIRED` IS EMPTY (E5) — the workstream's acceptance test from E1 is MET.** `ict_course` M6 was
 > its last entry; it is now derived from the pre-commitment ledger. Asserted, not eyeballed:
@@ -261,8 +261,13 @@ Each phase is a boot-promptable unit; sequenced in
   `stages` `tape_studies` wiring that **emptied `STAGE_UNWIRED`**; and the two-step capture surface + calibration
   panel. Backend tests **181 → 213**, Playwright **50 → 57**. The design's *soft-delete convention* was
   **deliberately broken** here — see §E5 as-built.
-- **E6 — Gamification + honesty surfaces.** Computed honesty signals on `/gate`; evidence-backed streak /
-  adherence; declared rest days.
+- **E6 — Gamification + honesty surfaces.** ✅ **BUILT 2026-08-10** — Alembic `0012` (`rest_days` + a
+  declared-in-advance trigger); the pure `services/honesty.py` (five signals, computed per read, stored
+  nowhere) and `services/consistency.py`; `GET /api/gate/honesty`; `GET | POST /api/rest-days`; the strip on
+  `/gate` and the evidence-backed block beside the shipped adherence figures. Backend tests **213 → 263**,
+  Playwright **57 → 68**. The design's *"a field on the gate payload"* reading was **rejected** — the strip is
+  a separate resource so the verdict structurally cannot read it — and `study_preferences.blackout_dates`
+  was **rejected as the home for rest days** because it cannot record when a date was declared. See §E6 as-built.
 
 **Why the content pass does not lead** (the tracker's hypothesis, partially overturned): because rubrics
 project from bullets that already exist, most drills are gradable **as written**, so E2 is not blocked on
@@ -740,6 +745,150 @@ carrying its denominator and no ring, target or streak → `/path/ict_course/M6`
 before E5 it read "no gate attestation covers this bar" and could never be met → **reps held at 0/1 throughout** →
 **zero console errors** (9 messages, all vite/React-DevTools info).
 
+## E6 as-built (2026-08-10) — code is now ground truth
+
+Shipped in `neurospect-learn`: Alembic **`0012`** (`rest_days` + the
+`rest_days_declared_in_advance()` trigger), `models/rest_day.py`, the **pure**
+`services/honesty.py` and `services/consistency.py`, `schemas/honesty.py`, the
+`GET /api/gate/honesty` endpoint in `routers/gate.py`, `GET | POST /api/rest-days` +
+the `_consistency` extension to `_adherence` in `routers/planner.py`, and the frontend
+`lib/honesty.ts` + `components/gate/honesty-strip.tsx` + `components/planner/rest-days.tsx`
+wired into `/gate` and `/plan/setup`, plus the evidence-backed block in
+`components/planner/adherence-meter.tsx`. Tests: `test_honesty.py` (21, DB-free) +
+`test_consistency.py` (11, DB-free) + `test_honesty_api.py` (18); **213 → 263 backend**,
+Playwright **57 → 68**. Reversibility harness extended with an `_E6` group.
+
+### THE LOAD-BEARING CALL — the strip is a SEPARATE RESOURCE, so it cannot gate anything
+
+E6's one real decision was **where the honesty signals live**. §5 says they render "on
+`/gate`", and the obvious reading — a field on `GateOut` — would have been wrong twice over.
+
+The signals are served from **`GET /api/gate/honesty`**, and `GET /api/gate` is untouched.
+The verdict is built from exactly three inputs (concept ladder · backtest expectancy · four
+attestations), and keeping the signals out of that payload means `services/gate.py` **has no
+honesty value in scope to read**. "These gate nothing" is therefore enforced by what is
+reachable rather than by a rule someone has to remember — the §E2 argument (`reps` DERIVED,
+not guarded) and the §E5 argument (a trigger, not router discipline), applied once more.
+
+It also preserved the workstream's loudest no-regression signal: `/api/gate` is **byte-identical**
+to the STEP-0 baseline (`27ff7157…`, unchanged now across E2 · E3 · E4 · E5 · E6). A nested field
+would have moved that digest and spent the strongest evidence in the phase on a routing choice.
+§5's wording is about the *rendered* surface, and the page renders it beside the attestations.
+
+Proven rather than asserted: `test_making_every_signal_fire_leaves_the_gate_byte_identical`
+captures `/api/gate`, creates evidence that trips **all five** signals at once, captures it
+again and requires the two to be equal — then asserts the signals really did fire, so the
+comparison cannot pass vacuously over an unchanged record.
+
+### A ZERO FROM AN INSTRUMENT THAT CANNOT SEE IS NOT A MEASUREMENT
+
+Every signal reports the **population it could actually inspect** and returns `NOT_MEASURED`
+with `count = None` — never `0` — when that population is empty. This is E5's `accuracy: None`
+precedent owed five times, and the sharp case is **back-dating**: `evidence_assets.captured_at`
+is nullable and user-asserted (E2 chose that deliberately — `models/evidence.py` says
+"back-dating is SURFACED, never blocked — E6"). A capture asserting no time can be neither
+back-dated *nor cleared of it*, so those rows are excluded from the population and **reported
+separately** rather than folded into a reassuring zero. The rendered strip says so:
+*"1 capture asserts no capture time and is outside this measurement entirely."*
+
+**Every threshold is stated in the signal itself** (`BURST_SECONDS = 60`, `BACKDATE_HOURS = 24`),
+because an unstated threshold is an invented rule wearing a fact's clothes. The other three
+signals need no threshold and have none — they count a condition that is simply true or not.
+
+### Declared rest days — and why `blackout_dates` could not serve
+
+§6 asks for rest days "in `study_preferences`". `study_preferences.blackout_dates` **already
+exists** and could not carry the mechanic: it is a `DATE[]` on a mutable row rewritten wholesale
+by `PUT /api/preferences`, so it accepts **any** date including yesterday's, and it records
+nothing about *when* a date was added — it cannot answer "was this declared in advance?" even in
+principle. Honouring it in a streak would have built precisely the retroactive freeze §6 rejects.
+It is also a different concept (a *scheduling* input, Phase 5e-2), so E6 leaves it alone and adds
+a table that can hold the property. Pinned by `test_blackout_dates_never_touch_the_evidence_streak`.
+
+`rest_days` is guarded structurally, not by router discipline: a `BEFORE INSERT OR UPDATE` trigger
+refuses a `rest_date` earlier than the server's current UTC date and freezes `rest_date` /
+`declared_at` afterwards. **A CHECK constraint was not available** — Postgres refuses non-IMMUTABLE
+expressions in CHECK, and every form of "today" (`now()::date`, `declared_at::date`, `AT TIME ZONE`)
+is STABLE at best. **Verified by disabling it**: with the trigger off the same raw-SQL back-dated
+insert lands; with it on it raises (E3/E5's "prove the guard is what makes the test pass").
+
+**`rest_days` has no `is_deleted` column and no PATCH/DELETE route** — `0011`'s divergence repeated,
+pinned by a test that fails if either verb is added.
+
+### What this deliberately does NOT prevent, and surfaces instead
+
+Declaring a long run of *future* rest days keeps a streak alive without work. No constraint can fix
+that — a month of booked leave and a month of pre-emptive excuses are the same rows. So the count of
+rest days **inside the current streak** is published beside it, and a mostly-rest streak reads as one
+("block the certain, surface the rest", §5). The score-chase test is direct and runs at both layers:
+`test_declaring_rest_days_cannot_raise_the_streak` — a rest day is **neutral**, so booking ten moves
+the number by exactly zero.
+
+### The shipped surfaces, re-derived — beside, not instead
+
+`_adherence`'s figures are unchanged; `AdherenceOut` gained a `consistency` block computed by the
+pure `services/consistency.py` from days that carry **evidence** (`created_at`, the server clock —
+never the asserted `captured_at`, or a streak could be extended by asserting one). Both render, which
+is E2's `reps` / `reps_evidenced` / `reps_legacy` idiom: a user whose marked streak is 12 and whose
+evidenced streak is 3 has learned something true, while being shown only the 3 would read as the app
+having lost their work. The walkthrough caught the contrast live — *"Adherence 0% · 0 done · 4 pending"*
+next to *"Backed by evidence · 1 day in a row"*.
+
+**No new currency is minted.** No XP, no badges, no points, no target, no ring, no threshold, and
+nothing here gates anything — asserted at the API (`test_no_signal_carries_a_score_grade_or_target`)
+and on the rendered page (no percentage, no `progressbar`, no "target/score/streak/level/badge/points"
+word survives a word-boundary scan of the strip).
+
+### The defect the rendered surface caught (the query layer was correct)
+
+The strip's summary line printed **"0 of 5 signals had something to measure, across 0 captures"**
+directly beneath five careful *"not measured"* rows — every word true, and together a reassuring zero
+that undid the exact distinction the strip exists to draw. **A query-layer check passes**, because a
+`measured_count` of 0 is a perfectly correct count of an empty set. This is E5's calibration-panel
+defect in a new place, and it was caught the same way and fixed the same way: the summary **qualifies
+a measurement**, so it may only appear once there has been one. Pinned by asserting that no `0 of N`
+and no `0 captures` appears on an empty record.
+
+### Divergences from the design
+
+- **The strip is `GET /api/gate/honesty`, not a `GateOut` field** — see THE LOAD-BEARING CALL above.
+- **Rest days are their own table, not `study_preferences`.** §6 names that page; a `DATE[]` on a
+  mutable row cannot record when a date was declared, which is the entire mechanic.
+- **The five signals are FACTS, not judgements.** Three carry no threshold at all; the design implied
+  each would have a bar to trip. A count of a stated condition needs none, and needing none is better.
+- **`bulk_marking` counts `reps_claimed > 1`, which the design never framed as a shortcut.** §1 chose
+  `reps_claimed` over one-image-per-rep deliberately, so this signal is neutral by construction — it
+  reports the shortest path between an upload and a rep count, and calls it nothing worse.
+- **`ungraded_backlog` ignores the `deterministic` pass.** It runs on every upload, so its presence
+  says nothing about whether the work was checked; only a missing `self_check` counts.
+- **The live walkthrough ran through Playwright-driven Chromium, not claude-in-chrome** (the extension
+  was not connected this session). Same engine, same rendered DOM, same console stream; the driver is
+  durable at `app/scripts/e6-walkthrough.mjs` and its screenshots + console report are in
+  `api/docs/evidence/e6/`. **18/18 checks, 0 console errors.**
+
+### Verified
+
+**263 backend tests** (213 → +50; 32 of them DB-free). `0012` up/down/up/base reversible on a
+**scratch** DB with a single-step `downgrade 0011` proof that removes exactly E6's objects — table,
+index, both triggers **and its own trigger function** — while leaving E5's ledger, E3's rubrics, E2's
+evidence layer and `0001`'s shared `update_updated_at()` intact. Working-DB seeds intact
+(**74/23/58/67 + 44/104**). `tsc -b` + `vite build` clean. `/api/analytics/*` + `/api/gate`
+**byte-identical** to the STEP-0 baseline (sha256 `27ff7157…` — the same digest as E2, E3, E4 and E5).
+**Playwright 68** (57 → +11), **three consecutive clean runs** at default parallelism
+(84.7s / 73.1s / 77.5s). Route liveness confirmed discriminatingly before any measurement
+(`/api/gate/honesty` and `/api/rest-days` → **403** against a `/api/nonexistent-control` → **404**),
+with uvicorn run **without `--reload`** so no reloader existed to die mid-measurement.
+
+**Live walkthrough** (`api/docs/evidence/e6/`): the empty strip rendered five **NOT MEASURED** rows
+with **no count of any kind** and an explicit "Nothing has been measured yet — that is not the same as
+a clean record" → two captures then lit **5 of 5** signals with every threshold printed and `aura D1-a`
+named on each → the Gate above it stayed at **cleared 0 → 0** with every requirement row identical →
+a back-dated rest day was refused by the server **422** ("must be declared in advance") while the form's
+own `min` refused it before that → a booked day rendered frozen with "declared 5 days ahead" and **no
+edit or delete control** → Today showed **"Adherence 0%"** beside **"Backed by evidence · 1 day in a
+row"** → declaring three more rest days left the evidence streak at **1 → 1** → **zero console errors**
+(15 messages, all vite/React-DevTools info).
+
 ## Invariants this layer must preserve (checked at every phase)
 
 1. The Gate stays **non-overridable and computed per read** — no `cleared` column, and evidence adds no write
@@ -842,6 +991,37 @@ before E5 it read "no gate attestation covers this bar" and could never be met �
    written exclusively by `PATCH /api/progress` from the request body. Kept at the surface too: the panel states
    that it gates nothing, and M6's bar is deliberately indifferent to whether the calls were right.
 
+### Walked at E6 (2026-08-10) — each one, explicitly
+
+1. **Gate non-overridable ✔** — no `cleared` column, request field or endpoint was added;
+   `services/gate.py` is **untouched** (confirmed in the diff) and reads no honesty signal.
+   `/api/gate` is byte-identical to the STEP-0 baseline (`27ff7157…`). **Strengthened this phase:**
+   the signals are served from a separate resource, so `compute_readiness` has no honesty value in
+   scope to read — pinned by tripping all five signals and requiring the gate JSON to be equal.
+2. **Frontier never gate-eligible ✔** — `watch_only` handling is untouched. The strip only READS
+   `evidence_assets` / `evidence_grades`, and a rest day writes only `rest_days`; neither can reach a
+   concept's Can-mark cap or lift a frontier concept.
+3. **Skips still logged ✔** — `plan_item_status` is unmodified and every figure `_adherence` already
+   computed is byte-for-byte the same code; E6 only APPENDED a `consistency` block. A skip still hurts
+   adherence. Note the shipped `current_streak` deliberately does **not** read `rest_days` — only the
+   new evidence-backed streak does, so no rest day can repair the self-reported figure either.
+4. **Backtest ≠ live ✔** — nothing in E6 touches `journal_entries.mode`, `expectancy.py` or
+   `opportunity_cost.py` (all three untouched in the diff); the byte-identical analytics snapshot is
+   the proof. A rest day is not a trade and carries no R.
+5. **`reps` strictly harder, never easier ✔ — and unchanged in E6.** The strip is READ-ONLY (there is
+   no POST/PATCH/PUT/DELETE on it — asserted, all four return 405), `rest_days` mints no rep, and
+   `services/consistency.py` only reads. The derivation is untouched. E2's three-endpoint bypass test
+   and E3's `test_a_self_check_never_moves_a_rep` both still pass inside the 263.
+6. **`auto_met` / `locked` still concept-based ✔** — `services/stages.py` is unmodified and reads no
+   honesty signal and no rest day. `STAGE_UNWIRED == {}` re-asserted in
+   `test_stage_unwired_is_still_empty_after_e6`, so E5's acceptance test did not regress.
+7. **Advisory score never writes `confidence` / `ladder_stage` ✔** — E6 writes neither, and goes
+   further: **no honesty signal is stored anywhere at all**, asserted structurally by walking every
+   column of `Base.metadata` and requiring that none is named for a signal. Both user-owned columns
+   remain written exclusively by `PATCH /api/progress` from the request body. Kept at the surface too:
+   the strip renders counts with their denominators and **no percentage, no progress bar and no
+   target**, so it cannot read as a competing mark.
+
 ## Contradiction flags (per [[CLAUDE]] Rule #6)
 
 1. **Cost — now MEASURED, and lower than this doc's own estimate.** The tracker warned that per-rep vision calls
@@ -872,6 +1052,19 @@ before E5 it read "no gate attestation covers this bar" and could never be met �
 6. **Unverified sources, labelled.** Duolingo's streak-freeze figures (≈21% churn reduction, +14% D14
    retention) come only from vendor and secondary blogs — **unverified**, and no decision here rests on them.
    MeasureBench and Deci/Koestner/Ryan 1999 are primary and are what the design leans on.
+7. **`study_preferences.blackout_dates` overlaps "declared rest days" and cannot serve as one — E6.**
+   §6 asks for rest days "in `study_preferences`", and that table already carries a `blackout_dates`
+   `DATE[]` (Phase 5e-2) which the scheduler honours. It is **not** the same thing, and using it would
+   have built the retroactive streak freeze §6 rejects: it is rewritten wholesale by
+   `PUT /api/preferences`, so it accepts a date already past, and it stores nothing about *when* a date
+   was added — so "was this declared in advance?" is unanswerable from it in principle. E6 therefore
+   added `rest_days` (`0012`) and left `blackout_dates` alone in its scheduling role. Recorded because
+   the two will keep looking like duplicates to a future reader, and because the evidence streak
+   deliberately reads only one of them (`test_blackout_dates_never_touch_the_evidence_streak`).
+8. **The strip renders on `/gate` but is NOT in `/api/gate` — E6.** §5 says these signals "render as an
+   honesty strip on `/gate`", which describes the page. They are served from `GET /api/gate/honesty` so
+   that `services/gate.py` cannot read them, and so the baseline digest survives — see §E6 as-built.
+   Noted because a reader going to `GateOut` for them will not find them there, by design.
 
 ## See Also
 

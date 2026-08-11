@@ -736,6 +736,14 @@ record; the future is always recomputed from current state** — is the elite ad
     (materialize+persist today; items + adherence + pace), `GET /api/plan?from=&to=`,
     `POST /api/plan/regenerate`, `PATCH /api/plan/items/{id}` (status + `done_qty` → feeds
     `concept_progress`/`drill_progress`).
+    **E6 added `GET | POST /api/rest-days`** (declared rest days) and an evidence-backed `consistency` block
+    on `AdherenceOut` — the shipped streak/adherence figures re-derived from days that carry evidence, by the
+    pure `app/services/consistency.py`, and published BESIDE the marked figures rather than replacing them.
+    **Rest days have NO PATCH and NO DELETE**, and a `rest_date` already past is refused (422) by the router
+    and again by Alembic `0012`'s trigger — a day off booked after the fact is a retroactive streak freeze.
+    Not to be confused with `study_preferences.blackout_dates`, which is a *scheduling* input, accepts past
+    dates, and is deliberately invisible to the streak. Canonical rationale:
+    [[concepts/architecture/learning-enforcement]] §6 + §E6 as-built.
   - `journal` (5f, as-built — `app/routers/journal.py`, prefix `/api`, auth-gated + user-scoped, soft-delete):
     `POST /api/journal`, `GET /api/journal` (`?mode=`/`?entry_model=`/`?instrument=`/`?from=`/`?to=`, newest
     first), `GET|PATCH|DELETE /api/journal/{id}`. Schemas in `app/schemas/journal.py`.
@@ -746,6 +754,13 @@ record; the future is always recomputed from current state** — is the elite ad
     `app/services/gate.py`): `GET /api/gate` (`?track=` restricts which track may supply credit — tightens only),
     `GET|PATCH /api/gate/attestations` (the four behavioural items; lazy upsert, revocable). Schemas in
     `app/schemas/gate.py`. **No endpoint writes a verdict** — `cleared` is computed per read.
+    **E6 added `GET /api/gate/honesty`** on the same router: the five honesty signals, computed per read and
+    **stored nowhere**, served as a SEPARATE resource rather than a field on `GateOut` so that
+    `app/services/gate.py` has no honesty value in scope to read — which is what makes "these gate nothing" a
+    structural property rather than a rule to remember (and keeps `/api/gate` byte-identical to the baseline
+    digest that has held since E2). **Read-only: POST/PATCH/PUT/DELETE all 405**, because a signal a user can
+    dismiss is not a record. Signals in the pure `app/services/honesty.py`; schemas in `app/schemas/honesty.py`.
+    Canonical rationale: [[concepts/architecture/learning-enforcement]] §5 + §E6 as-built.
   - `missed-trades` (6b, as-built — `app/routers/missed_trades.py`, prefix `/api`, auth-gated + user-scoped,
     soft-delete, mirroring `journal.py`): `POST /api/missed-trades`, `GET /api/missed-trades`
     (`?miss_type=`/`?entry_model=`/`?hypothetical_outcome=`/`?instrument=`/`?from=`/`?to=`, newest first),
