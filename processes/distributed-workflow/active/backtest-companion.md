@@ -14,9 +14,14 @@ and use that as the wedge for a broader **companion** positioning, integrating w
 has already chosen rather than replacing them.
 
 > **STATUS (2026-08-10): SCOPED ONLY — no research done, no design decided, no code written.** This tracker
-> exists so the first session starts from the real question rather than a blank page. Phase **B1** is a
-> **deep-research + design session** and its boot prompt is ⏭ ACTIVE below. Nothing in this document is a
-> finding; everything in it is a question or a constraint.
+> exists so the first session starts from the real question rather than a blank page. Nothing in this document
+> is a finding; everything in it is a question or a constraint.
+>
+> **Two sessions are queued, in this order.** The ⏭ ACTIVE prompt is the **skill authoring** session — it
+> writes the divergent council skill that Phase B1 then uses (see §Recommended tooling for why none of the four
+> installed council skills fits). **Phase B1** — the deep-research + design session — is written and QUEUED
+> below; the skill session's last act is to move the ACTIVE marker onto it. B1 *can* be run without the skill,
+> using its prompt alone; it will simply be more vulnerable to the three failures §Recommended tooling names.
 >
 > **Why this lane, and why now.** [[processes/distributed-workflow/active/learning-enforcement]] closed on
 > 2026-08-10 with E1–E6 complete, and its retrospective recommended the repo-integration lane next. Paul
@@ -191,11 +196,12 @@ review, and a market scan without one of them becoming decoration.
 doc + the B2+ split. B1 can be run without the skill using the boot prompt alone; it will simply be more
 vulnerable to the three failures above.
 
-## Skill Authoring Prompt — run this BEFORE the B1 boot prompt
+## Next Session Boot Prompt (Skill authoring — the divergent council) ⏭ ACTIVE
 
-> **Not the boot prompt.** This section deliberately carries no ACTIVE marker so `/neurospect-boot` still
-> resolves to B1 uniquely. Paste this into a fresh session; it authors the tool, then B1 uses it.
+> **This runs BEFORE Phase B1.** B1's own prompt is further down, marked QUEUED; **this session's last act is to
+> move the ACTIVE marker onto it** (see §Ending this session below).
 > **Launch:** `claude --model opus[1m]`, then `/effort high`. Plan mode optional — the output is one file.
+> **No app environment is needed** — this session writes a skill, not code. Docker/uvicorn/vite can stay down.
 
 **Task: author the fifth council skill — a DIVERGENT sibling for discovery, then use it on the B1 lane.**
 
@@ -255,7 +261,21 @@ THIS SKILL IS NOT: a research-report generator; a replacement for `assay` (which
 there are numbers to enumerate); or a workflow that needs the `Workflow` tool — it is a skill, like its four
 siblings. **Paul handles git — commit only when he asks.**
 
-## Next Session Boot Prompt (Phase B1 — deep research + design) ⏭ ACTIVE
+### Ending this session (MANDATORY — the boot chain depends on it)
+
+`/neurospect-boot` resolves the single ACTIVE marker in `active/`, so leaving two headings marked (or none)
+breaks the next session's entry point. Before signing off:
+
+1. **Move the marker.** Remove it from this section's heading and put it on the **Phase B1** heading below
+   (currently ending `— QUEUED, activate after the skill session`), so the next boot lands on the research
+   session. Keep exactly one marked heading in this file at all times.
+2. Add a **§Session Log** entry here: approach / decided / did / **flagged** / verified / next — including the
+   skill's final name if `prospect` was overruled, and anything the dry-run against the 17 questions exposed.
+3. If the skill was **not** finished, say so explicitly and leave the marker on this section. An overstated
+   status is worse than an unfinished phase.
+4. Bump `log.md` and `index.md` if the skill landed.
+
+## Boot Prompt (Phase B1 — deep research + design) — QUEUED, activate after the skill session
 
 Recommended launch: **Opus** (`claude --model opus[1m]`), then **`/effort xhigh`**, in **plan mode**. This is a
 research and design session and its output is a document, not code. **Write no app code in this session** —
