@@ -28,6 +28,13 @@ has already chosen rather than replacing them.
 > bottom of this file and carries the marker. It can be run without the skill using its prompt alone; it will
 > simply be more vulnerable to the three failures §Recommended tooling names.
 >
+> **⭐ B1's STEP 0 IS ALREADY DONE — DO NOT RE-RUN IT.** The boundary probe was executed 2026-08-11 against
+> Paul's reactivated Pro account and the verdict is **`OPEN`** (a manual per-trade CSV hatch; no API, no
+> webhooks, no developer programme). The full contract — 48-column payload, what does *not* cross, and the
+> ToS reading — is in **§Gate 3 — Boundary probe**. Read it before designing anything. Its headline finding:
+> **the export carries simulated market time, not wall-clock work time**, which is decisive for anything that
+> touches the E5 ledger or the E6 evidence streak. Q1, Q2, Q3a and Q5 are answered there.
+>
 > **Why this lane, and why now.** [[processes/distributed-workflow/active/learning-enforcement]] closed on
 > 2026-08-10 with E1–E6 complete, and its retrospective recommended the repo-integration lane next. Paul
 > redirected the same day: the backtesting tool is now **Tradezella**, chosen and kept, and the question is
@@ -113,6 +120,121 @@ the phrasing below should be read as a hypothesis to confirm.**
 16. Is this a product or a feature? The kill-shot question: what stops Tradezella shipping it themselves?
 17. Which *other* platforms does the companion positioning generalise to, and does designing for two make the
     first one worse?
+
+## Gate 3 — Boundary probe (2026-08-11): **VERDICT `OPEN`** — answers Q1, Q2, Q3a, Q5
+
+Run with `⛏ prospect`'s Gate 3 before any council was convened, on Paul's **reactivated Pro account**.
+This section is the boundary contract B1 must design against. **It supersedes any inference from the
+public docs — including two of my own, both of which were wrong.**
+
+```
+BET:            Can neurospect-learn improve backtesting sessions hosted in Tradezella?
+DIRECTION:      ONE-WAY, OUT, BY FILE. Nothing goes back in.
+MECHANISM:      Manual CSV export. NO API, NO OAuth, NO webhooks, NO developer programme.
+OBSERVED ON:    Pro plan ($59/mo) · web app · 2026-08-11 · Paul's own account
+PAYLOAD:        48 columns, 39 populated on a real futures trade (see below)
+TERMS:          ToS effective 2020-10-29 — §7 permits "a single copy made for personal use only";
+                §20 forbids use "for any commercial purposes". Automated access: NO CLAUSE EXISTS.
+LIMITS:         Per-trade rows only. No session linkage, no notes, no images, no stable ID.
+VERDICT:        OPEN (narrow in shape — a file hatch, not an integration)
+RE-CHECK:       Any pricing-page change, any ToS revision (it is 6 years stale and WILL be rewritten),
+                or the appearance of a developer/API page. Re-run this probe before B2 builds anything.
+```
+
+### The path, exercised end to end (`OBSERVED`)
+
+`Backtesting → Trade View → [select rows] → Bulk actions → Export trades to CSV → All columns → Download`
+
+- **Positive control:** the export returned Paul's real data — 2 sessions, 1 trade, 8m invested. A null
+  result here would therefore have meant something.
+- **Negative control:** `Backtesting → Sessions → Bulk action` offers **only `Delete` and
+  `Add to strategies`**. The export is trade-level, not session-level. Same UI idiom, different menu —
+  which is what makes the positive finding discriminating rather than incidental.
+
+### ⭐ Two things the public docs got wrong — both caught only by pressing the buttons
+
+1. **The 42-article "Backtesting & Replay" help collection contains NO export article at all**, and the
+   Sessions tab genuinely has no export. Reading the docs, the honest verdict was `NARROW`/possibly
+   `CLOSED`. **The capability exists anyway**, one tab over. `DOCUMENTED` was not `OBSERVED`, in the
+   direction that *understates* — the opposite of the usual failure, and worth recording because it is
+   the one a sceptical researcher walks into.
+2. **A vendor claim was directionally right for the wrong reason.** Tradezella's marketing blog says
+   backtested trades land in "the same journal" and can be exported. The help centre says backtesting
+   data lives in a **separate dedicated section** — and the help centre is right: the export carries
+   `Account Name = Backtesting`. Had the design leaned on the blog's "same journal" framing it would
+   have looked for these rows in the wrong place. **`MARKETED` was not usable even when its conclusion
+   was true.**
+
+### The payload — 48 columns, verbatim
+
+`Account Name · Adjusted Cost · Adjusted Proceeds · Avg Buy Price · Avg Sell Price · Exit Efficiency ·
+Best Exit · Best Exit Price · Best Exit Time · Close Date · Close Time · Commission · Custom Tags ·
+Duration · Entry Price · Executions · Exit Price · Gross P&L · Trade Risk · Initial Target · Instrument ·
+Spread Type · Mistakes · Net P&L · Net ROI · Open Date · Open Time · Pips · Reward Ratio · Points ·
+Position MAE · Position MFE · Price MAE · Price MFE · Realized RR · Return Per Pip · Reviewed · Side ·
+Status · Playbook · Symbol · Ticks Value · Ticks Per Contract · Fee · Swap · Rating · Quantity ·
+Zella Score`
+
+**39 populated** on a real NQ futures trade. **9 empty:** `Exit Efficiency`, `Best Exit`, `Best Exit
+Price`, `Best Exit Time`, `Pips`, `Return Per Pip` (the last two are forex-only and legitimately N/A on a
+futures trade), plus `Custom Tags`, `Mistakes`, `Rating` — which are **user-entered and simply unfilled**,
+not unavailable. That distinction matters: the qualitative/behavioural fields *do* cross, if the trader
+populates them.
+
+**What crosses that the enforcement layer can actually use:** `Account Name = Backtesting` (a machine
+discriminator for backtest rows), `Playbook` (= the strategy — the link to the model-aligned journal),
+`Reviewed` (a boolean review flag), `Realized RR` / `Reward Ratio` / `Initial Target` / `Trade Risk`,
+`Position MAE`/`MFE` + `Price MAE`/`MFE`, `Duration`, `Executions`, and `Mistakes`/`Custom Tags`/`Rating`
+when filled.
+
+### ⭐ What does NOT cross — and the one that changes the design
+
+Verified absent from the header, not assumed: **no trade ID or stable unique key · no session ID or
+session name · no notes/Notebook text · no screenshots or chart images · no record-creation timestamp.**
+
+1. **⭐ The export carries SIMULATED market time, not wall-clock work time.** `Open Date = 2026-01-01`,
+   `Open Time = 19:08:29 EST` are the *replayed historical bar times*, not when Paul sat down and did the
+   work. The Sessions UI knows the real figure — it shows `Time spent 6 min` and `Time invested 8m` — but
+   **that number is session-level and does not appear in the trade export at all.**
+
+   **This is decisive.** [[concepts/architecture/learning-enforcement]]'s E5 pre-commitment ledger and E6
+   evidence-backed streak both rest on *when the work actually happened*. A CSV row dated 2026-01-01
+   cannot tell you whether the rep was done today, and cannot establish that a call preceded an outcome.
+   **An import that trusted `Open Date` would silently back-date every rep** — precisely the failure E5's
+   frozen ledger was built to make structurally impossible. Any B2 design must take the work-time from
+   the *act of importing* (or from a session-level capture), never from the row.
+
+2. **No session linkage** means a trade cannot be tied back to the plan or pre-commitment made for that
+   session from the CSV alone. Session-level context (name, strategy, date range, time spent, completion)
+   lives only in the Sessions table and is **not exportable** — it would have to be captured separately.
+
+3. **No stable ID** means re-import is not idempotent by construction; de-duplication would have to be
+   synthesised from a composite key. Compounded by their own documented constraint: *"the exported CSV
+   file cannot be re-uploaded back into the platform."*
+
+### The ToS finding — the bet splits in two
+
+Read in full and rendered (the earlier fetch returned only a JS shell; **that was NOT-VISIBLE, not
+silence**, and was re-routed rather than reported as "unrestricted").
+
+- **§7:** *"Except for a single copy made for personal use only, you may not copy, reproduce, modify,
+  republish, upload, post, transmit, or distribute any documents or information from this site."*
+- **§20:** *"You agree not to sell, resell, reproduce, duplicate, copy or use for **any commercial
+  purposes** any portion of this site, or use of or access to this site."*
+- **Genuinely ABSENT** (whole document read): no clause on automated access, bots, scrapers, crawlers,
+  rate limits, reverse engineering, or API terms. Not permitted, not forbidden — **no clause exists.**
+- Effective **2020-10-29**, which **predates the backtesting feature entirely**. Treat as volatile.
+
+**Consequence for the lane, stated plainly:** Paul's own personal use is squarely inside §7. A
+**commercial** companion product sold to other Tradezella users runs into §20 and would need written
+permission. The two halves of Paul's goal — *"improve my backtesting sessions"* and *"increase the
+product-market fit of this platform"* — therefore have **different boundary verdicts**, and B1 must
+decide which it is designing for rather than treating them as one bet.
+
+### Still open after this gate
+
+`Q3b` (has anyone built and *abandoned* a Tradezella companion — the `TRIED-AND-FAILED` check) and all of
+the incumbent/learning-science/demand/kill-shot questions. Those need the council.
 
 ## Lane
 
@@ -235,6 +357,42 @@ the assumption that the research is supposed to overturn.
   real exercise is B1, and B1 is where it will show whether the lenses hold.
 - next: **Phase B1** — run the boot prompt at the bottom of this file, invoking `/prospect`, and read §Dry-run
   first so the council is briefed on the right 14 questions.
+
+### 2026-08-11 (later) — Gate 3 boundary probe RUN; verdict `OPEN`. First real use of `prospect`.
+
+- **approach:** ran the new skill's **Gate 3 only**, solo, before convening anything — which is what the
+  skill prescribes and what kept the cost down. Paul authorised the council decision as *"boundary probe
+  first, then decide"*, so no subagents were spawned.
+- **decided: told Paul NOT to reactivate Pro yet**, and ran the probe on public primary sources first. The
+  reasoning was the skill's own: the cheap step that can invalidate everything runs first, and a `CLOSED`
+  verdict would have meant paying for a subscription to confirm a wall. He reactivated only once the public
+  sources had been exhausted and the remaining questions provably needed the product.
+- **did:** established the full boundary contract — see §Gate 3. Verdict **`OPEN`**: a manual, one-way,
+  per-trade CSV export at `Backtesting → Trade View → Bulk actions`, 48 columns, 39 populated. No API, no
+  OAuth, no webhooks, no developer programme on any tier; the Partner Programme is affiliate-only.
+- **⭐ flagged — the finding that will shape B2:** the export carries **simulated market time, not wall-clock
+  work time**. `Open Date = 2026-01-01` is the replayed bar, not when the work was done. The real figure
+  (`Time spent 6 min`) exists in the Sessions UI and **is not in the export**. An importer that trusted
+  `Open Date` would back-date every rep — the exact failure E5's frozen ledger exists to prevent.
+- **flagged — the bet splits in two on the ToS.** §7 permits "a single copy made for personal use only";
+  §20 forbids use "for any commercial purposes". Paul's personal use is fine; a commercial companion is not,
+  absent written permission. B1 must choose which bet it is designing for.
+- **flagged — two instrument failures, both caught, neither reported as a finding:**
+  1. `app.tradezella.com/information/terms` returned a **JS shell containing only the word "TradeZella"**.
+     Reporting "the ToS is silent on automated access" from that would have been a fabricated negative. It
+     was classified **NOT-VISIBLE** and re-routed through the browser, where the full document rendered —
+     at which point "no automated-access clause exists" became a real, verified finding.
+  2. `www.tradezella.com/terms` 404s. Absence of a page is not absence of terms.
+- **⭐ verified — the docs were wrong in the direction that UNDERSTATES.** The 42-article backtesting help
+  collection has **no export article**, and the Sessions tab has no export. From documentation alone the
+  honest verdict was `NARROW`/possibly `CLOSED`. The capability exists one tab over. Recorded because the
+  skill's `DOCUMENTED ≠ OBSERVED` rule is usually framed as guarding against over-claiming, and here it
+  guarded against **under**-claiming — which would have killed a viable lane.
+- **verified — controls held.** Positive: the export returned Paul's real 2 sessions / 1 trade. Negative:
+  the Sessions-tab bulk menu offers only `Delete` / `Add to strategies`, so the positive finding is
+  discriminating rather than incidental.
+- next: **the council.** Q3b (`TRIED-AND-FAILED` — has anyone built a Tradezella companion and abandoned it)
+  plus the incumbent / learning-science / demand / kill-shot lenses. Paul's call whether to convene.
 
 ## Dry-run of `prospect` against the 17 questions (2026-08-11) — B1 MUST READ THIS
 
