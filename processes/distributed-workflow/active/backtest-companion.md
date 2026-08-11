@@ -3,7 +3,7 @@ tags: [distributed-workflow, active, neurospect, backtesting, integration, trade
 aliases: [Backtest Companion Tracker, Tradezella Lane, Companion Positioning Workstream]
 sources: []
 created: 2026-08-10
-updated: 2026-08-10
+updated: 2026-08-11
 ---
 
 # Backtest Companion — Workstream Tracker
@@ -13,15 +13,20 @@ discipline while the session runs, capture and storage of what came out of it, a
 and use that as the wedge for a broader **companion** positioning, integrating with the trading apps a trader
 has already chosen rather than replacing them.
 
-> **STATUS (2026-08-10): SCOPED ONLY — no research done, no design decided, no code written.** This tracker
-> exists so the first session starts from the real question rather than a blank page. Nothing in this document
-> is a finding; everything in it is a question or a constraint.
+> **STATUS (2026-08-11): STILL SCOPED ONLY — no research done, no design decided, no code written.** This
+> tracker exists so the first session starts from the real question rather than a blank page. Nothing in this
+> document is a finding about Tradezella, the market, or the literature; everything in it is a question or a
+> constraint.
 >
-> **Two sessions are queued, in this order.** The ⏭ ACTIVE prompt is the **skill authoring** session — it
-> writes the divergent council skill that Phase B1 then uses (see §Recommended tooling for why none of the four
-> installed council skills fits). **Phase B1** — the deep-research + design session — is written and QUEUED
-> below; the skill session's last act is to move the ACTIVE marker onto it. B1 *can* be run without the skill,
-> using its prompt alone; it will simply be more vulnerable to the three failures §Recommended tooling names.
+> **The skill-authoring session is DONE (2026-08-11).** `⛏ prospect` now exists at
+> `C:\Users\PaulRussell\.claude\skills\prospect\` — the divergent fifth council sibling, boundary-first and
+> able to halt. It was dry-run against the 17 open questions below, which **changed how B1 should be briefed**:
+> three of the 17 are internal design questions no external lens should touch, one needs splitting, and the
+> skill asks three questions the 17 do not. See §Dry-run of `prospect` against the 17 questions.
+>
+> **Phase B1 — the deep-research + design session — is now the ACTIVE lane.** Its boot prompt sits at the
+> bottom of this file and carries the marker. It can be run without the skill using its prompt alone; it will
+> simply be more vulnerable to the three failures §Recommended tooling names.
 >
 > **Why this lane, and why now.** [[processes/distributed-workflow/active/learning-enforcement]] closed on
 > 2026-08-10 with E1–E6 complete, and its retrospective recommended the repo-integration lane next. Paul
@@ -121,7 +126,7 @@ the phrasing below should be read as a hypothesis to confirm.**
 
 ## Plan
 
-### Phase B1 — Deep research + design session ⏭ **ACTIVE** (boot prompt below)
+### Phase B1 — Deep research + design session — **NEXT UP** (boot prompt at the bottom of this file)
 Answer the 17 questions above from **external evidence**, decide the positioning, and produce ONE canonical
 design doc plus a boot-promptable B2+ split. **Writes no app code.**
 
@@ -157,7 +162,154 @@ the assumption that the research is supposed to overturn.
 - next: **author the council skill (small dedicated session), then run the B1 boot prompt.** The skill is
   itself a design artifact and deserves fresh context; B1 can run without it, but less well.
 
+### 2026-08-11 — `⛏ prospect` authored (skill session; still no research, no design, no app code)
+
+- **approach:** followed the skill-authoring boot prompt as written — read `assay` in full as the format of
+  record, skimmed `conclave`/`inquest`/`vigil` for how the four differ, then the E4 as-built and
+  §Contradiction flags for the precedents the prompt named. No app environment started (the prompt said none
+  was needed, and none was).
+- **decided: kept the recommended name `prospect`**, glyph **⛏**, completing the metaphor `assay` established
+  — *you prospect to find the ore, then you assay what you found*, which is exactly the divergent→convergent
+  relation. Lenses named `claimant` · `scout` · `scholar` · `canvasser` · `devil`; `devil` deliberately keeps
+  the house name it has in all four siblings rather than being renamed "kill-shot".
+- **did:** wrote `~/.claude/skills/prospect/SKILL.md` (323 lines) + `references/prospect-brief-template.md`
+  (147 lines).
+  Structure follows the house shape: three gates before convening, with **Gate 3 = the boundary probe** as the
+  signature gate (`OPEN | NARROW | CLOSED`, and **CLOSED halts the council**), five lenses each with an
+  explicit *may not* column, a human gate before the output becomes a design, and design as a **separate phase**
+  after the verdict. Reconciled all four siblings + `army` (see flagged below).
+- **built three disciplines beyond the three the prompt asked for**, each earned from a precedent in this
+  corpus rather than invented:
+  - **A five-rung source tier** `OBSERVED | DOCUMENTED | REPORTED | MARKETED | ASSUMED`, with **`DOCUMENTED`
+    is not `OBSERVED`** as its own starred rule. Earned from E4: the phase's *own boot prompt* asserted the
+    SDK picks the credential up from `api/.env` with no code change, and that was false; the same session
+    found a config default that killed `alembic`, `uvicorn` and `pytest` on import. If our documentation can
+    be wrong about our own code, a third party's is not evidence about theirs.
+  - **Four kinds of absence** — `ABSENT | UNSEARCHABLE | UNSPOKEN | TRIED-AND-FAILED` — the discovery form of
+    "a zero from an instrument you have not proved can see is not a measurement". `TRIED-AND-FAILED` is the
+    one that matters: it reads exactly like good news.
+  - **⭐ Boundary facts expire.** The discipline none of the four convergent siblings needs, because a diff
+    does not change while you review it and a third party's product does. Every boundary fact carries its
+    scope (tier · version · region · date) and the event that invalidates it. Straight from E4's probe, which
+    **re-measures its conclusion every run and prints `⚠ REOPENED`** rather than asserting it, and which
+    scoped the 981-token finding to one model with instructions to re-measure if it changed.
+- **verified — the prompt's "do not ship a skill that has never been pointed at anything":** dry-ran it
+  against all 17 questions. Full result in §Dry-run above. Headline: **it is not a clean 17-of-17 mapping** —
+  3 questions (Q4, Q10b, Q11) are internal design questions no external lens should touch, 2 (Q3, Q17) need
+  splitting, and the skill asks 3 questions the 17 do not. Halt condition confirmed mechanical (fails closed
+  on empty `PAYLOAD` + `MECHANISM: none`), and four structural disagreements between lenses confirmed.
+- **flagged (1) — the tracker has had two active markers all along, one invisible to the boot skill.**
+  The Phase B1 *status* heading carried the glyph followed by a bolded `ACTIVE` (asterisks *inside* the
+  marker), which `/neurospect-boot`'s literal grep cannot match — so the chain resolved cleanly by luck, not
+  by design. Normalised that heading to `**NEXT UP**` with no glyph. **Two conventions worth keeping:** the
+  marker belongs on the *boot-prompt* heading only, never on a phase-status heading; and **prose must not
+  quote the marker verbatim** — this log deliberately describes it instead, because every quoted instance
+  becomes a false hit in the next session's grep. Verified after editing: exactly one match in this file.
+- **flagged (2) — `~/.claude/skills/INDEX.md` did not list a single council skill.** Not `prospect`, and not
+  `conclave`/`inquest`/`assay`/`vigil`/`army` either; it is the older ALDC "CCE Skills Library" taxonomy, last
+  revised 2026-01-13, and the whole council family postdates it. Adding one orphan `prospect` row would have
+  been worse than useless, so a new **§Adversarial Councils** section was added listing all six with their
+  signature gates and a routing line. **Its header totals (63 skills / 20,492 lines) were left alone rather
+  than guessed at**, with a dated note saying so.
+- **flagged (3) — the `army` sibling list was already stale** (named three councils, predating `vigil`), and
+  its Phase 5 **mirror contract is unfulfillable from a Neurospect session**. It requires a byte-identical copy
+  to `wiki/concepts/patterns/skills/` — the **ALDC** wiki — which the Isolation Rule forbids writing to from
+  this lane. Checked: `army`, `inquest` and `conclave` are mirrored there; **`assay`, `vigil` and now
+  `prospect` are not.** `~/.claude/` is not a git repo, so those three are currently unbacked. **This needs
+  Paul to run it from an ALDC session** — it is not a Neurospect decision to make.
+- **flagged (4) — three PowerShell instruments misfired silently while verifying this work.** Each returned a
+  confident wrong answer rather than an error, which is the exact failure the new skill is about:
+  1. **`Measure-Object -Line` silently drops blank lines** (an empty string counts as zero lines) — it
+     understated every skill file by ~30%. Two of the six line counts published in INDEX.md were wrong before
+     being re-counted with `@(Get-Content …).Count` and corrected.
+  2. **`-like` returned no-match on a string that demonstrably contained the pattern** (confirmed by
+     `IndexOf`), which would have aborted a correct edit as "target not found".
+  3. **`.Split('(321 lines)')` splits on each *character*, not the string** — it reported 58,958 remaining
+     occurrences of a substring that had already been removed.
+
+  All three were caught only because the result was checked against a second method. **Prefer
+  `[System.IO.File]::ReadAllText` + `IndexOf`/`Replace` for verifying file content in this estate**, and never
+  let a PowerShell one-liner be the sole witness to a published number.
+- **NOT done, and not to be called green:** no research on Tradezella, the market or the literature; no
+  design; no app code. The skill has been dry-run against questions, never against **evidence** — its first
+  real exercise is B1, and B1 is where it will show whether the lenses hold.
+- next: **Phase B1** — run the boot prompt at the bottom of this file, invoking `/prospect`, and read §Dry-run
+  first so the council is briefed on the right 14 questions.
+
+## Dry-run of `prospect` against the 17 questions (2026-08-11) — B1 MUST READ THIS
+
+The skill was pointed at the 17 questions before being called done. **It does not ship a clean 17-of-17
+mapping, and that is the finding** — the dry-run changed how B1 should brief its council.
+
+**Lens assignment (14 of 17 are external-evidence questions):**
+
+| Lens | Questions it owns |
+|---|---|
+| `claimant` (boundary) | 1, 2, **3a** (partner/affiliate programme), 5 |
+| `scout` (incumbent) | 6, 8a (what Tradezella charges, observed) |
+| `scholar` (mechanism) | 9, **10a** (what *should* be captured), 12, 13, 14 |
+| `canvasser` (demand) | **3b** (who else has integrated), **7**, 8b (what the price implies), 15 |
+| `devil` (kill-shot) | 16, **17b** (does designing for two make the first worse) |
+
+**⭐ Three of the 17 are NOT lens questions — do not brief a council on them.** They are internal design
+questions about our own code, and an external-evidence lens has nothing to say about them. They belong to the
+synthesiser, in the design phase, *after* the boundary verdict:
+
+- **Q4** ("if the only path is manual export, what is the least-friction honest flow, and is it good enough")
+  — this is Phase 3 design, gated behind the boundary. Answering it during research is how a council designs
+  against a boundary that has not been established yet.
+- **Q10b** ("which of those is already covered by E1–E6 primitives")
+- **Q11** ("new data model or a new *source* for the existing one")
+  — both are the "reuse primitives before inventing schema" step, and both are already answered by reading
+  our own code. Sending them to a research lens invites a proposal to rebuild what E2 settled.
+
+**Two questions need splitting** before they go in a brief, because each has two halves that land in different
+lenses and would otherwise be answered on whichever half is easier:
+
+- **Q3** → *3a* the partner/affiliate programme (a boundary term, `claimant`) and *3b* whether third parties
+  have integrated (`canvasser`). Sharp point the tier ladder gets right and a human easily gets wrong:
+  **another company's working integration is `REPORTED` evidence about the boundary, never `OBSERVED`** — they
+  may hold a private agreement that is not available to us.
+- **Q17** → *17a* which other platforms this generalises to (needs a second boundary probe — **explicitly defer
+  it** unless the bet requires it, or the gate cost doubles) and *17b* the scope-expansion risk (`devil`).
+
+**One deliberate divergence from §Recommended tooling's lens table.** That table put *"where do users say
+attention leaks"* (Q7) under **Incumbent**. The skill puts it under **Demand**, and the cut is now
+`scout` **= the product's behaviour, first-hand** / `canvasser` **= what people say and pay, population
+stated**. Reason: the dissent positive-control discipline ("prove your search can find complaints before
+reporting there are none") has to live in exactly one seat, and two lenses searching the same forums produce
+**correlated** findings that read as corroboration. Recorded because it contradicts the table above.
+
+**Three questions the skill asks that the 17 do not** — evidence the lens set is not just a restatement of the
+tracker, and all three should be added to B1's brief:
+
+1. **Has anyone built a Tradezella companion and abandoned it?** Q3 asks who has integrated, never who *tried
+   and quit*. This is the skill's `TRIED-AND-FAILED` absence class, and it is the one that reads most exactly
+   like good news: "nobody has built this" is an opportunity or a graveyard, and the difference is decisive.
+2. **What is the maintenance burden, in sessions per year, of tracking someone else's release cycle?** — and
+   who notices when their API changes.
+3. **What is the re-check trigger on every boundary fact?** A third party's product changes on their schedule.
+   A `CLOSED` verdict in particular is a fact with an expiry date, and it is the one most likely to be quoted
+   years later as settled.
+
+**Halt condition is checkable, not rhetorical** — verified: the Gate 3 contract fails closed on an empty
+`PAYLOAD` + `MECHANISM: none`. The test is *"name the fields that cross"*, which is mechanical. For this lane
+specifically: the export file exists and its columns have been read, or the verdict is `CLOSED`/"could not
+determine".
+
+**The lenses disagree by construction**, which was the other thing to verify. Four structural conflicts are
+built in, not incidental: `scout` "they deliberately omit X" (opportunity-shaped) vs `devil` "they omit it
+because it does not work, or they ship it next quarter"; `scholar` "spaced retrieval works" vs `canvasser`
+"nobody asks for it or would pay"; `claimant` "manual CSV only" vs `scholar` "the mechanism requires in-session
+capture" — **that one decides the product**; and `canvasser` "demand evidenced" vs `devil` "n=1, you are the
+market".
+
 ## Recommended tooling for B1 (Paul asked; this is the recommendation, not a survey)
+
+> **✅ DONE 2026-08-11 — the recommendation below was accepted and executed.** The skill is `⛏ prospect`
+> at `C:\Users\PaulRussell\.claude\skills\prospect\SKILL.md` (+ `references/prospect-brief-template.md`).
+> The five lenses are named `claimant` · `scout` · `scholar` · `canvasser` · `devil`. Read §Dry-run above
+> **before** briefing a council with it — the question mapping is not 1:1.
 
 **Recommendation: author ONE new skill — a *divergent* council for product bets — and run B1 with it.**
 
@@ -196,7 +348,10 @@ review, and a market scan without one of them becoming decoration.
 doc + the B2+ split. B1 can be run without the skill using the boot prompt alone; it will simply be more
 vulnerable to the three failures above.
 
-## Next Session Boot Prompt (Skill authoring — the divergent council) ⏭ ACTIVE
+## Boot Prompt (Skill authoring — the divergent council) — ✅ RUN 2026-08-11
+
+> **HISTORY — do not execute.** Ran 2026-08-11; `⛏ prospect` was authored and the ACTIVE marker moved to the
+> Phase B1 boot prompt at the bottom of this file. See §Session Log 2026-08-11.
 
 > **This runs BEFORE Phase B1.** B1's own prompt is further down, marked QUEUED; **this session's last act is to
 > move the ACTIVE marker onto it** (see §Ending this session below).
@@ -275,15 +430,24 @@ breaks the next session's entry point. Before signing off:
    status is worse than an unfinished phase.
 4. Bump `log.md` and `index.md` if the skill landed.
 
-## Boot Prompt (Phase B1 — deep research + design) — QUEUED, activate after the skill session
+## Boot Prompt (Phase B1 — deep research + design) ⏭ ACTIVE
 
 Recommended launch: **Opus** (`claude --model opus[1m]`), then **`/effort xhigh`**, in **plan mode**. This is a
 research and design session and its output is a document, not code. **Write no app code in this session** —
 E1's precedent, and for the same reason: the design is the load-bearing artifact and building against an
 unvalidated one is how the phase gets rewritten.
 
-**If the council skill (§Recommended tooling) has been authored, invoke it.** If it has not, run this prompt
-directly and consider authoring the skill first — but do not block on it.
+**The council skill EXISTS — invoke it: `/prospect`.** Authored 2026-08-11 at
+`C:\Users\PaulRussell\.claude\skills\prospect\SKILL.md`, with a brief template at
+`references/prospect-brief-template.md`. Its five lenses are `claimant` (boundary) · `scout` (incumbent) ·
+`scholar` (mechanism/literature) · `canvasser` (demand) · `devil` (kill-shot).
+
+⚠️ **Read §Dry-run of `prospect` against the 17 questions BEFORE writing the brief.** The mapping from the 17
+questions to the five lenses is **not** 1:1: three of them (Q4, Q10b, Q11) are internal design questions that
+no external-evidence lens should be given, two (Q3, Q17) need splitting, and the skill asks three questions the
+17 do not — including *"has anyone built this and abandoned it?"*, which is the difference between an opening
+and a graveyard. Briefing a council on all 17 verbatim will waste two seats and invite a proposal to rebuild
+what E2 settled.
 
 ⚠️ **STEP 0 — ESTABLISH THE BOUNDARY BEFORE DESIGNING ANYTHING.** Find out, from primary sources, what
 Tradezella actually exposes: public API? OAuth? webhooks? CSV/Excel export and with which columns? What does
