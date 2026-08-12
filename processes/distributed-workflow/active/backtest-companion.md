@@ -433,7 +433,7 @@ boundary-first divergent council is for.
 
 ## Plan
 
-### Phase B1 — Deep research + design session — **NEXT UP** (boot prompt at the bottom of this file)
+### Phase B1 — Deep research + design session — ✅ **COMPLETE 2026-08-11** (verdict: §COUNCIL VERDICT)
 Answer the 17 questions above from **external evidence**, decide the positioning, and produce ONE canonical
 design doc plus a boot-promptable B2+ split. **Writes no app code.**
 
@@ -456,7 +456,13 @@ If they fill up, the residue that Tradezella *still* cannot do becomes the real,
 **Note what this phase actually is: it asks the trader to use the incumbent properly before building
 anything beside it.** A council that recommends its sponsor do nothing for twenty sessions is doing its job.
 
-#### B3 — Deploy `neurospect-learn`. This is the binding constraint, not integrations.
+#### B3 — Deploy `neurospect-learn`. This is the binding constraint, not integrations. — ⏸ **HALF DONE (2026-08-11)**
+
+**Status, stated exactly:** everything that does not need Paul's browser is written, locally proven and
+reconciled — `render.yaml`, `requirements.txt`, the SPA fallback, a fail-closed Discord allowlist, tolerant
+env parsing, and the runbook at [[processes/operations/neurospect-learn-deployment]]. **Nothing is
+provisioned and nothing is deployed.** §1–§5 of that runbook all require Paul's own Cloudflare and Render
+accounts. The phase closes when the surface renders, not when the config exists — see the B3b boot prompt.
 
 Six enforcement phases of real work are reachable only from one laptop. There is no Dockerfile, no CI, no
 container, no deploy config. **Until this is fixed the platform cannot be used away from the desk, cannot be
@@ -677,6 +683,79 @@ after twenty sessions. Tradezella ships **weekly** — re-run Gate 3 before acti
   Analysis panel inspection (needs an automated run). None change the verdict.
 - next: **B2 is Paul's** — define rules in the Playbook Rules tab, run ~20 sessions using the existing
   in-product fields. **B3 (deploy) is the next session's work and now carries the marker.**
+
+### 2026-08-11 (later still, second session) — B3 **HALF DONE**: deploy prep written and proven; nothing provisioned
+
+- approach: took the B3 prompt as written. Read the wiki `CLAUDE.md`, §COUNCIL VERDICT, the `neurospect-api`
+  deployment tracker and the E-invariants, then checked every "ESTABLISHED" claim against the code before
+  building on it. Confirmed: no `.github/workflows` (only Copilot instruction files), migrations at `0012`,
+  local DB on :5433, CORS localhost-only, R2 unwired. Repo is **private** and `main` is in sync with origin.
+- **decided (storage): R2, and it is NOT optional.** Render's container filesystem is ephemeral, so
+  `storage.make_backend()`'s local fallback would delete every captured chart on each deploy **while the
+  `evidence_assets` rows survived** — reps derived from evidence that no longer exists, and *nothing raises*.
+  That is a silent void of E2's central claim, so "defer storage" was rejected rather than deferred. Paul
+  chose R2 with the constraint that the Cloudflare account must be **personal, not company**; the runbook is
+  written that way throughout.
+- **decided (auth): a fail-closed Discord allowlist.** The Discord app is Public, so a reachable URL means
+  anyone who finds it can mint an account. `ALLOWED_DISCORD_IDS` unset = everyone on localhost, **nobody** in
+  prod. Fail-open was rejected: forgetting one env var would leave the instance silently open, where
+  fail-closed produces an immediate 403 whose message names the fix. Enforced **per request**, not only at
+  token issue, because a 30-day JWT would otherwise outlive removal by a month — and a refused login writes
+  no `users` row, asserted against the DB rather than assumed.
+- **decided (hosting): Render + Cloudflare Pages, `frankfurt`, ~$14/mo.** Reusing the proven stack; region
+  moved from `oregon` because the only user is in the UK and uses it daily.
+- did: `render.yaml` (Blueprint, `rootDir: api`, Postgres 16 `basic-256mb`); `requirements.txt` committed —
+  56 pinned lines, needed because `poetry.lock` is **gitignored**, so Render's pip build had nothing to
+  install; `app/public/_redirects`; `app/auth/allowlist.py` + enforcement in the auth router and `deps.py`;
+  tolerant parsing for the two list-valued settings; `.env.example` updated on both sides; and the runbook at
+  [[processes/operations/neurospect-learn-deployment]] with a nine-row §Differences table.
+- **flagged — four things the old runbook would have got wrong, each MEASURED, not inferred:**
+  1. **`plan: starter` on Postgres is a LEGACY type** Render no longer creates new databases on, and
+     `postgresMajorVersion` now defaults to **18** when omitted. Copying the 2026-04 runbook verbatim fails
+     the Blueprint outright. Checked against Render's Blueprint spec rather than assumed.
+  2. **`-w 2` is unsafe here.** `services/ai_grade_queue.py` serialises drains with a per-*process*
+     `asyncio.Lock` and has **no** DB-level claim (no `FOR UPDATE SKIP LOCKED`), so two workers would drain
+     the same `pending` rows — duplicate advisory grades and duplicate Anthropic spend. `--workers 1`, and
+     raising it requires adding a DB claim first. This is a correctness constraint, not a tuning knob.
+  3. **Both list-valued env vars accepted JSON ONLY.** A bare origin, `a,b`, and an **empty** value each
+     raised inside the settings source and killed the app **at import** — not a 4xx, a process that never
+     serves. `sync: false` renders as an empty dashboard box, so the most likely first deploy would not have
+     booted. Fixed with `NoDecode` + a before-validator; the accepted forms are pinned by 15 tests.
+  4. **The wiki is not a runtime dependency** — only `scripts/` read `wiki_content_root`. So production is
+     seeded from the laptop against the external connection string, the corpus never enters the deployed
+     artifact, and rubrics stay wiki-projected and read-only. The seed step carries a **target-proving**
+     pre-flight that prints host+database before anything is written, because exporting `DATABASE_URL` alone
+     does not redirect these scripts and that trap has wiped the local seed twice.
+- **flagged — a PRE-EXISTING defect the suite surfaced, fixed, and one that is NOT fixed.**
+  `test_honesty_api.py` built its dates from `date.today()` — the *machine's* local date — while both clocks
+  in the code are UTC-based (`study_preferences.timezone` defaults to `"UTC"`, and `0012`'s trigger compares
+  against `(now() AT TIME ZONE 'UTC')::date`). On this Pacific-time machine the suite therefore went red
+  every evening after 17:00 local, `rest_days_upcoming` short by exactly one. The tests now read the same
+  clock as the code and were re-run **inside the failing window** to prove it. **Unfixed and deliberately
+  out of scope:** the underlying **two-clock** design — the planner counts in the user's timezone while the
+  trigger enforces in server UTC. They agree for a user at or ahead of UTC (Paul) and can disagree west of
+  it. Deployment makes this permanent, since Render runs UTC. Carried to B4.
+- **invariants ([[concepts/architecture/learning-enforcement]] §Invariants): none touched, and one
+  actively defended.** No service, model, router or migration outside `auth/` was modified — `gate.py`,
+  `stages.py`, the evidence layer, the rubric layer and the prediction ledger are byte-unchanged, so
+  invariants 1–3 and 6–7 have nothing in scope to move, and 4 (backtest ≠ live) sees no new data path. The
+  phase's contact with the enforcement layer is invariant **5** (`reps` strictly harder, never easier), and
+  it is a *defence*: deploying on the ephemeral local storage backend would have left rep-bearing evidence
+  rows whose blobs had been deleted, which makes `reps` accidentally **easier** to hold than to have earned.
+  Requiring R2 is what keeps that from happening. The allowlist can only ever deny access; it mints nothing.
+- verified: **294 backend tests pass** (263 baseline + 16 allowlist + 15 config-parsing), against a 263-pass
+  baseline captured *before* any edit; frontend `tsc -b` + `vite build` clean, with `_redirects` confirmed
+  present in `dist/`; `scripts/scratch_migrate.py` → `RESULT: REVERSIBLE`, which is the real evidence that
+  the 12 migrations Render will run against an **empty** database actually work; catalog row counts
+  re-measured as the seed anchor (74 / 23 / 58 / 67 / 44 / 104, `alembic_version` `0012`) and they match this
+  tracker's claims exactly.
+- **NOT done, and it is the majority of the phase's value:** nothing is provisioned, nothing is deployed,
+  and therefore **nothing has been rendered or verified**. No R2 bucket, no Render service, no Pages project,
+  no Discord redirect URI. Every one of those needs Paul's own accounts and a payment method. The
+  verification battery in the runbook §6 is written but **unrun**, and until it is run this phase has not
+  demonstrated the thing it exists to demonstrate.
+- next: **B3b** — Paul provisions (runbook §1–§4), the session seeds (§5) and then runs §6 against the
+  rendered surface, including the redeploy-and-look-again test that is the whole reason R2 is in scope.
 
 ## Dry-run of `prospect` against the 17 questions (2026-08-11) — B1 MUST READ THIS
 
@@ -987,7 +1066,11 @@ prompt. **Paul handles git — commit only when he asks.**
 
 ---
 
-## Boot Prompt (Phase B3 — deploy `neurospect-learn`) ⏭ ACTIVE
+## Boot Prompt (Phase B3 — deploy `neurospect-learn`) — ⏸ PARTIALLY RUN 2026-08-11
+
+> **Do not re-run this prompt.** Its preparation half is done and its findings are in the session log
+> above; its provisioning half became the B3b prompt at the foot of this file. Kept unedited as the
+> record of what B3 was asked to do.
 
 > **B2 is NOT a session's work — it is Paul's.** Define rules in the Tradezella Playbook → Rules tab and run
 > ~20 backtesting sessions using the existing in-product fields. Do not build anything that depends on that
@@ -1039,3 +1122,67 @@ it paints** — a query-layer pass is not a deployment check (the E2/E3/E5/E6 se
 only the rendered surface showed). Then write the B4 boot prompt.
 
 **THIS PHASE IS NOT:** building the Tradezella importer; adding features; or reopening any E1–E6 invariant.
+
+---
+
+## Boot Prompt (Phase B3b — provision, seed, and RENDER-verify) ⏭ ACTIVE
+
+> **This phase needs Paul at a browser.** The session cannot create a Cloudflare account, enter card
+> details, or click through Render. Read §"Paul does / the session does" below before starting, and if
+> Paul is not available to provision, say so and stop rather than inventing adjacent work.
+
+**Launch:** `claude --model sonnet[1m]`, `/effort medium`. This is execution against a runbook that now
+exists; nothing here is a design question. Escalate only if provisioning uncovers something the runbook
+did not anticipate.
+
+**Task: finish B3. Get `neurospect-learn` reachable, seeded, and PROVEN at the rendered surface.**
+
+**State, exactly.** The preparation half is committed-ready and locally proven: `render.yaml`,
+`requirements.txt`, `app/public/_redirects`, the fail-closed Discord allowlist, tolerant env parsing,
+`.env.example` on both sides, and the runbook. 294 backend tests pass, the frontend builds, and
+`scripts/scratch_migrate.py` reports `RESULT: REVERSIBLE`. **Nothing is provisioned. Nothing is
+deployed. Nothing has been rendered or verified.** Do not let the volume of finished config read as a
+finished phase — the phase's value is the last mile, and none of it is done.
+
+READ FIRST:
+1. The wiki `CLAUDE.md` — **code is ground truth**, the MANDATORY post-implementation reconciliation
+   checklist, Rules #3/#4/#6, Context Management (tell Paul at >50%). **Paul handles git.**
+2. [[processes/operations/neurospect-learn-deployment]] — **the runbook. Follow it; do not re-derive
+   it.** Its §Differences table exists because the older `neurospect-api` page would mislead you in
+   nine specific places.
+3. This tracker's **2026-08-11 (second session)** log entry — the four measured findings, and the one
+   defect deliberately left unfixed.
+
+**Paul does** (runbook §1–§4, browser only): the R2 bucket + scoped API token on a **personal**
+Cloudflare account; the Discord redirect URI; the Render Blueprint + env vars; the Pages project with
+root directory `app`. **The session does**: talk him through each step with exact values to paste, then
+§5 (seed production from the laptop) and §6 (verify).
+
+⚠️ **Non-negotiables, each of which has already cost something:**
+- **Ask before touching any credential**, name the secret and its source, and **never echo a value** into
+  chat, a log, a commit or the wiki. Paul's standing rule.
+- **The seed step writes to a live database.** Run the runbook's target-proving pre-flight first and
+  read it: if either line says `localhost:5433`, stop. Exporting `DATABASE_URL` alone does **not**
+  redirect these scripts, and that trap has wiped the local seed twice. **Never** run a bare
+  `alembic downgrade`.
+- **Anchor the seed** against 74 / 23 / 58 / 67 / 44 / 104 and `alembic_version` `0012`. User-data tables
+  must be **0** in production; the local counts for those are fixtures and test residue.
+- **A green health check is not a deployment check.** E2, E3, E5 and E6 each caught a defect that only
+  the rendered surface showed.
+
+DELIVERABLES:
+1. **Every page painted**, walked one by one, with **labelled screenshots** captured to the repo's
+   evidence folder — and a written note of which interactions respond and **which are inert**. A silent
+   no-op is a finding, never an acceptable default.
+2. **The R2 proof, which is the one test this phase exists for:** upload a chart capture, confirm the
+   thumbnail renders, **then redeploy and confirm it still renders.** On the local backend it would be
+   gone while the row survived. If this is not run, B3 is not done.
+3. The allowlist proven from the outside: Paul logs in; a non-allowlisted account is refused.
+4. Runbook + tracker + `log.md` + `index.md` reconciled with what actually happened — **including every
+   step where reality diverged from the runbook**, which is the part that pays off next time.
+5. Then the **B4** boot prompt (capture-first in `neurospect-learn`, per §Phase B2+), which should carry
+   the **two-clock** finding: the planner counts "today" in the user's timezone while migration `0012`'s
+   trigger enforces server UTC, and deployment makes that permanent.
+
+**THIS PHASE IS NOT:** building the Tradezella importer; adding features; reopening any E1–E6 invariant;
+or fixing the two-clock design (record it for B4 — changing it touches E6 semantics).

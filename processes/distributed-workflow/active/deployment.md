@@ -8,6 +8,15 @@ updated: 2026-04-24
 
 # Deployment — Workstream Tracker
 
+> **⚠ SCOPE: this page is about the EARLIER `neurospect-api` / `neurospect-app` pair (live since
+> 2026-04-25) — NOT about `neurospect-learn`.** For deploying the learning platform, the canonical page is
+> [[processes/operations/neurospect-learn-deployment]]. Read its **§Differences** table before reusing
+> anything from here: nine things diverge, and at least three of the values below would now *fail* —
+> Postgres `plan: starter` is a legacy type Render no longer creates new databases on,
+> `postgresMajorVersion` defaults to 18 rather than 16 when omitted, and `-w 2` is unsafe for
+> `neurospect-learn` because its AI-grade queue serialises with a per-process lock and no DB-level claim.
+> (Added 2026-08-11, Phase B3.)
+
 Get Neurospect running in production so real TradingView webhooks can reach the backend and beta users can log in with Discord.
 
 **Why this is the gate:** TradingView can only POST to public HTTPS URLs, not localhost. Everything built so far has been tested with curl. No real coaching session is possible until the backend has a public URL.

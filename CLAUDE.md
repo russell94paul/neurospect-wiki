@@ -144,6 +144,7 @@ Each architectural topic has ONE canonical doc. Other docs may link to it but mu
 | Env vars | `.env.example` in `neurospect-api` | Wiki docs should reference, not duplicate |
 | R2 storage key pattern | `concepts/architecture/phase2-project-structure.md` | Supersedes `tech-stack.md` §6 |
 | Evidence layer, drill grading, anti-cheat, gamification | `concepts/architecture/learning-enforcement.md` | Extends `learning-platform.md`; the evidence layer serves drills + journal + missed trades |
+| Deploying `neurospect-learn` (Render + Cloudflare Pages + R2) | `processes/operations/neurospect-learn-deployment.md` | **Not** `processes/distributed-workflow/active/deployment.md` — that covers the EARLIER `neurospect-api`/`neurospect-app` pair. See its §Differences before reusing anything from the older page |
 
 When the canonical doc is a code file (e.g. `.env.example`), wiki docs should reference it rather than duplicating its content.
 
