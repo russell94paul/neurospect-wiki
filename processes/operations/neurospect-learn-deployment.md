@@ -1,9 +1,9 @@
 ---
-tags: [process, operations, neurospect, deployment, render, cloudflare, r2, neurospect-learn]
-aliases: [Learn Deployment, neurospect-learn Deploy, B3 Runbook]
+tags: [process, operations, neurospect, deployment, render, cloudflare, r2, neurospect-learn, docker, local-stack]
+aliases: [Learn Deployment, neurospect-learn Deploy, B3 Runbook, Local Stack, Daily Driver]
 sources: []
 created: 2026-08-11
-updated: 2026-08-11
+updated: 2026-08-12
 ---
 
 # neurospect-learn — Deployment Runbook
@@ -21,6 +21,74 @@ that one disagree about `neurospect-learn`, **this page wins**; where they disag
 
 > **Code is ground truth.** Every claim below was checked against the repo on 2026-08-11, and the
 > facts that were *measured* rather than assumed are marked `MEASURED`.
+
+> ⚠ **STATUS 2026-08-12: the hosted path below is PARKED, not cancelled.** Paul decided hosting is
+> premature — he is the only user, every drill is desktop TradingView bar-replay, and a public URL buys
+> only the two things not needed yet (a second person reaching it, and access away from the desk).
+> `neurospect-learn` runs instead as a **one-command local stack** — see §Local stack, which is what is
+> actually in use. Everything from §Topology down remains written, config-proven and **unprovisioned**;
+> it is the plan for the day there is someone to show it to, and nothing in it has ever been deployed.
+
+## Local stack — the daily driver (and what is actually in use)
+
+`docker compose up -d` in `neurospect-learn`. Verified end to end at the rendered surface on
+2026-08-12; evidence in the repo at `api/docs/evidence/b3-local/` (12 labelled artifacts +
+`b3-local-render-walk.md`).
+
+```
+docker-compose.yml  ──▶  db    postgres:16, container `neurospect-learn-db`, :5433
+                    ──▶  api   api/Dockerfile,  :8001  (migrations then uvicorn, --workers 1)
+                    ──▶  app   app/Dockerfile,  :5174  (BUILT bundle behind nginx)
+```
+
+**It deliberately does not occupy the dev ports.** Hot-reload development stays native on the host at
+:8000 / :5173; the daily driver is :8001 / :5174, so both run side by side instead of fighting. Both
+talk to the **same** database on :5433 — one dataset, which is the point.
+
+⚠️ **:5173 is held by a different project of Paul's.** That is why the daily driver never binds it.
+
+### The traps this stack has already sprung
+
+- **The DB volume is not a fresh one.** `neurospect-learn-db` originally ran from `docker run`, so it
+  had an **anonymous** volume. The data was **copied** (never moved) into the named volume
+  `neurospect_learn_pgdata`, so the original anonymous volume survives untouched as the rollback.
+  The copy preserved the catalog exactly: `alembic_version` `0012` and
+  `74 / 23 / 58 / 67 / 44 / 104` all still match.
+- **`compose` warns that it did not create that volume**, and the warning is load-bearing:
+  `volume "neurospect_learn_pgdata" already exists but was not created by Docker Compose. Use
+  external: true`. Until it is declared `external: true`, a `docker compose down -v` would delete the
+  seed **and** every captured chart. Treat `down -v` as forbidden here.
+- **Evidence blobs must stay on the host bind mount** (`./.evidence-store:/evidence`). This is the
+  local answer to the question R2 answers on Render: without it, a container recreate would delete
+  blobs while the `evidence_assets` rows survived, leaving reps derived from evidence that no longer
+  exists, and **nothing raises**. `PROVEN 2026-08-12`: uploaded a capture, forced a recreate of both
+  containers, and the thumbnail still rendered with the rep intact.
+- **The wiki mount is read-only** (`../neurospect-wiki:/wiki:ro`) — the wiki's Rule #1 in mount form.
+  The ingest and rubric-projection scripts must never write back to their source.
+- **`VITE_*` must be build `args`, not `environment`.** Vite inlines env at **build** time. Passing
+  them as runtime environment silently does nothing and the bundle falls back to its `localhost:8000`
+  default — i.e. the daily driver would quietly read the **dev** API. `MEASURED 2026-08-12`: the
+  served bundle contains `localhost:8001` twice and `localhost:8000` zero times.
+- **`--workers 1` is a correctness constraint here too**, not a tuning knob — same reason as the hosted
+  path (`services/ai_grade_queue.py` serialises with a per-*process* lock and has no DB-level claim).
+- **Health checks must dial `127.0.0.1`, not `localhost`.** nginx binds IPv4 only and the container has
+  **no IPv6 stack**, while musl resolves `localhost` to `::1` first. The `app` check failed **1350
+  times in a row** while the site served perfectly. Do **not** "fix" this with `listen [::]:80;` —
+  nginx would fail to bind and refuse to start, which is strictly worse than the false alarm.
+- **`DEBUG=true` here, and that is correct.** Localhost-only, so debug login is the door and no Discord
+  app is needed. It also means the allowlist admits everyone — which is exactly what it refuses to do
+  when `DEBUG=false`. The fail-closed behaviour is a property of the hosted path, so this stack does
+  **not** test it.
+
+### Local stack facts
+
+| Setting | Value | Why |
+|---|---|---|
+| Root `.env` | `POSTGRES_*`, `JWT_SECRET` | Compose reads **only** the root `.env` — a different file from `api/.env` and `app/.env`. Keeps passwords out of `docker-compose.yml`. |
+| `DATABASE_URL` | `…@db:5432/…` | Container-to-container, so host `db` / port `5432` — **not** `localhost:5433`, which is only how the *host* reaches it. |
+| `DATABASE_URL_SYNC` | `""` (empty) | `config.py` derives the psycopg2 URL Alembic needs from `DATABASE_URL`; a second copy could only drift. |
+| `AI_GRADING_ENABLED` | `false` | No Anthropic spend from the daily driver; E4's second reader is therefore not exercised locally. |
+| Migrations | on every `api` start | Idempotent; a failure fails the container loudly instead of serving against a stale schema. |
 
 ## Topology
 

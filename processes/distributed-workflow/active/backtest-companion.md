@@ -3,7 +3,7 @@ tags: [distributed-workflow, active, neurospect, backtesting, integration, trade
 aliases: [Backtest Companion Tracker, Tradezella Lane, Companion Positioning Workstream]
 sources: []
 created: 2026-08-10
-updated: 2026-08-11
+updated: 2026-08-12
 ---
 
 # Backtest Companion — Workstream Tracker
@@ -33,10 +33,20 @@ has already chosen rather than replacing them.
 > an argument — three shipped, free, one-click discipline instruments inside Tradezella all read **genuine
 > ZERO** for the only user, with the instrument proved live.
 >
-> **Phase B3 — deploy `neurospect-learn` — is now the ACTIVE lane** (boot prompt at the bottom of this file).
-> **B2 sits before it and is Paul's own work, not a session's**: define rules in the Playbook Rules tab and
-> run ~20 backtesting sessions using the in-product fields that already exist. That test is free, gates
-> everything else, and has not been run.
+> **⭐ B3 IS CLOSED (2026-08-12) — but locally, not hosted.** Paul decided **hosting is premature**;
+> `neurospect-learn` now runs as a one-command **local Docker daily driver** (`docker compose up -d`,
+> :8001 / :5174), render-verified with 12 artifacts in `api/docs/evidence/b3-local/`. The Render + R2 path
+> stays written and proven but **PARKED and unprovisioned** — the B3b boot prompt is retired **unrun**, and
+> executing it would spend money against a reversed decision.
+>
+> **⭐ THIS TRACKER NO LONGER HOLDS THE ACTIVE LANE (2026-08-12).** B4 was **absorbed as S2** of
+> [[processes/distributed-workflow/active/aura-session-runner]] — the screen Paul keeps open beside
+> Tradezella and follows every session. Go there for the active boot prompt (**S1**). This page remains the
+> canonical record of the B1 council verdict, the boundary facts, and B3's local close.
+>
+> **B2 still sits before everything and is Paul's own work, not a session's**: define rules in the Playbook
+> Rules tab and run ~20 backtesting sessions using the in-product fields that already exist. That test is
+> free, gates everything else — including B4 — and **has still not been run**.
 >
 > Boundary facts expire. This verdict is scoped to **2026-08-11, Pro tier**; Tradezella ships weekly — see
 > §The re-check trigger before acting on this page after ~2026-11.
@@ -456,20 +466,42 @@ If they fill up, the residue that Tradezella *still* cannot do becomes the real,
 **Note what this phase actually is: it asks the trader to use the incumbent properly before building
 anything beside it.** A council that recommends its sponsor do nothing for twenty sessions is doing its job.
 
-#### B3 — Deploy `neurospect-learn`. This is the binding constraint, not integrations. — ⏸ **HALF DONE (2026-08-11)**
+#### B3 — Run `neurospect-learn` somewhere it can actually be used. — ✅ **CLOSED 2026-08-12 (locally, not hosted)**
 
-**Status, stated exactly:** everything that does not need Paul's browser is written, locally proven and
-reconciled — `render.yaml`, `requirements.txt`, the SPA fallback, a fail-closed Discord allowlist, tolerant
-env parsing, and the runbook at [[processes/operations/neurospect-learn-deployment]]. **Nothing is
-provisioned and nothing is deployed.** §1–§5 of that runbook all require Paul's own Cloudflare and Render
-accounts. The phase closes when the surface renders, not when the config exists — see the B3b boot prompt.
+**Status, stated exactly.** The phase closed by being **re-timed, not completed as written**. Paul decided
+on 2026-08-12 that **hosting is premature**, so the deliverable became a **one-command local Docker daily
+driver** (:8001 / :5174, sharing the dev DB on :5433), which is built, running, and **render-verified** —
+all eight pages painted, seed anchored at the rendered layer, and the evidence-persistence test passed
+across a forced container recreate. Evidence: `api/docs/evidence/b3-local/` (12 artifacts +
+`b3-local-render-walk.md`); runbook §Local stack in
+[[processes/operations/neurospect-learn-deployment]].
+
+**The hosted path is PARKED, not cancelled.** `render.yaml`, `requirements.txt`, the SPA fallback, the
+fail-closed Discord allowlist, tolerant env parsing and runbook §1–§7 all remain written and
+config-proven; **nothing is provisioned and nothing is deployed**, and the B3b boot prompt that would have
+provisioned it is retired unrun. B3's original argument is not overturned — `devil`'s criterion #5 made
+deployment the binding constraint *on showing the platform to a second person*, and **B2 is what
+determines whether there is anyone to show it to**. Un-park when B2 returns full instruments, or when a
+second user actually exists.
 
 Six enforcement phases of real work are reachable only from one laptop. There is no Dockerfile, no CI, no
 container, no deploy config. **Until this is fixed the platform cannot be used away from the desk, cannot be
 shown to a second user, and every "high-friction flow" argument is moot because there is no flow.**
 `devil`'s success criterion #5. This is the highest-value phase available today and it depends on nobody else.
 
-#### B4 — Capture in `neurospect-learn` FIRST, not imported after.
+#### B4 — Capture in `neurospect-learn` FIRST, not imported after. — ➡️ **ABSORBED 2026-08-12 as S2 of [[processes/distributed-workflow/active/aura-session-runner]]**
+
+> **This phase has MOVED. Do not run it from this tracker.** On 2026-08-12 Paul opened the **Aura Session
+> Runner** lane — a screen he can keep open beside Tradezella and follow every session — and B4's
+> capture-first brief is its **S2**. One lane, not two overlapping ones: two trackers describing the same
+> work is how the B3b misdirection happened. Everything below is preserved as the origin of S2's
+> constraints (E5 pre-commitment, consistency/`CI`, the `SELF-REPORTED` quarantine rule, and the two-clock
+> finding), all of which carried across intact.
+>
+> **B2 still gates the capture layer** — and the new lane's **S1** exists precisely to make B2 runnable:
+> the council's ZERO was measured against 2 sessions / 8 minutes **with zero rules defined**, so the gate
+> was blocked on a missing instrument rather than on Paul's discipline. S1 builds that instrument and
+> writes nothing, so it cannot prejudge the gate's outcome.
 
 `scholar`'s deliverable targets are **cue-usage (`CI`)** and **consistency** — both require data captured
 *during* the session, which is exactly what the export cannot carry. So the correct surface is the
@@ -756,6 +788,76 @@ after twenty sessions. Tradezella ships **weekly** — re-run Gate 3 before acti
   demonstrated the thing it exists to demonstrate.
 - next: **B3b** — Paul provisions (runbook §1–§4), the session seeds (§5) and then runs §6 against the
   rendered surface, including the redeploy-and-look-again test that is the whole reason R2 is in scope.
+
+### 2026-08-12 — hosting PARKED; local Docker daily driver built, render-verified and **CLOSED**
+
+- **context this entry exists to repair: VS Code crashed mid-session**, so the work below was written to
+  disk and then left completely unrecorded. The next session found seven untracked files, a running
+  three-container stack, and a tracker whose `⏭ ACTIVE` prompt said *provision Render* — i.e. the
+  tracker actively misdirected. **The on-disk artifacts were the only surviving record of the pivot**
+  (the decision was recoverable solely because `docker-compose.yml`'s header comment stated it). Lesson:
+  a decision that lives only in a code comment is one crash away from being lost — but a decision
+  written into a code comment is what made recovery possible at all.
+- ⭐ **decided (Paul, 2026-08-12): hosting is premature. B3's Render path is PARKED, not cancelled.**
+  He is the only user, every drill is desktop TradingView bar-replay, and a public URL buys only the two
+  things not needed yet — a second person reaching it, and access away from the desk. `render.yaml`, the
+  R2 decision, the fail-closed allowlist and the runbook all **stay written and proven**; none of it is
+  provisioned. This does **not** overturn B3's reasoning, it re-times it: `devil`'s criterion #5 argued
+  deployment was the binding constraint *on showing the platform to someone*, and there is nobody to
+  show it to until B2 has been run.
+- did (the pivot, unlogged until now): `docker-compose.yml`, `api/Dockerfile`, `app/Dockerfile`,
+  `app/nginx.conf`, root `.env.example`, two `.dockerignore` files — a one-command local stack on
+  **:8001 / :5174**, deliberately not the dev ports (:8000 / :5173), sharing the **same** DB on :5433.
+  Data was **copied** (never moved) from the old anonymous volume into `neurospect_learn_pgdata`, so the
+  anonymous volume survives as the rollback.
+- did (this session): **closed the phase properly** — fixed the healthcheck defect below, walked every
+  page, ran the persistence proof, wrote §Local stack into
+  [[processes/operations/neurospect-learn-deployment]], and retired the B3b prompt.
+- **flagged — a defect that had been failing 1350 times in a row, in silence.** `app` reported
+  `unhealthy` for its entire 4-hour life **while serving perfectly**. Discriminating test, predicted
+  before running: in-container `wget http://localhost/` → refused, `wget http://127.0.0.1/` →
+  **SUCCESS**; `netstat` shows one socket, `0.0.0.0:80`, and **no IPv6 socket at all** — musl resolves
+  `localhost` to `::1` first. **The obvious fix was the wrong one:** adding `listen [::]:80;` to
+  `nginx.conf` would have made nginx fail to bind and refuse to **start**, converting a cosmetic false
+  alarm into a real outage. Fixed in `app/Dockerfile` instead (check dials `127.0.0.1`). After:
+  `healthy`, streak **0**, and `healthy` in **7 seconds** on a later forced recreate. It mattered
+  despite the site being fine, because nothing could ever gate on `app` being healthy and a
+  permanently-red status teaches you to ignore health output.
+- **flagged — `docker compose down -v` would destroy the seed and every captured chart.** Compose warns
+  `volume "neurospect_learn_pgdata" already exists but was not created by Docker Compose. Use external:
+  true`, and it is right: the volume is not declared `external`, so `down -v` is in scope to delete it.
+  **NOT fixed** — one-line change, left for the next session rather than slipped in unverified.
+- ⭐ **verified — the persistence proof, which is the one test this phase existed for.** The compose
+  header *claims* "nothing here is ephemeral"; that was asserted, never run. Now run end to end:
+  `aura D1-a` at `0/50 · 0 evidenced` → uploaded a capture through the real UI → `1/50 · 1 evidenced`
+  with the thumbnail rendering → **`docker compose up -d --force-recreate api app`** → blob still
+  present (14192 bytes) and **thumbnail still renders with the rep intact**, zoomed to prove it is the
+  real image and not a broken-image placeholder. This is precisely the failure mode that made R2
+  non-optional on Render: blob deleted, `evidence_assets` row surviving, rep derived from evidence that
+  no longer exists, **nothing raising**.
+- verified: **all eight pages paint** — Today (E6 honesty strip live), Path, Library, Drills, Plan,
+  Journal, Expectancy, Gate — navigated by **direct URL**, which also proves the nginx SPA fallback
+  (a refresh on `/journal`, or Discord's `/auth/callback`, would otherwise 404). Library prints
+  **"67 pages"** and Drills **"58 drills"** *on the page*, anchoring the seed at the consumer's layer
+  rather than inferring it from matching values; `alembic_version` `0012` and all six catalog counts
+  (74/23/58/67/44/104) match the tracker exactly after the volume copy. The served bundle contains
+  `localhost:8001` twice and `localhost:8000` **zero** times, so the `VITE_*` build-arg mechanism
+  worked — as `environment:` it would have silently baked the dev API. 12 labelled artifacts +
+  `b3-local-render-walk.md` in `neurospect-learn/api/docs/evidence/b3-local/`.
+- **invariants: none touched; two observed working at the rendered layer.** The only source change was
+  one `HEALTHCHECK` line in `app/Dockerfile` — no service, model, router or migration was modified. The
+  walk *observed* E2 (the capture **derived** the rep; nothing minted it) and E3 (*"not checked yet —
+  the reps still count"*) behaving as specified.
+- **NOT done, stated plainly:** the `external: true` volume fix; Expectancy/Journal **filtering** was
+  rendered but never driven to a result, and `Check against the bar` was deliberately not clicked, so
+  the E3 grade path is **unverified at the UI**; E4's second reader is untested locally
+  (`AI_GRADING_ENABLED=false`); the fail-closed allowlist is **not** exercised by this stack
+  (`DEBUG=true` admits everyone by design — it is a `DEBUG=false` property); and **nothing is deployed**.
+- **residue:** one real evidence asset + one derived rep on the fixture account `e2e-evidence`
+  (`aura D1-a`), left in place deliberately — evidence is not retractable under E2/E5, and hand-deleting
+  it would set a worse precedent than a documented fixture rep.
+- next: **B4** — capture-first in `neurospect-learn`, per §Phase B2+. Carry the **two-clock** finding.
+  B2 (Paul's twenty Tradezella sessions) still gates everything and is still unrun.
 
 ## Dry-run of `prospect` against the 17 questions (2026-08-11) — B1 MUST READ THIS
 
@@ -1066,7 +1168,12 @@ prompt. **Paul handles git — commit only when he asks.**
 
 ---
 
-## Boot Prompt (Phase B3 — deploy `neurospect-learn`) — ⏸ PARTIALLY RUN 2026-08-11
+## Boot Prompt (Phase B3 — deploy `neurospect-learn`) — ✅ **CLOSED 2026-08-12** (ran 2026-08-11; closed locally, not hosted)
+
+> **DO NOT EXECUTE.** History, kept for auditability. Its prep half ran on 2026-08-11; the phase then
+> **closed locally** on 2026-08-12 when Paul parked hosting (see §B3 in the Plan and the 2026-08-12 log
+> entry). Its `ESTABLISHED` block below is now **stale**: the repo *does* have Dockerfiles and a compose
+> stack, and the test count moved 263 → 294.
 
 > **Do not re-run this prompt.** Its preparation half is done and its findings are in the session log
 > above; its provisioning half became the B3b prompt at the foot of this file. Kept unedited as the
@@ -1125,7 +1232,14 @@ only the rendered surface showed). Then write the B4 boot prompt.
 
 ---
 
-## Boot Prompt (Phase B3b — provision, seed, and RENDER-verify) ⏭ ACTIVE
+## Boot Prompt (Phase B3b — provision, seed, and RENDER-verify) — ❌ **SUPERSEDED, NEVER RUN** (2026-08-12)
+
+> **DO NOT EXECUTE THIS PROMPT.** It is kept only so the decision that killed it stays auditable.
+> Paul decided on 2026-08-12 that **hosting is premature**, and `neurospect-learn` got a local Docker
+> daily driver instead (§B3-local). Everything below describes provisioning Render, Cloudflare Pages and
+> R2 — work that is now **parked, not cancelled**. Running it would provision paid infrastructure
+> against an explicit decision not to. See the **2026-08-12** session log entry and the ⏭ ACTIVE prompt
+> at the very bottom of this file.
 
 > **This phase needs Paul at a browser.** The session cannot create a Cloudflare account, enter card
 > details, or click through Render. Read §"Paul does / the session does" below before starting, and if
@@ -1186,3 +1300,85 @@ DELIVERABLES:
 
 **THIS PHASE IS NOT:** building the Tradezella importer; adding features; reopening any E1–E6 invariant;
 or fixing the two-clock design (record it for B4 — changing it touches E6 semantics).
+
+---
+
+## Boot Prompt (Phase B4 — capture-first in `neurospect-learn`) — ➡️ **MOVED 2026-08-12, NEVER RUN**
+
+> **DO NOT EXECUTE FROM HERE.** B4 was absorbed as **S2** of
+> [[processes/distributed-workflow/active/aura-session-runner]] on 2026-08-12, before it ever ran. Its
+> constraints were carried across intact; this text is kept only so the move stays auditable. The active
+> lane for Neurospect is now that tracker's **S1** boot prompt. Everything below is superseded — including
+> its "State, exactly" paragraph, which predates the runner lane.
+
+**Launch:** `claude --model opus[1m]`, `/effort high`. Unlike B3, this phase contains **real design
+questions** — what a pre-session pre-commitment *is*, and how consistency is measured — and it touches the
+E5 ledger and E6 semantics, where a wrong shape is expensive to undo. Escalate rather than economise.
+
+**Task: build capture-first support for a backtesting session `neurospect-learn` does not host.**
+
+**State, exactly.** B1 is complete and said **DON'T BUILD the Tradezella importer** — read §COUNCIL VERDICT
+before anything else; several sections above it were written while that bet was still open and read as
+though it were. B3 is **closed**: the platform now runs as a local Docker daily driver on **:8001 / :5174**
+(`docker compose up -d`), render-verified 2026-08-12, sharing the dev database on :5433. Hosting is
+**parked, not cancelled**. **B2 — Paul's twenty Tradezella sessions — still gates this phase and is still
+unrun**; see §"The honest thing to do first" below before writing code.
+
+READ FIRST:
+1. The wiki `CLAUDE.md` — **code is ground truth**, the MANDATORY post-implementation reconciliation
+   checklist, Rules #3/#4/#6, Context Management (tell Paul at >50%). **Paul handles git.**
+2. §COUNCIL VERDICT, then §Phase B2+ **B4** — `scholar`'s deliverable targets are **cue-usage (`CI`)** and
+   **consistency**, and the reason capture must happen *during* the session is that the export
+   structurally cannot carry it.
+3. [[concepts/architecture/learning-enforcement]] §Invariants — in particular **E5** (a call cannot be
+   back-dated, edited, re-resolved or deleted) and **E6** (computed-per-read, gates nothing, stores
+   nothing). This phase writes *into* the frozen ledger, so it is the first phase whose bugs are
+   permanent.
+4. The **2026-08-12** session log entry — the local stack, the traps, and the four things left NOT done.
+5. `api/docs/evidence/b3-local/b3-local-render-walk.md` — what is proven about the running surface, and
+   the three UI paths still **unverified** (filtering driven to a result, `Check against the bar`, E4).
+
+⚠️ **The honest thing to do first.** B2 is a gate, not a formality: three live, free, one-click discipline
+instruments in Tradezella currently read **genuine ZERO**. If they stay empty after twenty sessions, *no
+companion of any design survives* — including this one. **Ask Paul whether B2 has been run before building
+capture surfaces**, and if it has not, say so plainly and offer to scope B4 against the existing E5/E6
+primitives *without* building new capture UI yet. A council that tells its sponsor to practise for twenty
+sessions before writing code was doing its job; do not quietly overrule it.
+
+⚠️ **Carry the two-clock finding, and treat it as a design input, not a bug to swat.** The planner counts
+"today" in the user's timezone (`study_preferences.timezone`, default `"UTC"`) while migration `0012`'s
+trigger enforces server UTC (`(now() AT TIME ZONE 'UTC')::date`). They agree for a user at or ahead of UTC
+(Paul) and disagree west of it. **A pre-session pre-commitment is precisely a claim about ordering in
+time**, so B4 cannot avoid choosing a clock the way earlier phases could. Changing it touches E6 semantics
+— decide deliberately and write the decision down.
+
+**Local-stack gotchas that have already cost something (from §Local stack in the runbook):**
+- **Never `docker compose down -v`** — the volume is not declared `external: true`, so it would delete the
+  seed *and* every captured chart. **Fixing that one-line declaration is the cheapest win available and is
+  still open.**
+- **Never `alembic downgrade base`** against the working DB — exporting `DATABASE_URL` does not redirect
+  Alembic (`.env`'s `DATABASE_URL_SYNC` wins). This has wiped the seed twice. Use
+  `scripts/scratch_migrate.py`.
+- **Do not trust `--reload`** on the host dev server; the reloader has died silently and served stale code
+  through a whole before/after measurement.
+- If you rebuild `app`, remember `VITE_*` are **build args** — as `environment:` they silently do nothing
+  and the bundle falls back to the **dev** API on :8000.
+
+DELIVERABLES:
+1. A decision, written down, on whether B4 builds now or waits on B2 — and if it builds, **what it builds
+   without new capture UI**.
+2. If it builds: a pre-session pre-commitment authored *before* the replay is advanced, stamped by
+   `neurospect-learn` (the one artifact whose ordering can be trusted), plus consistency-across-setups
+   measurement — one rubric, many captures, variance in cue usage.
+3. Any backtest-derived data that is ever imported must be permanently and visibly quarantined as
+   `SELF-REPORTED` and excluded from the evidence streak, the calibration score and the Readiness Gate
+   (`devil`'s criterion #2) — and the design must then state what value remains, because that residue *is*
+   the bet.
+4. **Render-verify at the surface** on :5174, with labelled screenshots into
+   `api/docs/evidence/b4/`, and a written note of which interactions respond and **which are inert**. Four
+   phases in a row have caught a defect only the rendered surface showed; B3-local made that five.
+5. Runbook + tracker + `log.md` + `index.md` reconciled, **including every place reality diverged** — then
+   the B5 boot prompt.
+
+**THIS PHASE IS NOT:** building the Tradezella importer (B1 killed it); provisioning Render or R2 (parked —
+do not spend Paul's money on a decision he reversed); or reopening any E1–E6 invariant.
