@@ -20,7 +20,11 @@ another dashboard to read.
 > 6 groups, **33 rules**, verified at the rendered layer). Phase **S1b ⏭ ACTIVE** — the guided
 > walkthrough with diagrams (boot prompt at the bottom); **S2 is gated on real replayed sessions.**
 > The model content this workstream projects is canonical in `concepts/mastery/aura/` and must not be
-> re-derived here.
+> re-derived here. **Phase S1c ⏭ ACTIVE** (promoted ahead of S1b at Paul's request): compute Aura
+> setups from real bars. Proven possible — the chart exposes real OHLC via `exportData`, and a
+> discriminating test with its result predicted in advance returned **0.0% SMT divergence NQ-vs-MNQ**
+> against **5.7% NQ-vs-ES**, which validates the method and measures the duplicate-symbol problem.
+> **⛔ Blocked until the session symbols are `NQ ES YM 6S`.**
 
 ## Goal (Paul, 2026-08-12 — in his framing)
 
@@ -184,7 +188,38 @@ fields — which is B2. Decided 2026-08-12 in preference to building capture fir
 constraint is *starting to practise*, and a v1 that slips across three sessions means tomorrow does not
 happen.
 
-### S1b — The walkthrough: guided setup + markup, with diagrams. ⏭ **ACTIVE**
+### S1c — Computed setup detection: run the rules on real bars. ⏭ **ACTIVE**
+
+Paul, 2026-08-13: *"the priority is to see if you can use the strategy rules to identify valid setups
+and then log them for me to review."* Promoted ahead of S1b at his request.
+
+**⭐ PROVEN POSSIBLE — and proven the honest way, not the plausible way.** The danger in this request is
+obvious: an assistant that *looks* at a chart and narrates a confident-sounding Aura read produces
+output indistinguishable from analysis, which Paul would then review and (per his tutorial idea) teach
+from. Wrong reads would teach wrong. So the capability was **tested before it was promised**:
+
+- **The chart exposes real OHLC.** `tradingViewApi.chart(i).exportData({includeTimeValues:true})` returns
+  `{schema, data}` — 300 bars of `[time, o, h, l, c, volume]`, **time-aligned across all four panes**.
+  Everything downstream is arithmetic on real numbers, not perception.
+- **The discriminating test, with its result predicted BEFORE running.** Prediction: a genuine SMT
+  computation must return ≈**zero** divergence between `NQ` and `MNQ` (same instrument, different
+  multiplier) and a non-zero number against `ES`. Result on 300 1-minute bars, 57 three-candle pivots
+  (R1), checked 20 bars forward for who took the level:
+
+  | Pair | Divergent | Rate |
+  |---|---|---|
+  | **NQ vs MNQ** | **0 / 53** | **0.0%** |
+  | NQ vs ES | 3 / 53 | 5.7% |
+  | NQ vs MES | 2 / 53 | 3.8% |
+
+  Zero against MNQ is not "low", it is **structurally impossible to diverge** — which is what makes the
+  0.0% a validation of the method rather than a weak signal. It also converts the MNQ/MES duplicate
+  finding from an argument into a measurement.
+
+**This is, in effect, building the Sequential-SMT indicator R23 describes and the S1 probe proved
+Tradezella cannot provide.** That is the gap; that is the value.
+
+### S1b — The walkthrough: guided setup + markup, with diagrams. *(next after S1c)*
 
 Paul's ask, 2026-08-13: *"a step by step process / guide to have open alongside tradezella… a
 walkthrough guide on how to set everything up and mark everything out — should be done in detail"*,
@@ -483,7 +518,98 @@ the S1 mapping doc alone, and for the full Tradezella setup with the key tracked
 
 ---
 
-## Boot Prompt (Phase S1b — the guided walkthrough, with diagrams) ⏭ ACTIVE
+## Boot Prompt (Phase S1c — computed setup detection) ⏭ ACTIVE
+
+**Launch:** `claude --model opus[1m]`, `/effort high`. This phase produces numbers Paul will trade
+against and may teach from. Every one must be auditable.
+
+**Task: compute Aura setups from real bars and log them for review.** Not "look at the chart and
+describe it" — extract OHLC, run the rules as arithmetic, and emit a record where every line can be
+checked against the chart.
+
+### ⛔ HARD PREREQUISITE — the symbols
+
+Sequential SMT is a comparison **across the triad**. On `NQ / MNQ / ES / MES`, two of four legs carry
+**zero** information (measured: 0.0% divergence). **The session must be `NQ ES YM 6S` or this phase
+cannot run at all.** Verify it before writing a line of analysis code.
+
+READ FIRST:
+1. Wiki `CLAUDE.md` — code is ground truth, reconciliation checklist, Rules #3/#4/#6, >50% context.
+   **Paul handles git.**
+2. This tracker: **§S1c above** (the proven mechanism + the discriminating test), §S1 as-built.
+3. [[concepts/mastery/aura/rules]] — the rulebook being computed. **The wording is canonical.**
+4. [[concepts/mastery/aura/chart-markup]] §The probe — why no indicator can exist here.
+5. `~/.claude/skills/web-automation/claude-in-chrome-driving.md` — **required.** Screenshots time out
+   while the DOM stays healthy; drive by `javascript_tool`.
+
+### What is COMPUTABLE vs what is JUDGEMENT — do not blur the line
+
+| Computable from bars | Rule |
+|---|---|
+| 3-candle swing pivots | R1, R2 |
+| SMT qualification across the triad | R3, R18, R20 |
+| Range by expansive move | R4 |
+| Discount / EQ / premium position | R5, R32 |
+| Gaps (FVG, iFVG, NWOG, NDOG) + liquidity nested inside | R11, R12, R13 |
+| Cross-cycle gap-pairing | R21 |
+| Cascade across resolutions | R27 |
+| 5m iFVG entry, stop at invalidation, target at TF extreme | R30, R33, R35 |
+| R:R and risk in R | R39, R43, R44 |
+
+**NOT computable — surface candidates and mark `UNRESOLVED`, never pick silently:**
+- **R9** — *"if the range isn't obvious, zoom out"*, *"the most-prominent obvious high"*, and
+  *"overlapping/ambiguous ranges are acceptable — do not force one"*. Explicitly judgement.
+- **R8's false-sweep tiebreak** where candidates are close.
+- Anything resting on a **soft/flagged** rule (R31's 9:30 preference above all) — report the branch,
+  do not resolve it.
+
+### ⭐ THE OUTPUT CONTRACT — auditable or it does not ship
+
+Every logged setup carries, per line, **the rule ID, the computed value, and the bar/time it came from**,
+so Paul can check it against the chart. Worked shape:
+
+```
+2025-06-03 09:47 ET · NQ
+  R1  swing high 21,884.25 @ 09:31  (pivot bars 12/13/14)
+  R3  SMT-qualified: NQ took it 09:44 · YM did NOT (high 40,112 vs level 40,140)
+  R4  range 21,802.50-21,884.25  (expansive move 09:12->09:31)
+  R5  entry in DISCOUNT (0.31 of range)
+  R30 5m iFVG 21,838.75-21,843.00, confirmed 09:47
+  R33 stop 21,801.75  ·  risk 37.0 pts
+  R35 target 21,884.25 (range extreme)  ·  2.2R
+  UNRESOLVED: R9 - two candidate ranges (see note)
+```
+
+**Rules for the log:**
+- **A setup that fails a hard gate is still logged, as a rejection with the failing rule.** The
+  stand-asides are the most valuable records Paul has (R51) and the ones no instrument currently keeps.
+- **Never emit a figure the data did not produce.** If the export window is too short for the cycle
+  being framed, say so and stop — do not extrapolate.
+- **State the sample.** Bars, resolution, date range, and which symbols were actually present.
+
+### ⚠️ QUARANTINE — machine-found setups are NOT Paul's reps
+
+These are **not** evidence of practice, and they must never touch the evidence layer: no
+`evidence_assets`, no rep credit, nothing that feeds the streak, the calibration score or the Readiness
+Gate. That is `devil`'s criterion #2 and the E2 invariant *"reps gets strictly harder, never easier"*.
+Log to **files** under `api/docs/evidence/s1c/`, and if anything is ever surfaced in the app it renders
+**visibly and permanently marked as machine-generated**. A tutorial artifact is not a training record.
+
+DELIVERABLES:
+1. The extraction + rule engine (a script, versioned, re-runnable — not a one-off console paste), with
+   the sample it ran on stated.
+2. A logged set of setups **and rejections** over a declared span, in the contract above.
+3. **Optional and only if it earns its place:** draw the computed levels onto the chart via
+   `createShape` / `createMultipointShape`, so a marked chart accompanies the arithmetic.
+4. An honest accuracy statement — what the engine finds, what it misses, and where it defers to Paul.
+5. Tracker + `log.md` + `index.md` reconciled, then hand back to **S1b**.
+
+**THIS PHASE IS NOT:** narrating a chart from perception; writing to the evidence layer; fabricating
+bars or levels; resolving a soft rule into a hard branch; or building the walkthrough UI (S1b).
+
+---
+
+## Boot Prompt (Phase S1b — the guided walkthrough, with diagrams) — ⏸ NEXT, after S1c
 
 **Launch:** `claude --model opus[1m]`, `/effort high`. Design-heavy: this authors a procedure Paul will
 follow every session for months, and a set of diagrams that must be honest about what they depict.
