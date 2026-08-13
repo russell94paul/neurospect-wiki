@@ -16,8 +16,11 @@ another dashboard to read.
 > **STATUS (2026-08-12): S1 ✅ BUILT and render-verified.** The runner ships at `/runner` in
 > `neurospect-learn`, the boundary probe has been **run in the product** (answer: **NO custom
 > indicators** — see §The boundary probe, now answered), and the three missing pieces are authored as
-> wiki pages. Phase **S2 ⏭ ACTIVE** (boot prompt at the bottom). The model content this workstream
-> projects is canonical in `concepts/mastery/aura/` and must not be re-derived here.
+> wiki pages, and the **Tradezella playbook is built and saved** (`Aura - Sequential SMT (NQ triad)`,
+> 6 groups, **33 rules**, verified at the rendered layer). Phase **S1b ⏭ ACTIVE** — the guided
+> walkthrough with diagrams (boot prompt at the bottom); **S2 is gated on real replayed sessions.**
+> The model content this workstream projects is canonical in `concepts/mastery/aura/` and must not be
+> re-derived here.
 
 ## Goal (Paul, 2026-08-12 — in his framing)
 
@@ -181,7 +184,25 @@ fields — which is B2. Decided 2026-08-12 in preference to building capture fir
 constraint is *starting to practise*, and a v1 that slips across three sessions means tomorrow does not
 happen.
 
-### S2 — Capture-first. **Absorbs B4** from the backtest-companion tracker. ⏭ **ACTIVE**
+### S1b — The walkthrough: guided setup + markup, with diagrams. ⏭ **ACTIVE**
+
+Paul's ask, 2026-08-13: *"a step by step process / guide to have open alongside tradezella… a
+walkthrough guide on how to set everything up and mark everything out — should be done in detail"*,
+plus *"other things I should be filling in or tracking in trades"*, and diagrams if they can be made
+honestly.
+
+**The gap this closes.** S1 shipped the **live protocol** (phases 0→7, tickable) and three **reference
+documents**. A document is not a walkthrough: the setup steps and the M1–M12 markup order are ordered,
+dependency-bearing procedures rendered as read-only prose in a collapsible. The runner already proves
+the right shape — position, progress, hard gates — and it is applied to only one of the three
+procedures.
+
+⚠️ **Scope discipline, stated up front.** This adds app surface *before* Paul has run a single
+replayed day, which is the exact pattern S1 existed to break — six phases were built on fixtures.
+So **S1b is bounded to what gets session ONE to happen** and nothing beyond it. Anything that wants
+knowledge of how he actually practises belongs to S2, after real days exist.
+
+### S2 — Capture-first. **Absorbs B4** from the backtest-companion tracker. *(gated on real sessions)*
 
 Decided 2026-08-12: B4 (*"Capture in `neurospect-learn` FIRST, not imported after"*) **becomes S2** rather
 than running as a parallel phase — two trackers describing overlapping work is how the B3b misdirection
@@ -457,7 +478,93 @@ the S1 mapping doc alone, and for the full Tradezella setup with the key tracked
 
 ---
 
-## Boot Prompt (Phase S2 — capture-first, and the two-clock decision) ⏭ ACTIVE
+## Boot Prompt (Phase S1b — the guided walkthrough, with diagrams) ⏭ ACTIVE
+
+**Launch:** `claude --model opus[1m]`, `/effort high`. Design-heavy: this authors a procedure Paul will
+follow every session for months, and a set of diagrams that must be honest about what they depict.
+
+**Task: turn the two read-only procedures into GUIDED walkthroughs, add a per-trade capture card, and
+illustrate them.** Still read-only with respect to the database — S1's constraint holds.
+
+READ FIRST:
+1. The wiki `CLAUDE.md` — code is ground truth, the MANDATORY reconciliation checklist, Rules #3/#4/#6,
+   Context Management (tell Paul at >50%). **Paul handles git.**
+2. This tracker: **§S1 as-built**, §Open questions (all answered — the counting basis is canonical and
+   must not be reopened), and the **§S1b scope discipline note above**.
+3. `neurospect-learn/api/docs/evidence/s1/s1-render-walk.md`.
+4. [[concepts/mastery/aura/tradezella-setup]] · [[concepts/mastery/aura/chart-markup]] ·
+   [[concepts/mastery/aura/tradezella-rule-mapping]] — the three pages being projected.
+5. `app/src/lib/runner.ts` + `app/src/pages/runner.tsx` — the existing shape to extend, **not** replace.
+6. `~/.claude/skills/web-automation/claude-in-chrome-driving.md` — **required before any browser work.**
+   Tradezella freezes screenshots while the DOM stays healthy, MUI ignores `.click()`, and coordinates
+   from a screenshot misfire on a mutating DOM.
+
+### ⚠️ FIRST ACTION — ask Paul whether he has run a replayed day yet
+
+Not a blocker, but it changes the work. If he has, **read what came out of it first** and let the real
+friction drive the walkthrough. If he has not, build the smallest thing that gets session one to happen
+and say so plainly. Do **not** design capture surfaces on speculation — that is S2, and S2 is gated.
+
+### ⭐ THE DIAGRAM RULE — the one thing this phase can get badly wrong
+
+**Never fabricate price data.** No invented candlesticks, no "example" FVG or SMT setup drawn from
+imagination. This model's entire skill is reading *actual* structure, so a plausible-looking fake teaches
+geometry that never happened — and it would be indistinguishable from a real example once it is sitting
+in the app. This is the sharpest form of the estate's own rule: a figure that is not measured must not
+render as though it were.
+
+**Three honest sources, in order of preference:**
+
+1. **Schematic diagrams of RULES** — hand-authored inline SVG, theme-aware, each labelled visibly as a
+   schematic. These depict definitions and logic, not market observations:
+   - **D1 · The HTF→LTF cascade** — decision flow with the skip arrows, from
+     [[concepts/aura/htf-ltf-application]]'s own table (**R27**).
+   - **D2 · Range anatomy** — discount / equilibrium / premium with fib levels **0 / 0.5 / 1 only**, and
+     a visible "no quadrants" callout (**R4, R5** — this is a flagged divergence, so the diagram is where
+     it becomes unmissable).
+   - **D3 · Markup order M1→M12** — as a dependency chain, showing what gates what.
+   - **D4 · Sequential SMT logic** — three triad legs + 6S; one fails to take the level. Abstract shapes,
+     explicitly not a chart (**R18**).
+   - **D5 · The gap family** — FVG / iFVG / NWOG / NDOG as definitional 3-candle schematics, plus
+     **liquidity nested inside the gap** as the actual target (**R11, R12**).
+   - **D6 · Counting basis** — declared span vs the replayed day vs the setup, and where the 9:30 NY open
+     sits (**R31**).
+   - **D7 · Rule → Tradezella field map** — which Aura rule lands in which field.
+2. **Annotated real screenshots** of the Tradezella UI for the click-path (create-session form, Rules
+   tab, chart toolbar). Real, already navigated in S1 — see the skill doc for capturing them when
+   screenshots time out.
+3. **A real worked trade** — `aura-24` in [[concepts/aura/trade-reviews]] is already documented. Point at
+   it; do not invent a substitute.
+
+**Rendering:** the app uses `react-markdown`; there is no mermaid renderer wired in. Prefer hand-authored
+SVG React components — precise, theme-token-aware, and they scroll inside their own box at 400px. Adding
+a mermaid dependency is a bigger call than this phase needs; if you take it, justify it.
+
+DELIVERABLES:
+1. **The setup walkthrough** — the `tradezella-setup` steps as an ordered, tickable, position-aware
+   sequence, with the one-time §0 items separated from the per-session ones.
+2. **The markup walkthrough** — M1→M12 tickable, with each step's diagram beside it, and the dependency
+   made visible (a step whose predecessor is unticked should read as not-yet-reachable, **not** be
+   blocked — S1's hard-gate idiom is *surfaced, never refused*).
+3. **The per-trade capture card** — the five data tiers from
+   [[concepts/mastery/aura/tradezella-rule-mapping]] §"The key data to track", made explicit about
+   **which tier Tradezella captures for you** (Tier 1 — do not re-type it) and which is yours alone
+   (**Tier 4, the psychological layer**, where dOoMeR says the value is). Include the
+   `MANAGED`/`SET-AND-LEFT` tag, which powers the active-management-vs-walking-away comparison.
+4. **The diagrams**, per the rule above, each carrying its `R##` references.
+5. **Render-verified at 400px**, artifacts into `api/docs/evidence/s1b/`, plus which interactions respond
+   and **which are inert**. Extend `app/e2e/runner.spec.ts`; keep the no-horizontal-overflow assertion,
+   and add one asserting **every diagram scrolls inside its own box**.
+6. Tracker + `log.md` + `index.md` reconciled, including divergences — then hand back to **S2**, whose
+   prompt is below and still gated on real sessions.
+
+**THIS PHASE IS NOT:** writing to the database (still zero — no migration, no table, no mutating
+endpoint); reopening the counting basis; building capture *storage* (S2); fabricating any chart; or
+fixing `auth.ts` without Paul's approval.
+
+---
+
+## Boot Prompt (Phase S2 — capture-first, and the two-clock decision) — ⏸ GATED on real sessions
 
 **Launch:** `claude --model opus[1m]`, `/effort high`. This phase writes to the **frozen** E5 ledger and
 must choose a clock. Both are one-way doors.
