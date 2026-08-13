@@ -60,7 +60,7 @@ live in your head, not in a script.
 
 ## 0. One-time chart setup
 
-- [ ] Four panes, one symbol each: **`NQ` `ES` `YM` `6S`**. **[R16, R17]**
+- [ ] Panes, one symbol each: **`NQ` `ES` `YM`** — the indices triad. **[R16]** *(`6S`, the Aura Asset, is a flagged 4th leg and is not offered in Tradezella — see [[concepts/mastery/aura/tradezella-setup]] §The 6S problem. Do not block on it.)*
 - [ ] Timezone **`(UTC-4) New York`**, Session **`Extended trading hours`**, then `Apply to all`. **[R31]**
 - [ ] Save a **chart settings Template** so every session starts identical.
 - [ ] Turn the **magnet** on so levels snap to candle highs/lows — a swing point drawn 2 ticks off the
@@ -89,7 +89,7 @@ gated by the one you just made — you cannot draw the entry before you have dra
 
 - [ ] **M1 · Swing points.** Mark 3-candle pivots on the HTF being framed. Fractal — the mechanics do
   not change with timeframe. **[R1, R2]**
-- [ ] **M2 · SMT-qualify them.** Across `NQ` `ES` `YM` (+`6S`), mark which swings hold on all legs and
+- [ ] **M2 · SMT-qualify them.** Across `NQ` `ES` `YM`, mark which swings hold on all legs and
   which are swept on some. Recolour: qualified → yellow, unqualified → grey. **This is the filter
   everything downstream leans on.** **[R3]** ← hard gate
 - [ ] **M3 · The range.** Find the **largest expansive move between two swing points** — that move *is*
@@ -144,7 +144,7 @@ lines, 2 trend lines) and **zero on MNQ, ES and MES**. Two things follow:
 
 - The markup habit already exists — this protocol is regularising it, not introducing it.
 - **All the markup is on one chart.** Sequential SMT is read *across* the triad (R18), so the comparison
-  legs need marking too. That reinforces §0: the panes must be `NQ` `ES` `YM` `6S`, and each needs its
+  legs need marking too. That reinforces §0: the panes must be `NQ` `ES` `YM`, and each needs its
   swing points marked (M1–M2) or there is nothing to compare.
 
 ## Open flags carried from `rules.md` — do not silently resolve

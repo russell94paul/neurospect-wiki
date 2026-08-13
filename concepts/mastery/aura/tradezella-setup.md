@@ -74,19 +74,49 @@ almost no price).
 - [ ] **Strategy** — select the Aura playbook. The form warns *"No strategy selected · Add one to track
   consistency and improve results"*, and it is right: **with no strategy attached there is no rule
   instrument at all**, and every order reports `Rules followed 0 / 0`.
-- [ ] **Symbols** — **maximum 5**, `OBSERVED` in the form's own hint. Enter the triad plus the Aura Asset:
-  **`NQ`, `ES`, `YM`, `6S`**. That is 4, leaving one spare. **[R16, R17]**
+- [ ] **Symbols** — **maximum 5**, `OBSERVED` in the form's own hint. Enter the indices triad:
+  **`NQ`, `ES`, `YM`**. **[R16]** *(On the Aura Asset, see §The 6S problem below — do not block on it.)*
 - [ ] **Start date / End date** — `MM/DD/YYYY hh:mm:ss`, to the second. This pair **is** the declared
   replay span. See §Choosing the span.
 - [ ] **Start balance** — presets `5K / 10K / 25K / 50K / 100K / 250K`; leverage is 1:1. Keep it fixed.
 - [ ] `Create session`.
+
+### ⚠️ The 6S problem — and why it does NOT block you (2026-08-13)
+
+**Paul reports `6S` is not offered in Tradezella's symbol search.** *(Not independently verified: the
+in-session datafeed's `searchSymbols` is scoped to that session's own symbols — it returns the same four
+regardless of the query, including for a nonsense string — so a "not found" from it would have been a
+zero from an instrument that cannot see. Paul's observation stands; the catalogue was not checked.)*
+
+**Start with the three-leg triad and do not wait.** R16 defines the indices triad as **ES / NQ / YM** —
+that is the complete divergence set, and R18's Sequential SMT operates on the triad. **R17 adds 6S as a
+*fourth* leg and is itself `flagged`**: dOoMeR calls the origin story his own speculation and rests the
+case on chart behaviour, not theory. So the Aura Asset is an enhancement, not a prerequisite, and the
+5-symbol limit leaves room to add it later without losing anything.
+
+**If a substitute is considered, two facts decide it — and the first is a trap:**
+
+1. **Direction. `6S` is the CME Swiss Franc future, quoted USD per 1 CHF — i.e. it is `CHF/USD`.**
+   `USD/CHF` is the **inverse** and moves the opposite way, and it is the conventional quote most feeds
+   default to. Substituting `USDCHF` would invert every divergence read — plausible-looking and exactly
+   wrong. Only a **USD-per-CHF** quote — i.e. `CHFUSD` — is directionally equivalent to 6S.
+2. **⭐ Candle synchronisation — R17's ACTUAL stated criterion.** 6S was chosen over DXY *"because DXY's
+   candles aren't sync'd to the traded futures."* So the test a substitute must pass is **not** "does it
+   move the same" but **"do its daily/weekly candle boundaries align with the CME futures session?"** A
+   spot-forex feed can be directionally identical and still fail this, which would reintroduce precisely
+   the defect R17 rejected DXY for. Spot forex and CME FX futures also differ by **carry/forward points**
+   (a small, drifting basis) and futures carry **quarterly roll discontinuities**.
+
+**How to settle it when it matters:** put the candidate on a chart beside `NQ` and compare *candle
+boundaries*, not just direction — the same `exportData` comparison used to test MNQ. Until that is done,
+treat any substitute as **UNVERIFIED** and run the three-leg triad.
 
 ### ⚠️ The symbol mistake already on the account
 
 The existing session `NQ Macro Po3 - Asia Session` carries **`NQ`, `MNQ`, `ES`, `MES`**. `MNQ` is the
 micro contract of `NQ` and `MES` the micro of `ES` — they are the *same instrument at a different
 multiplier*. **Two of the four panes are duplicates, and a divergence between `NQ` and `MNQ` is
-impossible by construction.** The confirmation engine (R18) has nothing to read. Use `NQ` `ES` `YM` `6S`.
+impossible by construction.** The confirmation engine (R18) has nothing to read. Use `NQ` `ES` `YM`.
 
 ### Choosing the span
 
@@ -106,7 +136,7 @@ than an aspiration.
 
 Done once per session; the layout reports **`Autosaved`** in the top bar.
 
-- [ ] Confirm the **4-pane multi-symbol layout** shows `NQ`, `ES`, `YM`, `6S` — one symbol per pane. The
+- [ ] Confirm the **multi-symbol layout** shows `NQ`, `ES`, `YM` — one symbol per pane. The
   panes are what make SMT readable at a glance. **[R18]**
 - [ ] Open **chart settings (gear) → Symbol** and set **Timezone = `(UTC-4) New York`**. Every time
   reference in the Aura model is a New York time — the 9:30 open in R31 above all. A chart on another
