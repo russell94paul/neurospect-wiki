@@ -189,7 +189,12 @@ happen.
 Paul's ask, 2026-08-13: *"a step by step process / guide to have open alongside tradezella… a
 walkthrough guide on how to set everything up and mark everything out — should be done in detail"*,
 plus *"other things I should be filling in or tracking in trades"*, and diagrams if they can be made
-honestly.
+honestly. **This is the page he keeps open for both backtesting AND live trading.**
+
+Extended the same day with the request that became the phase's centrepiece: **an if-then decision tree
+for the entry/no-entry process, whose leaves are the different entry types** — see §D0 in the boot
+prompt. It fits because the model already *is* an if-then chain, and it absorbs two diagrams that were
+otherwise going to redraw the same content.
 
 **The gap this closes.** S1 shipped the **live protocol** (phases 0→7, tickable) and three **reference
 documents**. A document is not a walkthrough: the setup steps and the M1–M12 markup order are ordered,
@@ -513,23 +518,64 @@ geometry that never happened — and it would be indistinguishable from a real e
 in the app. This is the sharpest form of the estate's own rule: a figure that is not measured must not
 render as though it were.
 
+### ⭐⭐ D0 — THE DECISION TREE. Paul's request 2026-08-13, and the spine of this phase
+
+> *"a decision tree or diagram with if-then statements would be a powerful intuitive way to visualise the
+> decision process for entering/not entering trades and the different types of entries that are possible
+> based on what route you go down the decision tree."*
+
+**Build this first, and let the other diagrams orbit it.** It is the best-fitting visualisation this
+model has, because **the model already IS an if-then tree** — [[concepts/aura/htf-ltf-application]]
+presents the cascade as an explicit if-then table and states the reason outright: *"a great way to
+eliminate your impulses and a great way to notice when you have impulses is to think like a machine."*
+
+**It ABSORBS D1 and most of D4** — do not draw those separately, or the same content is drawn twice.
+Pay for the extra work by dropping **D6/D7 to "if budget allows"**.
+
+The leaves Paul asked for — *the different types of entries* — are real and already distinguishable in
+the corpus: standard nested-SMT entry · **Sequential Skip (down-cycle)** · **Sequential Skip
+(cross-asset)** (R25) · **alt-asset entry taken for stop size** (R34) · pre-9:30 vs post-9:30 (R31) ·
+and the terminal that matters most, **STAND ASIDE** (R51 — missing a trade is discipline, so it must be
+a first-class leaf drawn as an outcome, never as a dead end).
+
+### ⚠️ The tree's own failure mode: it will harden hedges into gates unless you stop it
+
+A decision tree renders everything as a clean branch — that is exactly its appeal, and exactly its
+danger here. dOoMeR does **not** state every rule as a gate, and the runner's whole design refuses to
+flatten that.
+
+- **R31 is the sharp case.** *Wait for the 9:30 open, or take the pre-9:30 gap?* is a natural branch —
+  but R31 is marked **soft**, stated as a preference aimed particularly at traders still building
+  consistency. Drawn as a hard branch, the tree silently promotes a preference into a rule.
+- **R9** (overlapping/ambiguous ranges are acceptable — do not force one) is the same shape.
+
+**So: every branch carries its `R##`, and a soft/flagged rule renders as a SOFT branch — visibly a
+preference, never a gate.** Reuse the shipped idiom rather than inventing one: `RuleChip` already marks
+soft/flagged rules with `*` and an amber ring, and the popover already says *"Preserved as stated — not
+hardened."* Hard gates keep the existing amber hard-gate treatment; the two must be visually distinct.
+
+**A decision for Paul, not for the session to assume: static or live?** A static tree is a poster; a
+tree that highlights the current node and the branch taken as he ticks through the runner is an
+instrument. Live is materially more useful and materially more build. **Ask him** — and if the answer is
+live, note that the tick state needed to drive it already exists in `runner.ts` (`ticks`, `phaseProgress`).
+
+---
+
 **Three honest sources, in order of preference:**
 
 1. **Schematic diagrams of RULES** — hand-authored inline SVG, theme-aware, each labelled visibly as a
    schematic. These depict definitions and logic, not market observations:
-   - **D1 · The HTF→LTF cascade** — decision flow with the skip arrows, from
-     [[concepts/aura/htf-ltf-application]]'s own table (**R27**).
+   - ~~**D1 · The HTF→LTF cascade**~~ — **absorbed into D0.**
    - **D2 · Range anatomy** — discount / equilibrium / premium with fib levels **0 / 0.5 / 1 only**, and
      a visible "no quadrants" callout (**R4, R5** — this is a flagged divergence, so the diagram is where
      it becomes unmissable).
    - **D3 · Markup order M1→M12** — as a dependency chain, showing what gates what.
    - **D4 · Sequential SMT logic** — three triad legs + 6S; one fails to take the level. Abstract shapes,
-     explicitly not a chart (**R18**).
+     explicitly not a chart (**R18**). *Mostly absorbed into D0 — build only the residue D0 cannot carry.*
    - **D5 · The gap family** — FVG / iFVG / NWOG / NDOG as definitional 3-candle schematics, plus
      **liquidity nested inside the gap** as the actual target (**R11, R12**).
-   - **D6 · Counting basis** — declared span vs the replayed day vs the setup, and where the 9:30 NY open
-     sits (**R31**).
-   - **D7 · Rule → Tradezella field map** — which Aura rule lands in which field.
+   - **D6 · Counting basis** — declared span vs the replayed day vs the setup. *If budget allows.*
+   - **D7 · Rule → Tradezella field map** — which Aura rule lands in which field. *If budget allows.*
 2. **Annotated real screenshots** of the Tradezella UI for the click-path (create-session form, Rules
    tab, chart toolbar). Real, already navigated in S1 — see the skill doc for capturing them when
    screenshots time out.
@@ -551,7 +597,9 @@ DELIVERABLES:
    **which tier Tradezella captures for you** (Tier 1 — do not re-type it) and which is yours alone
    (**Tier 4, the psychological layer**, where dOoMeR says the value is). Include the
    `MANAGED`/`SET-AND-LEFT` tag, which powers the active-management-vs-walking-away comparison.
-4. **The diagrams**, per the rule above, each carrying its `R##` references.
+4. **⭐ D0, the entry decision tree** — built first, absorbing D1/D4, with every branch carrying its
+   `R##` and every soft/flagged rule rendered as a **soft branch**. `STAND ASIDE` is a first-class leaf.
+   Then the remaining diagrams per the rule above, each carrying its `R##` references.
 5. **Render-verified at 400px**, artifacts into `api/docs/evidence/s1b/`, plus which interactions respond
    and **which are inert**. Extend `app/e2e/runner.spec.ts`; keep the no-horizontal-overflow assertion,
    and add one asserting **every diagram scrolls inside its own box**.
