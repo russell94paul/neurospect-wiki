@@ -554,10 +554,34 @@ preference, never a gate.** Reuse the shipped idiom rather than inventing one: `
 soft/flagged rules with `*` and an amber ring, and the popover already says *"Preserved as stated — not
 hardened."* Hard gates keep the existing amber hard-gate treatment; the two must be visually distinct.
 
-**A decision for Paul, not for the session to assume: static or live?** A static tree is a poster; a
-tree that highlights the current node and the branch taken as he ticks through the runner is an
-instrument. Live is materially more useful and materially more build. **Ask him** — and if the answer is
-live, note that the tick state needed to drive it already exists in `runner.ts` (`ticks`, `phaseProgress`).
+### ✅ DECIDED 2026-08-13 (Paul): **LIVE**, with the full map one tap away
+
+Not a poster. The tree shows **the path you are on**, plus the choice at the current node, with a
+`[full map]` toggle revealing the whole static tree for study. Live **absorbs** static — build one
+surface, not two.
+
+**The decisive argument was legibility, not power.** A decision tree is two-dimensional and the window
+is ~400px, so a static tree is a postage stamp you scroll around inside — worst exactly when you are
+mid-setup and least able to spare attention. **The path you are on is one-dimensional**, so live
+collapses a wide branching diagram into a short vertical list. Static is also most useful while
+*learning* and least useful while *executing*, which is backwards for a screen docked beside a live
+chart.
+
+### ⚠️ TWO DESIGN FINDINGS — do not rediscover these the hard way
+
+**1. Tick state alone CANNOT drive the tree.** The checklist is a linear list of things to verify; the
+tree branches on *facts about the market*. Ticking `R24+R25 — a valid Sequential Skip identified`
+records **that** a skip was used but not **which** — down-cycle or cross-asset are different leaves. So
+the tree needs its own small set of **branch answers** (~5–7 choices), stored in `localStorage`
+alongside `ticks` — same shape, keyed per day and per setup, since the entry decision is
+`scope: setup` and repeats.
+
+**2. ⭐ The tree must NOT auto-tick the rules.** It is tempting — the node was answered, why not tick
+R24? Because that **manufactures adherence the user never consciously asserted**, which is the same
+failure as batch-ticking 33 boxes and is precisely what corrupts the per-rule follow rate the whole
+playbook exists to produce. The tree may **highlight** which rules just came into scope; the user still
+ticks them. Keeping branch answers and rule ticks separate is what keeps the measurement honest — the
+same structural argument as E2's derived `reps`.
 
 ---
 
@@ -597,9 +621,11 @@ DELIVERABLES:
    **which tier Tradezella captures for you** (Tier 1 — do not re-type it) and which is yours alone
    (**Tier 4, the psychological layer**, where dOoMeR says the value is). Include the
    `MANAGED`/`SET-AND-LEFT` tag, which powers the active-management-vs-walking-away comparison.
-4. **⭐ D0, the entry decision tree** — built first, absorbing D1/D4, with every branch carrying its
-   `R##` and every soft/flagged rule rendered as a **soft branch**. `STAND ASIDE` is a first-class leaf.
-   Then the remaining diagrams per the rule above, each carrying its `R##` references.
+4. **⭐ D0, the LIVE entry decision tree** — built first, absorbing D1/D4. Shows the path taken plus the
+   current node's choice, with a `[full map]` toggle for the whole tree. Every branch carries its `R##`;
+   every soft/flagged rule renders as a **soft branch**; `STAND ASIDE` is a first-class leaf. Branch
+   answers live in `localStorage` beside `ticks` and **never auto-tick a rule**. Then the remaining
+   diagrams per the rule above, each carrying its `R##` references.
 5. **Render-verified at 400px**, artifacts into `api/docs/evidence/s1b/`, plus which interactions respond
    and **which are inert**. Extend `app/e2e/runner.spec.ts`; keep the no-horizontal-overflow assertion,
    and add one asserting **every diagram scrolls inside its own box**.
