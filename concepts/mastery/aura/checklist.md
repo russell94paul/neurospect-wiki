@@ -128,6 +128,11 @@ review lacks a checklist home. ✅
 
 ## See Also
 
+- **Practising this checklist in Tradezella** (authored 2026-08-12; these three pages plus this one are
+  projected into `neurospect-learn`'s `/runner` — edit the wiki, never the app):
+  - [[concepts/mastery/aura/tradezella-setup]] — session setup + the declared counting basis
+  - [[concepts/mastery/aura/tradezella-rule-mapping]] — these phases as Playbook rule groups
+  - [[concepts/mastery/aura/chart-markup]] — what to draw, in what order
 - [[concepts/mastery/aura/rules]] — the rule behind each **[R##]**
 - [[concepts/mastery/aura/exercises]] — drills that build each checklist section to automatic
 - [[concepts/mastery/aura/tracker]] · [[concepts/mastery/README]]

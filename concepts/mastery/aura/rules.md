@@ -210,6 +210,10 @@ it comes from. Where dOoMeR states a rule as a preference or flags his own uncer
 ## See Also
 
 - [[concepts/mastery/aura/checklist]] — these rules turned into a step-by-step execution checklist
+- [[concepts/mastery/aura/tradezella-rule-mapping]] — these rules as Tradezella Playbook rows (per-rule
+  follow rate + expectancy). ⚠️ **R23 cannot be reproduced there** — Tradezella's backtest chart takes no
+  custom indicators, so every SMT read in a backtest is a hand read; see
+  [[concepts/mastery/aura/chart-markup]] §The probe
 - [[concepts/mastery/aura/learning-path]] · [[concepts/mastery/aura/exercises]] · [[concepts/mastery/aura/tracker]]
 - [[concepts/mastery/README]] — the mastery model + readiness gate
 - [[concepts/aura/README]] — the concept KB every rule here links back to
