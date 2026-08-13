@@ -23,8 +23,11 @@ another dashboard to read.
 > re-derived here. **Phase S1c ⏭ ACTIVE** (promoted ahead of S1b at Paul's request): compute Aura
 > setups from real bars. Proven possible — the chart exposes real OHLC via `exportData`, and a
 > discriminating test with its result predicted in advance returned **0.0% SMT divergence NQ-vs-MNQ**
-> against **5.7% NQ-vs-ES**, which validates the method and measures the duplicate-symbol problem.
-> **⛔ Blocked until the session symbols are `NQ ES YM 6S`.**
+> against **5.7% NQ-vs-ES**. ⚠️ **That zero was then CORRECTED** — Paul disputed it and was right: MNQ
+> *can* diverge (its high differs from NQ on 61% of bars), the zero was a too-coarse 20-bar window, and
+> the real reason to drop MNQ is that its divergences carry **no information** (margin 0.00), not that
+> they cannot happen. The dispute also exposed a **missing noise floor** that would have shipped phantom
+> SMT into the engine. **⛔ Blocked until the session symbols are `NQ ES YM 6S`.**
 
 ## Goal (Paul, 2026-08-12 — in his framing)
 
@@ -212,9 +215,42 @@ from. Wrong reads would teach wrong. So the capability was **tested before it wa
   | NQ vs ES | 3 / 53 | 5.7% |
   | NQ vs MES | 2 / 53 | 3.8% |
 
-  Zero against MNQ is not "low", it is **structurally impossible to diverge** — which is what makes the
-  0.0% a validation of the method rather than a weak signal. It also converts the MNQ/MES duplicate
-  finding from an argument into a measurement.
+### ⚠️ CORRECTED SAME DAY — Paul disputed it and was right
+
+The first write-up called the MNQ zero *"structurally impossible to diverge"*. **That was wrong, and
+overstated.** Paul said he had seen MNQ move slightly differently from NQ. Measured rather than argued:
+
+- Over the same 300 bars, **only 8 have all four OHLC identical**; the **high differs on 184 of 300
+  (61.3%)**, median 0.25 (one tick), max 3.00. They are separate contracts with separate order books.
+- The 0/53 was an artifact of a **20-bar forward window being too coarse**. Tightening it surfaces the
+  divergence Paul described:
+
+  | Forward window | NQ vs MNQ | NQ vs ES |
+  |---|---|---|
+  | 3 bars | **1 / 56** | 9 / 56 |
+  | 5 bars | **1 / 56** | 6 / 56 |
+  | 20 bars | 0 / 53 | 3 / 53 |
+
+**The conclusion survives, for a better reason.** MNQ diverges ~9× less often than ES, and its one
+divergence has a **margin of 0.00** — the level was matched exactly and not exceeded by a single tick.
+That is microstructure, not two markets disagreeing. **R15 requires legs "independent enough that a
+divergence carries information."** MNQ fails *that* test — not the can-it-diverge test. Use `ES`/`YM`/`6S`
+because MNQ's divergences carry **no information**, not because they cannot happen.
+
+### ⭐ AND THE DISPUTE FOUND A REAL BUG IN THE ENGINE — carry this into S1c
+
+Several of **ES's** divergences also have **0.00 margins**. So a naive "did it exceed the level?" test
+**manufactures phantom SMT from zero-margin near-misses on the real triad too** — it would have shipped
+into the engine and produced confident false signals.
+
+**S1c requirement: SMT detection needs a noise floor, normalised per instrument.** Tick sizes differ
+across the legs (NQ 0.25 · ES 0.25 · YM 1.0 · 6S 0.00005), so a raw price comparison is not
+apples-to-apples either. Declare the threshold, print it in every signal (the E6 rule: an unstated
+threshold is an invented rule wearing a fact's clothes), and **report the margin alongside every SMT**
+so a near-miss is visible as a near-miss.
+
+*(Method note for the estate: the client disputing a number was, again, the only thing that surfaced the
+error — and it surfaced two, the overstated claim and the missing noise floor.)*
 
 **This is, in effect, building the Sequential-SMT indicator R23 describes and the S1 probe proved
 Tradezella cannot provide.** That is the gap; that is the value.
@@ -552,6 +588,7 @@ READ FIRST:
 | Discount / EQ / premium position | R5, R32 |
 | Gaps (FVG, iFVG, NWOG, NDOG) + liquidity nested inside | R11, R12, R13 |
 | Cross-cycle gap-pairing | R21 |
+| **SMT margin** — how far the level was exceeded/missed, reported on every signal | R3, R18 |
 | Cascade across resolutions | R27 |
 | 5m iFVG entry, stop at invalidation, target at TF extreme | R30, R33, R35 |
 | R:R and risk in R | R39, R43, R44 |
