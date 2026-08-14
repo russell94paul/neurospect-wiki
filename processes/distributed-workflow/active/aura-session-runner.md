@@ -27,7 +27,14 @@ another dashboard to read.
 > 75% of the output** — `known_at = pivot + N days` cannot see weekends, so a signal was dated four
 > days early and traded on the session that produced it. Five defects were found and fixed in all;
 > the setup count went **17 → 4 → 1**. ⚠️ **n = 1 supports no hit rate, win rate or expectancy, and
-> none may be quoted from this run.** **Phase S1b ⏭ ACTIVE** — the guided walkthrough.
+> none may be quoted from this run.**
+> **Phase S1d ⏭ ACTIVE** (promoted ahead of S1b, Paul 2026-08-13): mark up one full replayed week
+> (`2025-05-26 → 05-30`, NY session) as worked examples, hardened enough to take an entry from,
+> with **realised** outcomes. ⚠️ **Paul REJECTED S1c's markup quality** — infinite horizontal lines
+> instead of shapes bounded to where the level applied, which contradicts R6/R7; fixed canonically
+> in [[concepts/mastery/aura/chart-markup]] §0b. ⛔ **The week is SELECTED, not sampled** (it
+> contains the one known setup), so it carries **zero** information about frequency — and that must
+> be declared on the artifact.
 
 ## Goal (Paul, 2026-08-12 — in his framing)
 
@@ -255,7 +262,49 @@ error — and it surfaced two, the overstated claim and the missing noise floor.
 **This is, in effect, building the Sequential-SMT indicator R23 describes and the S1 probe proved
 Tradezella cannot provide.** That is the gap; that is the value.
 
-### S1b — The walkthrough: guided setup + markup, with diagrams. *(next after S1c)*
+### S1d — A full replayed WEEK, marked up as worked examples. ⏭ **ACTIVE** *(promoted ahead of S1b, Paul 2026-08-13)*
+
+Paul, after reviewing S1c's output and rejecting its markup quality:
+
+> *"Should we keep improving it so that you can successfully mark up everything required to take a
+> trade entry. Then when it is hardened and polished we can get you to replay a few days focusing
+> only on the NY Session. Then I can review and learn from the trades you take and try mark out
+> myself after."* … *"Show your read first, but I want an entire session of trade examples — maybe
+> one week to begin with. Then I will run my own session and learn from your markups and entries."*
+
+**Why this sequencing was accepted over "go practise first".** S1c stood aside on **21 of 22 days**
+(R6 alone rejected 13), and *nothing available can tell us whether that is correct*. Re-reading the
+rulebook cannot settle it; Paul running unmarked days cannot settle it. **His review of the engine's
+stand-asides is the only calibration instrument that exists** for whether the gates are tuned right.
+That is a genuine reason to harden first, and it overrode the session's own recommendation.
+
+**The recall concern is answered by his plan, not dropped.** Reviewing worked examples before
+marking up is normally tracing rather than recall — but he runs *his own session afterwards*, which
+is pre-commitment at session granularity. The test still happens; it just happens once, later, and
+bigger.
+
+### ⚠️ The base rate collides with "one week" — and the answer is a DECLARED selection
+
+At 1 setup per 22 weekdays, **a randomly chosen week yields zero entries as the overwhelmingly
+likely outcome.** So the week is **selected, not sampled**: `2025-05-26 → 05-30`, because it contains
+the one known qualifying setup (the 05-30 SHORT).
+
+⛔ **That selection must be declared on the artifact itself, loudly.** A week chosen *because* it
+contains a setup carries **no information whatsoever** about how often setups occur. If Paul infers a
+frequency from it, the artifact has lied to him — and this is the same failure mode as every
+"analysis" gate in the estate. Print the selection basis at the top of the deliverable.
+
+Note the week contains **Memorial Day (Mon 26 May 2025)**, a shortened session. Kept, and flagged as
+a teaching point rather than filtered out.
+
+### The deliverable is a SESSION, not a highlight reel
+
+Paul asked for *"an entire session of trade examples"*, and the correct reading is **every day fully
+marked up** — swing points, SMT qualification, ranges, PD arrays, discount/premium — with entries
+where they materialise and **named stand-aside reasons where they do not** (R51). A real session is
+mostly markup and sitting on your hands. An artifact showing only the trade would teach the opposite.
+
+### S1b — The walkthrough: guided setup + markup, with diagrams. *(after S1d)*
 
 Paul's ask, 2026-08-13: *"a step by step process / guide to have open alongside tradezella… a
 walkthrough guide on how to set everything up and mark everything out — should be done in detail"*,
@@ -802,7 +851,100 @@ bars or levels; resolving a soft rule into a hard branch; or building the walkth
 
 ---
 
-## Boot Prompt (Phase S1b — the guided walkthrough, with diagrams) ⏭ ACTIVE
+## Boot Prompt (Phase S1d — a full replayed week, marked up) ⏭ ACTIVE
+
+**Launch:** `claude --model opus[1m]`, `/effort high`. This phase produces the artifact Paul will
+**learn the model from**. Wrong reads teach wrong, and S1c proved that is not theoretical — it
+shipped five defects whose output looked competent at every stage.
+
+**Task: mark up one full replayed week as worked examples, hardened enough that everything
+required to take a trade entry is on the chart.** Deliver a session, not a highlight reel.
+
+### ⛔ READ THESE FIRST — in this order
+
+1. Wiki `CLAUDE.md` — code is ground truth, the MANDATORY reconciliation checklist, Rules #3/#4/#6,
+   Context Management (tell Paul at >50%). **Paul handles git unless he asks in-session.**
+2. This tracker: **§S1c as-built** (the five defects — do not reintroduce them) and **§S1d above**
+   (the declared week, and why it is selected rather than sampled).
+3. `neurospect-learn/api/docs/evidence/s1c/accuracy.md` — **the whole file.** It states what the
+   engine does not do, and every gap in it is scope for this phase.
+4. [[concepts/mastery/aura/chart-markup]] **§0b — Markup primitives**. Paul rejected S1c's markup:
+   infinite horizontal lines instead of shapes bounded to where the level applied. **This is a
+   correctness rule, not a style note** — an infinite line contradicts R6 and R7.
+5. [[concepts/mastery/aura/rules]] — canonical wording.
+6. `~/.claude/skills/web-automation/claude-in-chrome-driving.md` — **required.** Also note:
+   `createShape` returns a **Promise** in this build, so its return value proves nothing;
+   enumerate with `getAllShapes()` / `getShapeById()` to confirm anything.
+
+### The decisions Paul already made — do not reopen them
+
+| Decision | Value |
+|---|---|
+| Artifact order | **Worked examples first** — his read visible up front. He runs his own session afterwards; that is where recall gets tested |
+| Span | **One week**, `2025-05-26 → 05-30`, expandable later if he asks |
+| Selection | **Declared, not sampled** — chosen because it contains the known 05-30 setup |
+| NY session | **08:00–16:00 ET** (covers the AM killzone). R31's 9:30 preference stays a **soft branch**, never a filter — the known setup enters 08:05 and a strict 09:30 window deletes it |
+| Markup | **Bounded shapes only** — rectangles/rays with computed start *and* end |
+
+### What must be hardened — this is the phase's real work
+
+The engine currently computes a setup but does **not** mark up everything needed to take one.
+From `accuracy.md`'s own gap list:
+
+1. **Bounded markup primitives** (Paul's rejection). The engine *already computes every boundary
+   it needs* — gap `formed_time`/`inverted_time`, the range's `move_to`, R6's `broken_by` — so this
+   is a drawing change, not new analysis. Rectangles for PD arrays formation→mitigation; rays for
+   live levels; **range boundaries terminated at the invalidating close**.
+2. **NWOG / NDOG** (R11) — declared in the rulebook, unimplemented. Needs a per-symbol session
+   boundary; CHFUSD's do not match the futures', which is why S1c refused to approximate it.
+3. **The weekly cycle** — absent entirely. Weekly→daily is R18's canonical nesting pair, so its
+   absence weakens every Sequential SMT claim the engine makes. Export `W` natively; do **not**
+   aggregate daily bars into fake weeks.
+4. **R21** cross-cycle gap-pairing · **R22** extreme-of-the-larger-segment targeting · **R13**
+   look-left / zoom-in for liquidity · **R8**'s false-sweep tiebreak (or keep R8 UNRESOLVED and say so).
+5. **⭐ Outcome simulation.** The engine plans entry/stop/target and never walks price forward, so
+   every `R` is **planned, not realised**. Paul asked to learn from *"the trades you take"* — a trade
+   with no outcome is an intention. Walk the 5m/1m bars forward: stop-first or target-first, the bar
+   it happened on, and the realised R. Where both are touched inside one bar, that is
+   **UNRESOLVED at this resolution** — say so, do not guess the sequence.
+6. **Deeper 5m history** — S1c pulled ~26 days via `setVisibleRange`. One week needs far less, so
+   this is *not* blocking here; it becomes blocking the moment Paul expands the span.
+
+### ⚠️ THE TRAPS — every one of these is measured, not hypothetical
+
+- **Lookahead.** `known_at` must come from real bar timestamps plus a bar for closure, never
+  calendar arithmetic. This bug contaminated **75%** of S1c's output while the log reported
+  confident dates. **Re-run `aura_verify_record.py` and keep its no-lookahead assertion passing.**
+- **The engine must stay auditable.** Every logged line keeps `rule ID · computed value · source bar`.
+- **Never resolve a judgement rule.** R9/R8/R31 stay `UNRESOLVED` or render as soft branches. An
+  engine that resolves everything cleanly teaches Paul that Aura is deterministic, which it is not.
+- **State the selection basis on the artifact.** The week was chosen because it contains a setup, so
+  it carries **zero** information about frequency. Print it at the top.
+- **QUARANTINE holds.** These are machine-generated tutorial artifacts: no `evidence_assets`, no rep
+  credit, nothing feeding the streak, calibration or the Readiness Gate. Every drawn shape keeps a
+  visible machine-generated marker.
+- **Clean up the chart.** Anything drawn onto session `831607` must be removable by a scoped snippet
+  and **must be deleted before Paul marks that week himself** — pre-drawn levels turn a rep into
+  tracing. Verify `0` shapes after removal, by enumeration and after a navigation.
+
+### DELIVERABLES
+
+1. The hardened engine (still versioned, still re-runnable, still no app/DB changes).
+2. **One artifact per trading day** in the declared week: the marked chart (bounded shapes), the
+   rule log, the entry **or the named stand-aside reason**, and — where there is an entry — the
+   **realised** outcome in R.
+3. A week-level summary carrying the **declared selection basis** and the day-by-day shape.
+4. An updated `accuracy.md`: what is now implemented, what remains deferred, and what the week's
+   results do and do not support.
+5. Tracker + `log.md` + `index.md` reconciled; then hand back to **S1b**.
+
+**THIS PHASE IS NOT:** writing to the database or the evidence layer; building the walkthrough UI
+(S1b); quoting a hit rate, win rate or expectancy from a selected week; advancing Paul's replay
+position; or leaving shapes on his chart.
+
+---
+
+## Boot Prompt (Phase S1b — the guided walkthrough, with diagrams) — ⏸ NEXT, after S1d
 
 ### ⚠️ WHAT S1c HANDED YOU — read §S1c as-built before designing anything
 
