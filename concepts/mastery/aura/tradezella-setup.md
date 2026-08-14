@@ -94,7 +94,23 @@ that is the complete divergence set, and R18's Sequential SMT operates on the tr
 case on chart behaviour, not theory. So the Aura Asset is an enhancement, not a prerequisite, and the
 5-symbol limit leaves room to add it later without losing anything.
 
-**If a substitute is considered, two facts decide it — and the first is a trap:**
+### ✅ RESOLVED 2026-08-13 — `CHFUSD` exists, and it is the correct one
+
+Paul found `CHFUSD` in the symbol search (a **filter was suppressing results**, which is also why the
+first automated attempts found nothing — the failure was a UI filter, not only automation). Session
+`831607` was created with **`NQ` `ES` `YM` `CHFUSD`** and all four load data.
+
+**The direction question is settled empirically, not from memory:** `CHFUSD` printed **1.2139** — a
+franc costing $1.21, i.e. **USD per CHF**, which is 6S's convention. `USDCHF` would have printed ≈0.82.
+**Use `CHFUSD`.** Tradezella reports it as `spread_type: "forex"`.
+
+> ⚠️ **Open, and the reason S1c must test it: candle alignment.** On first load, `CHFUSD` bars ran to
+> `2025-06-01 21:00` while `NQ`/`ES`/`YM` stopped at `2025-05-30 20:59` — a ~2-day coverage difference.
+> That may be nothing more than different fetch windows, **or** it may be exactly the sync problem that
+> disqualified DXY (R17). **Not concluded.** Test it properly by comparing candle *boundaries*, not
+> coverage, via `exportData` timestamps.
+
+**If a substitute is ever reconsidered, two facts decide it — and the first is a trap:**
 
 1. **Direction. `6S` is the CME Swiss Franc future, quoted USD per 1 CHF — i.e. it is `CHF/USD`.**
    `USD/CHF` is the **inverse** and moves the opposite way, and it is the conventional quote most feeds
