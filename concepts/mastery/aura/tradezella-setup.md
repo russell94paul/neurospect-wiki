@@ -104,11 +104,39 @@ first automated attempts found nothing — the failure was a UI filter, not only
 franc costing $1.21, i.e. **USD per CHF**, which is 6S's convention. `USDCHF` would have printed ≈0.82.
 **Use `CHFUSD`.** Tradezella reports it as `spread_type: "forex"`.
 
-> ⚠️ **Open, and the reason S1c must test it: candle alignment.** On first load, `CHFUSD` bars ran to
-> `2025-06-01 21:00` while `NQ`/`ES`/`YM` stopped at `2025-05-30 20:59` — a ~2-day coverage difference.
-> That may be nothing more than different fetch windows, **or** it may be exactly the sync problem that
-> disqualified DXY (R17). **Not concluded.** Test it properly by comparing candle *boundaries*, not
-> coverage, via `exportData` timestamps.
+### ⭐⭐ MEASURED 2026-08-13 — CHFUSD fails the DAILY cycle and passes INTRADAY
+
+R17's stated criterion is candle synchronisation, so it was measured rather than argued. Shared bar
+timestamps between panes, same session, `exportData`:
+
+| Resolution | NQ ↔ ES | NQ ↔ YM | **NQ ↔ CHFUSD** |
+|---|---|---|---|
+| **Daily** | 300 / 300 | 300 / 300 | **0 / 242** ❌ |
+| 60m | 300 / 300 | 300 / 300 | **285 / 300** ✓ |
+| 5m | 300 / 300 | 300 / 300 | **288 / 300** ✓ |
+
+**Root cause, and it is structural — not a setting.** The symbols carry different exchange timezones:
+`NQ`/`ES`/`YM` resolve as `America/Chicago` (CME), `CHFUSD` as `Etc/UTC`. Daily bars bucket by the
+symbol's *own* exchange day, so NQ's daily bars stamp at **13:30 UTC** and CHFUSD's at **21:00 UTC** —
+7.5 hours apart, **zero** shared daily timestamps. Changing the chart's session or timezone *display*
+cannot fix it; the bucketing is a property of the symbol.
+
+This is almost verbatim the objection R17 raises against DXY — *"candles do not open and close in sync
+with the futures we actually trade… the legs line up differently."* **CHFUSD reproduces the exact defect
+6S was chosen to avoid, at the daily cycle.**
+
+**What this means in practice:**
+
+- ❌ **Do NOT use CHFUSD for daily- or weekly-cycle SMT.** R18's mechanic is SMT *nested across adjacent
+  cycles* (weekly→daily). CHFUSD cannot participate: the cycles do not correspond.
+- ✅ **CHFUSD IS usable intraday** (~96% aligned at 60m and 5m), which is where **R21**'s cross-cycle
+  gap-pairing lives (daily/session→4H, micro→15m–1H). Treat it as an intraday-only divergence leg.
+- ✅ **The triad is unaffected** — `NQ`/`ES`/`YM` align **perfectly at every resolution tested**, which is
+  also a clean positive control proving the measurement itself is sound.
+
+**So the Aura Asset slot remains genuinely unfilled at the HTF level**, and the three-leg triad is the
+working set for framing. Keep CHFUSD in the session for its intraday use; do not let it into a
+daily-cycle read.
 
 **If a substitute is ever reconsidered, two facts decide it — and the first is a trap:**
 

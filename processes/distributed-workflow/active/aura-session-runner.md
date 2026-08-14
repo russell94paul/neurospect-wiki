@@ -563,7 +563,33 @@ against and may teach from. Every one must be auditable.
 describe it" — extract OHLC, run the rules as arithmetic, and emit a record where every line can be
 checked against the chart.
 
-### ⛔ HARD PREREQUISITE — the symbols
+### ✅ PREREQUISITE MET + a finding S1c must build around (2026-08-13)
+
+Session **`831607`** exists: `NQ` `ES` `YM` `CHFUSD`, Aura playbook attached, 2025-06-01 → 2025-06-30,
+$50k. All four export bars.
+
+**⭐ Candle alignment was measured before any engine code, and it constrains the design:**
+
+| Resolution | NQ↔ES | NQ↔YM | NQ↔CHFUSD |
+|---|---|---|---|
+| Daily | 300/300 | 300/300 | **0 / 242** |
+| 60m | 300/300 | 300/300 | 285/300 |
+| 5m | 300/300 | 300/300 | 288/300 |
+
+Root cause is structural: `NQ`/`ES`/`YM` are `America/Chicago`, `CHFUSD` is `Etc/UTC`, so daily bars
+bucket on different exchange days (13:30 UTC vs 21:00 UTC stamps). **CHFUSD reproduces the exact defect
+R17 rejected DXY for, at the daily cycle.**
+
+**Engine requirements that follow — these are correctness constraints, not preferences:**
+1. **Never treat CHFUSD as a daily/weekly-cycle leg.** R18 nests SMT across adjacent cycles; the cycles
+   do not correspond. The engine must refuse this combination rather than silently produce a signal.
+2. **Join legs by TIMESTAMP, never by bar index.** Series have different lengths and windows (CHFUSD 252
+   daily bars vs 300 for the futures). Index-joining would silently compare different moments.
+3. CHFUSD is admissible **intraday only** (R21's gap-pairing range).
+4. `NQ`/`ES`/`YM` aligning perfectly at every resolution is the **positive control** — if a future run
+   shows them misaligned, the measurement is broken, not the market.
+
+### ⛔ HARD PREREQUISITE — the symbols *(met — see above)*
 
 Sequential SMT is a comparison **across the triad**. On `NQ / MNQ / ES / MES`, two of four legs carry
 **zero** information (measured: 0.0% divergence). **The session must be `NQ ES YM 6S` or this phase
