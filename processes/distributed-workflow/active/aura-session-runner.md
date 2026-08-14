@@ -520,9 +520,16 @@ ran. That is the cheap check and it found three of five.
    gap-pairing, **R22** extreme-of-the-larger-segment targeting, and **R8**'s false-sweep tiebreak.
    **Weekly and monthly cycles are absent entirely** — daily is the deepest cycle the export
    supports, and nothing was aggregated to fake the missing rungs.
-5. **Deliverable 3 (drawing computed levels on the chart) NOT DONE.** `createShape` is available
-   and proven, but it writes into Paul's live session, which he would then have to clean up.
-   Optional per the boot prompt; left for his say-so.
+5. **Deliverable 3 (drawing computed levels on the chart) ✅ DONE** — added at Paul's explicit
+   request after the phase closed. **8 shapes on the NQ pane**, each labelled with its rule ID and
+   an `[S1c]` marker, verified by reading every shape back through the chart API and proved to
+   persist across a full navigation. `createShape` returns a **Promise** in this build, so its
+   return value is worthless as confirmation — enumeration is the only honest check. Shape IDs and
+   a scoped removal snippet are in `api/docs/evidence/s1c/chart-shapes-drawn.md`.
+   ⚠️ **They must be deleted before Paul marks that day by hand**, or a markup rep becomes tracing.
+   The rendered view caught one thing the API could not: **R5's equilibrium is a computed midpoint
+   that is not on NQ's 0.25 tick grid** (`21,144.625`), so the chart snapped the drawing to
+   `21,144.75` — the only level not exactly where the arithmetic put it.
 
 ## Session Log
 
