@@ -17,9 +17,9 @@ another dashboard to read.
 > `neurospect-learn`, the boundary probe has been **run in the product** (answer: **NO custom
 > indicators** — see §The boundary probe, now answered), and the three missing pieces are authored as
 > wiki pages, and the **Tradezella playbook is built and saved** (`Aura - Sequential SMT (NQ triad)`,
-> 6 groups, **33 rules**, verified at the rendered layer). Phase **S1b ⏭ ACTIVE** — the guided
-> walkthrough with diagrams (boot prompt at the bottom); **S2 is gated on real replayed sessions.**
-> The model content this workstream projects is canonical in `concepts/mastery/aura/` and must not be
+> 6 groups, **33 rules**, verified at the rendered layer). **S1b (the guided walkthrough with diagrams)
+> is NEXT, not active**; **S2 is gated on real replayed sessions.** The model content this workstream
+> projects is canonical in `concepts/mastery/aura/` and must not be
 > re-derived here. **Phase S1c ⏭ ACTIVE** (promoted ahead of S1b at Paul's request): compute Aura
 > setups from real bars. Proven possible — the chart exposes real OHLC via `exportData`, and a
 > discriminating test with its result predicted in advance returned **0.0% SMT divergence NQ-vs-MNQ**
