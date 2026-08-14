@@ -20,14 +20,14 @@ another dashboard to read.
 > 6 groups, **33 rules**, verified at the rendered layer). **S1b (the guided walkthrough with diagrams)
 > is NEXT, not active**; **S2 is gated on real replayed sessions.** The model content this workstream
 > projects is canonical in `concepts/mastery/aura/` and must not be
-> re-derived here. **Phase S1c ⏭ ACTIVE** (promoted ahead of S1b at Paul's request): compute Aura
-> setups from real bars. Proven possible — the chart exposes real OHLC via `exportData`, and a
-> discriminating test with its result predicted in advance returned **0.0% SMT divergence NQ-vs-MNQ**
-> against **5.7% NQ-vs-ES**. ⚠️ **That zero was then CORRECTED** — Paul disputed it and was right: MNQ
-> *can* diverge (its high differs from NQ on 61% of bars), the zero was a too-coarse 20-bar window, and
-> the real reason to drop MNQ is that its divergences carry **no information** (margin 0.00), not that
-> they cannot happen. The dispute also exposed a **missing noise floor** that would have shipped phantom
-> SMT into the engine. **⛔ Blocked until the session symbols are `NQ ES YM 6S`.**
+> re-derived here. **Phase S1c ✅ BUILT 2026-08-13** (see §S1c as-built): the rules now compute from
+> real bars. `api/scripts/aura_setup_engine.py` + an independent audit script, run over
+> **2025-05-01→05-30 → 1 setup · 21 rejections**, all quarantined to files.
+> ⭐ **The phase's most valuable output is a defect, not a setup: a LOOKAHEAD bug had contaminated
+> 75% of the output** — `known_at = pivot + N days` cannot see weekends, so a signal was dated four
+> days early and traded on the session that produced it. Five defects were found and fixed in all;
+> the setup count went **17 → 4 → 1**. ⚠️ **n = 1 supports no hit rate, win rate or expectancy, and
+> none may be quoted from this run.** **Phase S1b ⏭ ACTIVE** — the guided walkthrough.
 
 ## Goal (Paul, 2026-08-12 — in his framing)
 
@@ -191,7 +191,7 @@ fields — which is B2. Decided 2026-08-12 in preference to building capture fir
 constraint is *starting to practise*, and a v1 that slips across three sessions means tomorrow does not
 happen.
 
-### S1c — Computed setup detection: run the rules on real bars. ⏭ **ACTIVE**
+### S1c — Computed setup detection: run the rules on real bars. ✅ **BUILT 2026-08-13** (see §S1c as-built)
 
 Paul, 2026-08-13: *"the priority is to see if you can use the strategy rules to identify valid setups
 and then log them for me to review."* Promoted ahead of S1b at his request.
@@ -431,7 +431,130 @@ real 401/403; leave it alone on a transport failure.
   tool was selected and clicked once on the `NQ` pane of `NQ Macro Po3 - Asia Session`. Placement was
   never confirmed (the panes were rendering without visible candles) and it was not deleted.
 
+## S1c as-built (2026-08-13) — code is now ground truth
+
+Two versioned scripts in `neurospect-learn`, plus an evidence folder. **No app code, no
+migration, no endpoint, no table, no backend module** — the evidence layer is untouched.
+
+- **`api/scripts/aura_setup_engine.py`** — extraction-fed rule engine. Reads the exported
+  bars, computes the rules as arithmetic, emits setups **and rejections** in the boot
+  prompt's output contract (rule ID · computed value · the bar/time it came from).
+- **`api/scripts/aura_verify_record.py`** — an **independent** audit that re-derives one
+  logged record straight from the JSON, importing nothing from the engine, and asserts
+  every engine claim. Exits non-zero on disagreement, so it is a gate not a printout.
+- **`api/docs/evidence/s1c/`** — `bars/tradezella-831607-export.json` (2.3 MB, the raw
+  export), `computed-setups.md` + `.json`, and `accuracy.md`.
+
+**The bars are real and now versioned.** `setVisibleRange` was found to force the chart to
+load deeper history — the previous session's 300-bar ceiling was a viewport artifact, not a
+limit. Exported `D`/`240`/`60`/`15`/`5` for all four symbols (~45k bars) and shipped them out
+of the browser to a localhost receiver, so the extraction is a re-runnable file rather than a
+console paste.
+
+⚠️ **A port collision nearly produced a phantom result.** The receiver was first pointed at
+`:8765`, which is held by Paul's `prefect-connectors` orchestrator; it answered the liveness
+probe `204`, which read as "my server is up". It was not — the bind had failed silently and
+the browser POST hung. **A liveness check that does not identify *which* service answered is
+not a liveness check.** Moved to `:8791`; the orchestrator was not touched.
+
+### The declared span, and why it is not the session's own
+
+Session `831607`'s replay is parked at **2025-05-30 20:59 UTC** and has never been advanced.
+Advancing it would consume days Paul intends to replay himself, so the engine was pointed at
+the real history sitting *behind* the replay edge: **2025-05-01 → 2025-05-30 (ET), 22
+weekdays**. No session state was changed. The span deliberately overruns the 5m data (which
+starts 05-04) so the boundary shows up as explicit `DATA` rejections rather than vanishing.
+
+**Result: 1 setup · 21 rejections.** Rejections by failing rule: `R6` 13 · `R3` 5 · `DATA` 2 ·
+`R35` 1.
+
+### ⭐ Five defects found and fixed — and the count went 17 → 4 → 1
+
+Every one of these produces output that *looks* like analysis. Recorded because the pattern
+matters more than the fix.
+
+| # | Defect | Effect | Caught by |
+|---|---|---|---|
+| 1 | **R6 never implemented** | a range used long after price closed through it; entries scored at `1.22 of range`; a five-week-old 3,584-pt "range" | reading the rendered log |
+| 2 | **`abs()` in the reward calc** | a target the trade had already passed rendered as `0.7R` | reading the rendered log |
+| 3 | **One stale daily SMT drove every day** (R7/R23) | the same 05-02 signal reused for a week | reading the rendered log |
+| 4 | **⭐ LOOKAHEAD** — `known_at = pivot + N days` | calendar arithmetic ignores weekends/holidays: dated a signal **4 days early** (05-25 vs the true 05-28) and traded it on the session that produced it | the independent audit |
+| 5 | **⭐ Tick measured as float noise** | CHFUSD's tick came back `5.98e-09` (IEEE-754 dust), collapsing that leg's noise floor to ~zero — **reintroducing the phantom-SMT bug on the one leg too small to eyeball** | a column that printed a measured value |
+
+**Defect 4 alone removed three of the four surviving setups.** Before that fix **75% of the
+setups were contaminated** by information that did not exist when the engine claimed to act on
+it — and any accuracy statistic computed beforehand would have looked entirely reasonable.
+This is the phase's most important output: *the engine was wrong in a way that reads as
+competent*, and only an instrument that re-derived the numbers by a different route found it.
+
+Defects 1–3 were caught by reading the output **like a trader**, not by checking that the code
+ran. That is the cheap check and it found three of five.
+
+### What the tracker asked for, and what it got
+
+- **Noise floor: DONE and two-sided** — the taking leg must exceed by more than the floor *and*
+  the diverging leg must miss by more than it. Floor is `2 ticks` of each instrument's **measured**
+  tick size, printed in the run header, and the margin is reported on every leg of every signal.
+- **Measured tick sizes recovered the contract specs without being told them: NQ `0.25` · ES
+  `0.25` · YM `1.0`.** That is the positive control for the measurement itself.
+- **CHFUSD refused at daily, admitted intraday** — encoded as a rule (`admissible_legs`), and the
+  refusal prints as a branch on every record rather than being silent.
+- **Legs joined by TIMESTAMP throughout.** `NOT-VISIBLE` is a distinct verdict from
+  `DID-NOT-TAKE`, so a missing bar can never masquerade as a divergence.
+- **Positive control passed on fresh data** — `NQ`/`ES`/`YM` share every daily timestamp,
+  `CHFUSD` shares none. Independently reproduces the 2026-08-13 alignment measurement.
+
+### ⚠️ FLAGGED — carry these into S1b
+
+1. **n = 1 supports no rate of any kind.** One setup over 22 days demonstrates the rules *can* be
+   computed; it measures nothing about whether they work. There is **no** hit rate, win rate or
+   expectancy in this run and none may be quoted from it.
+2. **No outcome simulation.** The engine never walks price forward to see whether stop or target
+   was hit first. Every `R` figure is **planned, not realised**.
+3. **CHFUSD's tick is not reliably measurable** — `1e-06` intraday vs `5.2e-06` daily, against a
+   conventional `1e-05`. Its measured tick varying *by resolution* is the tell. Its noise floor is
+   the softest of the four, and **the one surviving setup's Sequential Skip diverges on CHFUSD
+   alone** — the record now carries that warning on its face.
+4. **Declared-but-unimplemented rules**, stated rather than approximated: **NWOG/NDOG** (need a
+   per-symbol session boundary, and CHFUSD's do not match the futures'), **R21** cross-cycle
+   gap-pairing, **R22** extreme-of-the-larger-segment targeting, and **R8**'s false-sweep tiebreak.
+   **Weekly and monthly cycles are absent entirely** — daily is the deepest cycle the export
+   supports, and nothing was aggregated to fake the missing rungs.
+5. **Deliverable 3 (drawing computed levels on the chart) NOT DONE.** `createShape` is available
+   and proven, but it writes into Paul's live session, which he would then have to clean up.
+   Optional per the boot prompt; left for his say-so.
+
 ## Session Log
+
+### 2026-08-13 — S1c BUILT: the rules compute, and the engine was wrong five ways first
+
+- approach: proved the extraction first, versioned it, then wrote the engine — and then
+  **built a second instrument whose only job was to disbelieve the first**. That instrument is
+  what justified the phase.
+- **⭐ the headline is a defect, not a setup: a lookahead bug had contaminated 75% of the
+  output** and was invisible in the log, which said "knowable 2025-05-25" with total confidence.
+  Real bar timestamps put it at 05-28 — the session it then traded. `pivot + N days` cannot see
+  weekends. Fixed to derive `known_at` from actual bars, plus a full bar for the window to close.
+- **found: `setVisibleRange` forces deeper history loading** — the 300-bar ceiling the previous
+  session hit was a viewport artifact. ~45k bars extracted across five resolutions.
+- **found: the tick-size measurement was itself a phantom-SMT generator.** Taking the plain
+  minimum non-zero price difference returns IEEE-754 dust on a forex feed. A candidate increment
+  must **recur** before it is believed. The futures ticks (0.25/0.25/1.0) are the control that
+  proves the fixed version works.
+- **found: `:8765` belongs to `prefect-connectors`**, and it answered my liveness probe `204`,
+  which read as success. Not touched; moved to `:8791`. A liveness check that cannot say *who*
+  answered is not one.
+- decided: **span 2025-05-01→05-30, behind the replay edge**, rather than advancing Paul's
+  replay — those are his days to run.
+- decided: **quarantine by construction** — output goes to files under `api/docs/evidence/s1c/`,
+  nothing writes to the DB, and the report leads with the machine-generated banner.
+- verified: 12/12 independent audit checks pass, including the no-lookahead relation; positive
+  control (NQ/ES/YM daily alignment) reproduced on fresh data; measured ticks match contract specs.
+- verified: **Paul's session left exactly as found** — all four panes restored to `1m`, `0` shapes
+  on every pane, no replay advance, no orders, no playbook edits.
+- flagged: n=1, no outcome simulation, CHFUSD's soft floor, and five declared-but-unimplemented
+  rules — all in `accuracy.md` and §FLAGGED above.
+- next: **S1b** — the guided walkthrough. Boot prompt below.
 
 ### 2026-08-12 (S1 follow-on) — the playbook authored from the COURSE content; entry blocked on tooling
 
@@ -554,7 +677,7 @@ the S1 mapping doc alone, and for the full Tradezella setup with the key tracked
 
 ---
 
-## Boot Prompt (Phase S1c — computed setup detection) ⏭ ACTIVE
+## Boot Prompt Archive (Phase S1c — computed setup detection) ✅ RUN 2026-08-13
 
 **Launch:** `claude --model opus[1m]`, `/effort high`. This phase produces numbers Paul will trade
 against and may teach from. Every one must be auditable.
@@ -672,7 +795,46 @@ bars or levels; resolving a soft rule into a hard branch; or building the walkth
 
 ---
 
-## Boot Prompt (Phase S1b — the guided walkthrough, with diagrams) — ⏸ NEXT, after S1c
+## Boot Prompt (Phase S1b — the guided walkthrough, with diagrams) ⏭ ACTIVE
+
+### ⚠️ WHAT S1c HANDED YOU — read §S1c as-built before designing anything
+
+S1c built a working rule engine (`api/scripts/aura_setup_engine.py`) and, more usefully,
+**a list of five ways a confident-looking Aura read can be wrong**. Three of them are
+things the S1b walkthrough will be tempted to render as clean UI:
+
+- **A range is dead once price CLOSES beyond it (R6).** 13 of 21 rejections were this. A
+  walkthrough that draws a range without a liveness state teaches Paul to trade a corpse.
+- **A signal is not knowable when it forms** — it is knowable when its forward window
+  closes, counted in *bars*, not days. Any "as of" the walkthrough displays must respect it.
+- **The Aura Asset leg is the weakest link**, and one setup's confirmation rested on it alone.
+
+And the standing constraint: **n = 1**. S1c produced one setup over 22 days. The
+walkthrough must not imply a frequency, a hit rate, or an expectancy — none exists.
+
+#### ⭐ D0 gets a gift from S1c — use it instead of re-deriving the tree
+
+**The engine already enumerates D0's branches, in code, declared rather than inferred.**
+`aura_setup_engine.py` holds a `HARD_GATES` list and a `SOFT_BRANCHES` list at module top,
+and every rejection names the exact rule that stopped it. So:
+
+- **The hard gates are D0's decision nodes** — R3, R18, R6, R7, R30, R35, R29 — and they are
+  already in the order the model evaluates them.
+- **The rejection reasons are D0's STAND-ASIDE leaves**, and they come with *real observed
+  frequencies from a real run* (`R6` 13 · `R3` 5 · `DATA` 2 · `R35` 1). That is honest source
+  material for the tree that fabricates nothing — the exact opposite of an invented example.
+- **The soft branches are already tagged as soft** in the same file, which is precisely the
+  hedge-hardening failure §"The tree's own failure mode" warns about. Do not re-decide which
+  rules are soft; take the list.
+
+⚠️ **But do NOT wire the app to the engine.** The engine is an offline script over an exported
+file; S1b stays a wiki-projected read-only surface with no API call. Take the *structure*, not
+a runtime dependency — and if you project the gate list, project it the way `/runner` already
+projects rules (build-time, with a `--check` drift guard), never by importing Python into the app.
+
+⚠️ **And do not surface machine-found setups in the walkthrough.** S1c's output is quarantined
+by construction. If S1b ever displays one, it renders permanently and visibly marked as
+machine-generated — it is a tutorial artifact, never a training record.
 
 **Launch:** `claude --model opus[1m]`, `/effort high`. Design-heavy: this authors a procedure Paul will
 follow every session for months, and a set of diagrams that must be honest about what they depict.
@@ -683,9 +845,13 @@ illustrate them.** Still read-only with respect to the database — S1's constra
 READ FIRST:
 1. The wiki `CLAUDE.md` — code is ground truth, the MANDATORY reconciliation checklist, Rules #3/#4/#6,
    Context Management (tell Paul at >50%). **Paul handles git.**
-2. This tracker: **§S1 as-built**, §Open questions (all answered — the counting basis is canonical and
-   must not be reopened), and the **§S1b scope discipline note above**.
+2. This tracker: **§S1 as-built**, **§S1c as-built**, §Open questions (all answered — the counting basis
+   is canonical and must not be reopened), and the **§S1b scope discipline note above**.
 3. `neurospect-learn/api/docs/evidence/s1/s1-render-walk.md`.
+3b. **`neurospect-learn/api/docs/evidence/s1c/accuracy.md`** — the five defects, the declared-but-
+   unimplemented rules, and the `n = 1` constraint. Read this before writing a single number into UI.
+   Then skim `api/scripts/aura_setup_engine.py`'s declared-constants block for `HARD_GATES` /
+   `SOFT_BRANCHES` — D0's nodes and its soft/hard split are already decided there.
 4. [[concepts/mastery/aura/tradezella-setup]] · [[concepts/mastery/aura/chart-markup]] ·
    [[concepts/mastery/aura/tradezella-rule-mapping]] — the three pages being projected.
 5. `app/src/lib/runner.ts` + `app/src/pages/runner.tsx` — the existing shape to extend, **not** replace.
