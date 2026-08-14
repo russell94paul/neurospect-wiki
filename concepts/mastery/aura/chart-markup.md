@@ -82,6 +82,44 @@ live in your head, not in a script.
 
 ---
 
+## 0b. ⭐ Markup primitives — a drawn object's TIME EXTENT is a claim, so bound it
+
+**Paul, 2026-08-13, on the S1c machine markup:** *"you drew horizontal lines across the whole
+chart, not just in the area where the FVG was… the marking up has to be more refined and clear."*
+
+He is right, and the reason is not cosmetic. **An infinite horizontal line asserts "this level
+applies at all times."** For this model that assertion is usually false — and worse, it
+**contradicts the rules the line is supposed to depict**:
+
+- **R6** says a range is invalidated by a candle **close** beyond its boundary. A range boundary
+  drawn as an infinite line keeps asserting the range *after the close that killed it*.
+- **R7** says follow the current range only until an opposing or same-cycle Sequential SMT forms.
+  Again: a statement about a level **ceasing to apply**, drawn as a line that never ceases.
+- **R12**'s target is the liquidity *inside* a gap — a region with a start and an end, not a price
+  that extends to the edge of history.
+
+So the primitive is part of the meaning. Choose it deliberately:
+
+| What you are marking | Primitive | Time extent |
+|---|---|---|
+| **PD arrays — FVG / iFVG / NWOG / NDOG** (R11) | **Rectangle** | formation bar → mitigation/consumption; if still live, to the current edge only |
+| Liquidity nested inside a gap (R12) | Short bounded segment inside the box | the gap's own extent |
+| Range boundary (R4) | **Ray** from the anchoring pivot | **terminate it at the invalidating close (R6)** — never past it |
+| Discount / EQ / premium (R5) | Fib (0/0.5/1) or shaded box **bounded to the range's span** | the range's life |
+| Swing point (R1/R2) | Short ray from the pivot | until it is swept; then it stops there |
+| Entry / stop / target (R30/R33/R35) | Bounded segments or the position tool | the trade's lifetime, not the whole session |
+
+**Rule of thumb: an infinite `horizontal_line` is almost always the wrong tool here.** Reach for
+a **ray** when a level starts somewhere and is still live, a **bounded segment** when it started
+*and* ended, and a **rectangle** for anything that is a zone rather than a price. Terminating a
+drawing where the rule says the level died is what makes a chart re-readable a week later — and
+it is the visual form of R6.
+
+⚠️ **This applies to machine markup too.** S1c's engine already computes every boundary it needs
+(gap `formed_time` / `inverted_time`, the range's `move_to`, and R6's `broken_by` timestamp), so
+the data for bounded shapes was present and simply not used. Any future drawing pass emits
+rectangles and rays with computed start/end times — not `horizontal_line`.
+
 ## 1. The markup order — every replayed day, always this sequence
 
 The order is the point. It mirrors the top-down cascade (R27), so the drawing you make next is always

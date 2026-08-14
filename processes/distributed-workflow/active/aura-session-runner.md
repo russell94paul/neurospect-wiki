@@ -819,6 +819,27 @@ things the S1b walkthrough will be tempted to render as clean UI:
 And the standing constraint: **n = 1**. S1c produced one setup over 22 days. The
 walkthrough must not imply a frequency, a hit rate, or an expectancy — none exists.
 
+#### ⭐ PAUL'S FEEDBACK ON THE MARKUP (2026-08-13) — this is S1b's problem, not S1c's
+
+S1c drew its computed levels as **infinite horizontal lines**, and Paul rejected the markup
+quality outright: *"you drew horizontal lines across the whole chart, not just in the area
+where the FVG was… if we are getting you to run a backtest session and mark up levels and PD
+Arrays for trades the marking up has to be more refined and clear."*
+
+**He is right, and the reason is structural.** An infinite line asserts *"this level applies at
+all times"* — which contradicts **R6** (a range dies at a close beyond it) and **R7** (follow the
+current range only until the next Sequential SMT). The primitive was making a claim the rules
+explicitly deny. Now written up canonically as
+[[concepts/mastery/aura/chart-markup]] **§0b — Markup primitives**, with a
+what-to-draw-with table: **rectangles** for PD arrays bounded formation→mitigation, **rays**
+for live levels from their anchor, **bounded segments** for levels that have already ended,
+and range boundaries **terminated at the invalidating close**.
+
+**M1–M12 in the walkthrough must teach the primitive alongside the level.** "Box every FVG" is
+not enough guidance to produce a re-readable chart; *"box it from the bar that formed it to the
+bar that mitigated it"* is. This is the difference between a chart Paul can read back in a week
+and a wall of lines — and it is exactly the kind of thing a walkthrough exists to make automatic.
+
 #### ⭐ D0 gets a gift from S1c — use it instead of re-deriving the tree
 
 **The engine already enumerates D0's branches, in code, declared rather than inferred.**
