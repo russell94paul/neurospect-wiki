@@ -1,9 +1,9 @@
 ---
-tags: [process, operations, neurospect, deployment, render, cloudflare, r2, neurospect-learn, docker, local-stack]
-aliases: [Learn Deployment, neurospect-learn Deploy, B3 Runbook, Local Stack, Daily Driver]
+tags: [process, operations, neurospect, deployment, render, cloudflare, r2, neurospect-learn, docker, local-stack, tunnel, remote-access]
+aliases: [Learn Deployment, neurospect-learn Deploy, B3 Runbook, Local Stack, Daily Driver, Tunnel, Remote Access]
 sources: []
 created: 2026-08-11
-updated: 2026-08-12
+updated: 2026-08-20
 ---
 
 # neurospect-learn — Deployment Runbook
@@ -28,6 +28,13 @@ that one disagree about `neurospect-learn`, **this page wins**; where they disag
 > `neurospect-learn` runs instead as a **one-command local stack** — see §Local stack, which is what is
 > actually in use. Everything from §Topology down remains written, config-proven and **unprovisioned**;
 > it is the plan for the day there is someone to show it to, and nothing in it has ever been deployed.
+>
+> **AMENDED 2026-08-20 — reach was bought without buying hosting.** The second of those two things
+> (access away from the desk) is now had: a **Cloudflare quick tunnel** in front of the same local
+> stack, behind a password. See §Remote access. This changes nothing below §Topology — still
+> unprovisioned, still never deployed — and it deliberately keeps the single local dataset rather than
+> splitting it across a hosted database. If someone ever needs to be *shown* the app, the hosted path
+> is still the answer; a tunnel is not a deployment.
 
 ## Local stack — the daily driver (and what is actually in use)
 
@@ -89,6 +96,102 @@ talk to the **same** database on :5433 — one dataset, which is the point.
 | `DATABASE_URL_SYNC` | `""` (empty) | `config.py` derives the psycopg2 URL Alembic needs from `DATABASE_URL`; a second copy could only drift. |
 | `AI_GRADING_ENABLED` | `false` | No Anthropic spend from the daily driver; E4's second reader is therefore not exercised locally. |
 | Migrations | on every `api` start | Idempotent; a failure fails the container loudly instead of serving against a stale schema. |
+
+## Remote access — the local stack, reachable (2026-08-20)
+
+`PROVEN 2026-08-20`, evidence in the repo at `api/docs/evidence/tunnel/` (5 labelled screenshots + a
+gate matrix measured through the public Cloudflare edge), commit `6c586d8`.
+
+This reverses the 2026-08-12 decision **only for reach, not for hosting**. Everything below §Topology
+is still unprovisioned; the app still runs from the compose stack above against the local Postgres,
+and a **Cloudflare quick tunnel** puts that stack on a public hostname. It buys the second of the two
+things hosting was parked for — access away from the desk — without buying any of the cost, the
+migration, or the split dataset.
+
+```
+cloudflared ──▶ 127.0.0.1:5175 ──▶ app container :8080  (Basic auth)   ─┐
+                                                                        ├─▶ same nginx, same bundle
+                     localhost:5174 ──▶ app container :80  (no auth)   ─┘
+                                              │
+                                              └── /_api/ ──▶ api container :8000
+```
+
+Start it with `cloudflared tunnel --url http://localhost:5175`. **No Cloudflare login and no zone are
+required** for a quick tunnel — and none is configured on this machine, which is why the hostname is
+random `*.trycloudflare.com` and **changes on every restart**.
+
+### Why it is a second listener, not a change to the daily driver
+
+The desk stack keeps :5174 exactly as it was — same port, no password prompt, nothing to relearn.
+Remote access is a second `server {}` block on the same nginx, published to **`127.0.0.1:5175`** so
+nothing but cloudflared (which runs on the host) can reach the password-gated port at all. Source IP
+cannot separate the two — cloudflared's traffic arrives from the same Docker gateway address as a
+browser on the host — so the split has to be **by port**, never by `allow`/`deny`.
+
+### The API URL became relative, and that is the load-bearing part
+
+`VITE_API_URL: /_api`, reverse-proxied same-origin by nginx to the `api` container — it is no longer
+`http://localhost:8001`. A quick tunnel hostname changes on every restart, so an absolute URL would
+have to be **rebaked into the bundle AND added to `CORS_ORIGINS`** each time. One build now serves
+localhost, the LAN and any tunnel hostname, and CORS leaves the picture entirely.
+
+The one rule this imposes on the codebase: every `api.get(...)` call site must pass a **prefix-less**
+input (`'api/journal'`, `'auth/me'`) so it *extends* ky's `baseUrl`. A leading slash would escape the
+`/_api` prefix and resolve against the origin root. All 41 call sites comply today (`MEASURED`).
+
+### The two traps it sprang
+
+- **`if` resets nginx's positional captures.** `location ~ ^/_api/(.*)$` with `proxy_pass … /$1` sent
+  **every** request upstream as `/`, because a regex evaluated by an `if` elsewhere in the same
+  location clobbers `$1..$9` — *including when it does not match*. FastAPI answered a perfectly
+  plausible `404 {"detail":"Not Found"}`, which reads as a wrong path rather than a dead proxy. Use a
+  **named** capture, `(?<api_path>.*)`, which is immune.
+- **Basic auth cannot simply cover the API.** Basic and Bearer share the `Authorization` header, and a
+  browser attaches its cached Basic credential **only** to requests that do not already set that
+  header. Every API call the SPA makes sets it (`Bearer <jwt>`) — so each one would arrive without the
+  Basic credential, 401, be read by the SPA as an expired token, and bounce to `/login`, which cannot
+  mint a new one either. **A login loop on every request.**
+
+### The gate, and exactly what it concedes
+
+`auth_basic` accepts a **variable**, so the realm is switched off for a request that already presents
+a Bearer, and that request is judged by FastAPI's JWT instead. Everything **without** a Bearer — the
+page load, the assets, `POST /auth/debug/token`, the Discord exchange, i.e. every route by which an
+account could be minted — still demands the password. The credential lives in a **bind-mounted**
+`.tunnel-htpasswd` (gitignored), never an image layer, because a secret baked into a layer outlives
+every attempt to rotate it.
+
+⚠ **The password is the entire security boundary**, because this stack runs `DEBUG=true` — which is
+correct on localhost and is exactly what makes a public hostname dangerous: debug login is alive and
+the allowlist admits everyone. What the design concedes, stated plainly: anyone sending
+`Authorization: Bearer garbage` reaches FastAPI, is refused there, and can read `/openapi.json`. What
+it does not concede is a **session** — minting needs the password, and `JWT_SECRET` is random.
+
+### Verification battery for this path
+
+Run it against the **public hostname**, never localhost — the whole point is the edge:
+
+| Request | Must be |
+|---|---|
+| `GET /` no credentials | 401 |
+| `GET /` with credentials | 200 |
+| `GET /journal` with credentials | 200 (SPA deep route, not a 404) |
+| `GET /_api/health` with credentials | 200 `{"status":"ok"}` |
+| `POST /_api/auth/debug/token` **no credentials** | **401** — the one that matters |
+| `GET /_api/api/tracks` with a valid Bearer | 200 |
+| `GET /_api/api/tracks` with `Bearer garbage` | 401 |
+| `:5174` index, `/_api/health`, authed call | 200 — the desk must be unaffected |
+
+Then the **rendered** surface, because a 200 on `index.html` says nothing about whether the app paints:
+`node app/scripts/tunnel-render-check.mjs <url> <user> <pass>` drives headless Chromium through the
+public hostname (Basic auth → debug login → Path / Journal / Gate), fails on any console error, failed
+request or 4xx/5xx API call, and writes the screenshots. An `ERR_ABORTED` on a request cancelled by
+navigating away is noise, not a failure — confirm against the screenshot rather than the log line.
+
+### What this path still does not test
+
+The **fail-closed allowlist**, exactly as §Local stack already says: it is a property of `DEBUG=false`
+and this stack does not run that. Reaching the app from the internet has not changed that.
 
 ## Topology
 
