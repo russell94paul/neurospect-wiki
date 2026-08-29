@@ -3,7 +3,7 @@ tags: [distributed-workflow, active, neurospect, neurospect-learn, aura, backtes
 aliases: [Session Runner, Aura Runner, Backtest Runner, The Runner]
 sources: []
 created: 2026-08-12
-updated: 2026-08-12
+updated: 2026-08-14
 ---
 
 # Aura Session Runner — Workstream Tracker
@@ -28,13 +28,87 @@ another dashboard to read.
 > days early and traded on the session that produced it. Five defects were found and fixed in all;
 > the setup count went **17 → 4 → 1**. ⚠️ **n = 1 supports no hit rate, win rate or expectancy, and
 > none may be quoted from this run.**
-> **Phase S1d ⏭ ACTIVE** (promoted ahead of S1b, Paul 2026-08-13): mark up one full replayed week
-> (`2025-05-26 → 05-30`, NY session) as worked examples, hardened enough to take an entry from,
-> with **realised** outcomes. ⚠️ **Paul REJECTED S1c's markup quality** — infinite horizontal lines
-> instead of shapes bounded to where the level applied, which contradicts R6/R7; fixed canonically
-> in [[concepts/mastery/aura/chart-markup]] §0b. ⛔ **The week is SELECTED, not sampled** (it
-> contains the one known setup), so it carries **zero** information about frequency — and that must
-> be declared on the artifact.
+> **Phase S1d ✅ BUILT 2026-08-14** (see §S1d as-built). The declared week `2025-05-26 → 05-30`
+> is marked up: **1 entry · 4 stand-asides · 33 bounded shapes** on session `831607`, zero
+> `horizontal_line`, so Paul's markup rejection is addressed at the primitive level. Weekly cycle,
+> NWOG/NDOG, R21, R22, R13 and outcome simulation are all implemented; R8 is measured and
+> deliberately left UNRESOLVED. **S1c's span reproduces with all 22 day-verdicts identical**, so
+> every change is additive.
+> ⛔ **The one entry has NO realised outcome.** It ran 1.20R in favour / 0.41R against and then the
+> bars ran out — the replay is parked at 2025-05-30 16:59 ET (confirmed at 1m on all three futures
+> legs) and advancing it is forbidden. `UNRESOLVED-AT-DATA-EDGE` is a measurement gap, not a
+> breakeven. **Deliverable 2's "realised outcomes" is therefore only partly met, and cannot be met
+> from this session's data** — see §S1d as-built.
+> ⭐ **Six more defects were found, all producing confident-looking output** — including 15
+> rectangles whose end preceded their start, and the chart **silently clamping 13 of 33 shapes to
+> the loaded data window** while every success signal passed.
+> **⭐⭐ 2026-08-15 (S1e-b) — THE DETECTORS WERE WRONG, and Paul's Pine indicators proved it.**
+> Paul supplied three `QT[✦]` indicators (saved at `s1e/reference/`) — an independent
+> implementation of the same model. Four corrections, all confirmed against the `concepts/aura/*`
+> pages and not just the indicator:
+> **(1) There are TWO SMT objects** — swing-point SMT (3-candle pivot → qualifies *range anchors*)
+> and cycle SMT (segment-extreme divergence → sets *bias*). We conflated them; the old engine built
+> only the first and used it for the second's job.
+> **(2) The cycles are QUARTERLY-THEORY SEGMENTS, not timeframes** — "Daily cycle" = the four 6h
+> quarters of the day (18:00 NY start); "Weekly cycle" = the days within the week. Rule 22 says so
+> in as many words. This is why S1e found *no weekly SMT on 91%* of entries.
+> **(3) Cycle labels are off by one rung** (aura-07's naming convention).
+> **(4) The TARGET was the wrong object** — TP is the HTF range's **equilibrium**, then **liquidity
+> WITHIN a gap**, *"not the gap boundary"*; the engine used the range extreme, which is what
+> produced the `0.0R PLANNED` trades. Entry zone is the **LTF** range, not the HTF one.
+> ⭐ **R17 measured:** Pearson vs NQ — ES **+0.93** · YM **+0.83** · **CHFUSD +0.04**. At r≈0 a
+> divergence carries no information, yet the indicator **ORs** the legs so it can only add signal;
+> CHFUSD produced **392 of 598** 90m divergences. **Rule 17 mandates the leg, rule 15 forbids it** —
+> unresolved, and R17 is itself a *(flagged)* rule.
+> ⭐ **Paul re-scoped:** *"the main goal is that you get the entry levels correct rather than the
+> risk management and trade management"* (he takes half off at nearest IRL, rest to final TP, SL to
+> BE). **The acceptance test is now LEVEL CORRECTNESS against the chart, not expectancy** — the
+> 128-trade tally and the 384-cell sweep are **historical, not results**.
+> **Built:** `aura_qt_smt.py` · `aura_pd_arrays.py` · `s1e/object-inventory.md` (exhaustive object
+> list + coverage matrix). **Gating item: Paul's TradingView SSMT validation.**
+>
+> **Phase S1b ✅ BUILT 2026-08-29 — as a standalone Artifact, NOT in the app** (Paul chose
+> "Artifact first, then port"). Six sections, spine is a **19-step guided run** where each step names
+> the primitive to draw with and the chart builds up from recorded S1d geometry. Every step declares
+> **DRAWN / NOT-RECORDED / UNRESOLVED / ACTION**, so a step the engine never instrumented cannot be
+> mistaken for a trivial one; **stand aside is a first-class branch**, not a dead end.
+> ⭐⭐ **Measured coverage gap — 47% of the Aura corpus (19,427 of 41,568 words, 11 pages) is never
+> drawn on**, and it is one coherent half: risk management (the corpus's largest page),
+> mind/emotional control, the journaling system, and **`exercises.md` — the drill library S1 exists
+> to deliver.** 45/54 rules cited; R38/R42/R44/R46 (the risk spine) and R15 uncited; R23/R37
+> correctly absent. **The app is untouched and nothing is committed.**
+> **Phase S1e ⏳ PART-RUN 2026-08-15 — see §Boot Prompt (S1e-b), now ⏸ GATED on Paul’s
+> TradingView SSMT check.** The span
+> `2023-01-03 → 2025-04-30` was declared before any outcome was computed and the engine ran it:
+> **128 entries · win 40.6% · expectancy +0.038R · +4.84R total — but −7.57R without one trade**,
+> and 128 entries are only **32 independent episodes**.
+> ⛔ **That is NOT a verdict on Aura.** The engine **reports** the model's quality rules and
+> **gates on none** of them: **R17 violated on 100%** of entries, **R18 91%**, **R30 90%**,
+> **R30/R32 56%**, **R45 38%**. Enforcing them collapses the sample to **n = 0**.
+> **The strategy in `rules.md` has never actually been backtested.**
+> ⭐⭐ **Root cause of R17's 100%: CHFUSD shares 0 of NQ's 3,794 daily timestamps** (ES 3,794/3,794,
+> YM 3,792/3,794), so the exact-timestamp join makes the Aura Asset `NOT-VISIBLE` even when
+> admitted. **Admitting the 4th leg is necessary but not sufficient** — the 384-cell sweep's
+> Aura-Asset axis was therefore **inert**, and a session-date join (written, works, never run over
+> the full span) is the first thing S1e-b must sweep.
+> ⭐ **The 3-phase screenshot blocker was a WRONG DIAGNOSIS, now solved:** the page was `hidden`
+> (window minimised/occluded), so Chrome throttled it and the chart never painted — canvases at the
+> default 300×150 with zero pixels while 391 bars were loaded. CDP was never broken; a hidden page
+> returns a **stale frame with no error**.
+> **Phase S1e (original) ✅ SUPERSEDED** (Paul, 2026-08-14, promoted ahead of S1b): *"The review has to be a number
+> of valid entries and then review the number of wins and losses… I want to review a backtest session
+> and see what trades you take to see if you are reading the chart and concepts correctly."* S1d's
+> single unscoreable entry cannot answer that. ⚠️ **Wins/losses need forward bars, so S1e's span must
+> end well before the replay edge**, and at ~1 setup per 22 weekdays **a 10-entry tally needs ~10–11
+> months of intraday history** — the measured 5m history bound is S1e's STEP 0 and decides what is
+> deliverable. ⚠️ **A win/loss tally measures THE ENGINE's gates as much as it measures Aura** (R6
+> rejected 13/21 in S1c, 4/5 in S1d), so the rejection census ships beside the tally, not instead of
+> Paul's stand-aside review.
+> ⭐⭐ **MARKUP QUALITY is "paramount" (Paul) and comes FIRST** — see §MARKUP QUALITY. Accuracy is
+> proven by coordinate readback; **aesthetic quality is UNVERIFIED because no session has ever seen
+> the rendered markup** (CDP screenshots time out on this page). The likely cause of poor appearance
+> is that S1d's style overrides used guessed, shape-specific keys, which are **silently ignored when
+> wrong** — the same failure class as the coordinate clamp.
 
 ## Goal (Paul, 2026-08-12 — in his framing)
 
@@ -262,7 +336,7 @@ error — and it surfaced two, the overstated claim and the missing noise floor.
 **This is, in effect, building the Sequential-SMT indicator R23 describes and the S1 probe proved
 Tradezella cannot provide.** That is the gap; that is the value.
 
-### S1d — A full replayed WEEK, marked up as worked examples. ⏭ **ACTIVE** *(promoted ahead of S1b, Paul 2026-08-13)*
+### S1d — A full replayed WEEK, marked up as worked examples. ✅ **BUILT 2026-08-14** (see §S1d as-built)
 
 Paul, after reviewing S1c's output and rejecting its markup quality:
 
@@ -304,7 +378,34 @@ marked up** — swing points, SMT qualification, ranges, PD arrays, discount/pre
 where they materialise and **named stand-aside reasons where they do not** (R51). A real session is
 mostly markup and sitting on your hands. An artifact showing only the trade would teach the opposite.
 
-### S1b — The walkthrough: guided setup + markup, with diagrams. *(after S1d)*
+### S1e — N valid entries with WINS AND LOSSES, plus premium markup. ⏭ **ACTIVE** *(Paul, 2026-08-14)*
+
+Paul, after S1d produced one unscoreable entry:
+
+> *"The review has to be a number of valid entries and then review the number of wins and losses.
+> But I want to review a backtest session and see what trades you take to see if you are reading the
+> chart and concepts correctly."*
+>
+> *"The chart mark ups being high quality and accurate is paramount and we should try research a way
+> to get them at premium aesthetic quality and accuracy."*
+
+**Two hard constraints, both arithmetic rather than preference.** Outcomes need bars *after* each
+entry, so the span must stop well short of the replay edge — S1d's entry was unresolvable *only*
+because it sat on it. And at S1c's observed **1 setup per 22 weekdays**, ~10 entries needs **~10–11
+months** of intraday history, so the measured 5m history bound decides whether this phase yields 10
+entries or 2. That bound is STEP 0 and gets reported to Paul before any span is fixed.
+
+**The confound that must ship with the tally:** R6 rejected 13 of 21 days in S1c and 4 of 5 in S1d.
+If R6 is miscalibrated, the entries in the tally are survivors of an unvalidated filter and the
+trades it *should* have taken are invisible. So `N entries` publishes alongside `M stand-asides by
+failing rule` — a win rate without its rejection census is a number about a filter, and a win rate
+without its R:R is meaningless outright (R44).
+
+**Markup quality leads.** Accuracy is proven; **appearance is unverified** — no session has seen the
+rendered markup because CDP screenshots time out. Drawing N entries' worth of shapes before the
+appearance is checked would multiply an unverified result. See §MARKUP QUALITY.
+
+### S1b — The walkthrough: guided setup + markup, with diagrams. *(after S1e)*
 
 Paul's ask, 2026-08-13: *"a step by step process / guide to have open alongside tradezella… a
 walkthrough guide on how to set everything up and mark everything out — should be done in detail"*,
@@ -580,7 +681,310 @@ ran. That is the cheap check and it found three of five.
    that is not on NQ's 0.25 tick grid** (`21,144.625`), so the chart snapped the drawing to
    `21,144.75` — the only level not exactly where the arithmetic put it.
 
+## S1d as-built (2026-08-14) — code is now ground truth
+
+One new script, one modified script, one evidence folder. **No app code, no migration, no
+endpoint, no table, no backend module.** The evidence layer and `app/` are untouched.
+
+- **`api/scripts/aura_setup_engine.py`** — hardened to engine `S1d.1`. S1c's version is in
+  git history; `docs/evidence/s1c/` remains the frozen record of that run.
+- **`api/scripts/aura_bar_receiver.py`** — NEW. The localhost receiver S1c improvised, now a
+  versioned script. Its `GET /whoami` returns a **signature string** and the browser side
+  refuses to POST without it — a probe that only proves *something* is listening is not a
+  liveness check (the `:8765` port-collision lesson, encoded).
+- **`api/docs/evidence/s1d/`** — `week-summary.md`, `accuracy.md` (supersedes S1c's),
+  `chart-shapes-drawn.md`, `chart-shapes-spec.json`, `computed-setups.md` + `.json`, and
+  `bars/` (native weekly export + the 1m week).
+
+### The week: 1 entry · 4 stand-asides
+
+⛔ **SELECTED, not sampled** — and the report now refuses to hide that: `--selection-basis` is
+a CLI input, and omitting it prints a visible warning where the basis should be.
+
+**Four of the five stand-asides are the SAME finding restated:** every one of 26–29 May
+rejects at **R6** against the same dead range (`19,103.75–20,276.75`), killed 2025-05-12 by a
+close above `20,948.75`. The week is thinner in independent lessons than "4 stand-asides"
+suggests, and **Paul's judgement on whether those R6 stand-asides are right reads is the only
+calibration instrument that exists.**
+
+**Memorial Day (26 May) kept, as planned** — 48 five-minute RTH bars vs 84 on a normal day.
+The data guard passed, so it was evaluated as an ordinary session and rejected at R6 like the
+rest: **the holiday made no difference to the verdict**, because the range was already dead.
+
+### ⛔ Deliverable 2 is only PARTLY met, and cannot be met from this data
+
+The boot prompt asked for **realised** outcomes. Outcome simulation is built and works — but
+the one entry in the week resolves to **`UNRESOLVED-AT-DATA-EDGE`**: 1.20R in favour, 0.41R
+against, then the bars stop. The replay edge is **2025-05-30 16:59 ET**, confirmed at
+1-minute resolution on all three futures legs, and advancing the replay is forbidden by this
+phase. Measured before any engine work, not discovered at the end.
+
+**Any expectancy work needs bars past that edge**, which needs either a new session or Paul's
+own replay. That is his call, not the engine's. The engine keeps four distinct verdicts
+(`TARGET` / `STOP` / `UNRESOLVED-AT-RESOLUTION` / `UNRESOLVED-AT-DATA-EDGE`) and refuses to
+collapse an unresolved trade into a breakeven.
+
+### ⭐ Six defects found, every one producing confident-looking output
+
+| # | Defect | Effect | Caught by |
+|---|---|---|---|
+| 1 | **`attach_mitigation` anchored on FVG formation, not inversion** | for an iFVG the inverting move *is* the search's first hit, so **15 rectangles had `t2 < t1`** — geometrically impossible | printing the emitted coordinates and reading them |
+| 2 | **⭐ The chart silently clamps shape coords to the LOADED DATA WINDOW** | **13 of 33 shapes wrong**; 7 collapsed to zero width. `createMultipointShape` threw nothing, the promise resolved, `getAllShapes()` returned the right **count** | per-shape comparison of requested vs read-back coordinates |
+| 3 | **My own session-boundary measurement mis-classified CHFUSD's WEEKEND break as its daily boundary** | 75% "support" on 3 observations; every CHFUSD NDOG would sit at the wrong boundary | separating daily/weekly by **calendar days skipped**, not gap length |
+| 4 | **R8 fired on every single setup** | the check ran on the driving SMT pivot — and an SMT is *by construction* a level the other legs did not take, so "not swept on all legs" was the signal's definition, not a warning. A check that can never pass trains you to skip UNRESOLVED lines | noticing it fired 16/22 days |
+| 5 | **R22 double-counted the same price** as an independent second target | on 05-30 the weekly-segment extreme **is** R35's target (`20,727.00`) | the two numbers matching to the cent |
+| 6 | **The outcome walk misreported its own instrument** | claimed 5m while 1m was loaded and already walked — each coarser attempt overwrote the finer one | the `res` field saying 5 with 1m data present |
+
+**And S1c had no FVG size floor at all**, so a **one-tick** gap was an entry candidate on
+equal footing with a six-tick one — the same defect class as phantom SMT. A declared 4-tick
+floor was added, its exclusions are counted per day, and it is **proved not to change S1c's
+result**.
+
+⭐ **Defect 2 is the transferable one.** S1c taught that `createShape`'s *return value* proves
+nothing. S1d adds that **enumeration by count proves nothing either** — and that one chart
+resolution cannot hold both a month-long range and a 5-minute box, which is R27's cascade
+reappearing in the drawing layer. Written up canonically in
+[[concepts/mastery/aura/chart-markup]] **§0c**.
+
+### Regression evidence (the change is additive)
+
+Re-running **S1c's exact span** with the hardened engine gives **all 22 day-verdicts
+identical**, the same setup on the same day with the same bias, and the **same entry gap**.
+Every difference is an addition. `aura_verify_record.py` still passes all 12 checks including
+the no-lookahead assertion.
+
+### Instruments proved live (a zero from an unproven instrument is not a measurement)
+
+- **Weekly SMT detector: 13 events** over full history (6 high / 7 low). So "no weekly SMT in
+  the 12-week lookback" for this week is a genuine **ZERO**. ⚠️ The nearest prior weekly SMT
+  (2025-01-20, knowable 02-17) falls **~14 weeks out — just outside** the declared lookback,
+  a real sensitivity to a declared constant.
+- **Weekly alignment positive control:** NQ/ES/YM share **every** weekly timestamp; CHFUSD
+  shares **none** — the daily result reproduced at a new resolution.
+- **Session boundaries measured:** futures 17:00→18:00 ET; **CHFUSD daily = NOT-MEASURABLE**
+  (no daily halt), which vindicates S1c's refusal to guess it.
+- **Outcome walker:** 1m and 5m give identical MFE/MAE, as they must if 5m aggregates 1m.
+
+### ⚠️ FLAGGED — carry these into S1b
+
+1. **Weekly is REPORTED, not gated** (`WEEKLY_IS_A_GATE = False`). R18 is satisfied by any two
+   adjacent cycles. Whether weekly confirmation should become a gate is a **calibration
+   question only Paul's review answers** — the engine declines to decide it.
+2. **R8 is a rulebook CONTRADICTION, not just unimplemented.** Rule 8's first sentence says
+   anchor extremes only on **SMT-qualified** swings (which diverge); its second says prefer the
+   extreme swept on **all** triad assets (which does not). No single swing satisfies both.
+   S1b must not render this as a clean branch.
+3. **The entry window can hide an earlier retest.** On 05-30 the traded iFVG had already been
+   re-entered at 20:40 the previous evening, outside 08:00–16:00, so the entry taken is a
+   **later** touch. R30 does not say whether a re-tested iFVG is still valid.
+4. **A strict 09:30 filter would delete the only entry in this week** — R31 must stay soft.
+5. **33 `[S1d]`-marked shapes are LEFT ON the NQ pane** for Paul's review, with a tested
+   removal snippet in `chart-shapes-drawn.md` (removal verified 33 → 0 in-session). **They
+   must be removed before he marks the week by hand**, or a rep becomes tracing.
+6. **Chart left on 5m**, not the 1m it was found at. Paul confirmed in-session that changing
+   timeframes is fine. Replay position untouched.
+7. **Screenshots time out on this page** (30 s, "renderer may be frozen") while the DOM and
+   chart API answer instantly. Not retried — coordinate readback is the stronger evidence, and
+   an image could not have shown that a box's end preceded its start.
+
 ## Session Log
+
+### 2026-08-29 — S1b BUILT as a standalone Artifact: a guided run, and a measured coverage gap
+
+- **approach:** Paul asked for *"an interactive checklist guide for aura strategy, visuals would be
+  great"*, then *"more detailed examples with marked levels and entries"*, then *"can the walkthrough
+  be step by step so the user can mark"* (invoking `/living-systems-ui`). Offered app-vs-Artifact as
+  an explicit choice; **he chose Artifact first, then port**, so `neurospect-learn/app` is
+  **untouched** — no route, no component, no migration, no Playwright.
+- **decided:** built as ONE published page rather than a React phase, so the design could be judged
+  before a session is spent wiring it. `https://claude.ai/code/artifact/2da34972-c89e-4a23-b064-a02e1df302b9`
+- **did:** six sections — **§01 a 19-step guided run** (`SET · PRE · M1–M12 · D0 · SIZE · MAN · EXIT ·
+  REV`) where each step names the primitive to draw with and the chart builds up progressively from
+  the recorded S1d geometry, switching HTF/LTF as the cascade demands; §02 the 8 checklist phases,
+  tickable; §03 the live D0 tree taken from the engine's own `HARD_GATES` order; §04 the §0b
+  primitive argument shown as before/after on real bars; §05 four marked-up worked examples plus four
+  corpus trades; §06 the five-tier card. New scripts: `api/scripts/aura_figure_pack.py`,
+  `api/scripts/aura_guided_pack.py`. Evidence + build scripts + 4 verification scripts + 15 render
+  artifacts in `api/docs/evidence/s1b/`.
+- **⭐ the honesty grammar is the load-bearing part:** every step declares whether the engine
+  produced an artifact — **DRAWN · NOT-RECORDED · UNRESOLVED · ACTION** — so a blank chart at M1 reads
+  as *"only the qualified swing was ever recorded"* and M4 reads as *"R8 contradicts itself and the
+  engine refused to pick"*, rather than as a trivial step. All four states are legended on the page.
+- **⭐ the failure path is first-class:** D0 refuses to advance until you say how the gates ended.
+  Stand aside strikes `SIZE`/`MAN`/`EXIT` out of the rail as not-applicable and goes to the review,
+  citing R51. Four of five days in the recorded week end there; a walkthrough showing only the happy
+  path would misrepresent the model.
+- **⛔ flagged — the levels come from detectors later found WRONG.** S1d predates the 2026-08-15
+  finding (two SMT objects conflated; cycles are quarterly-theory segments; the target was the wrong
+  object). Every machine example is labelled *"Machine-generated · your review is the instrument"*
+  and the page never presents them as correct play. **Paul's calibration on the four R6 stand-asides
+  is still the only instrument that can settle whether R6 is too strict.**
+- **⭐⭐ MEASURED COVERAGE GAP — the answer to Paul's "are capturing all concepts deeply":** NO.
+  **45/54 rules** are cited somewhere, but **19,427 of 41,568 corpus words (47%) across 11 pages are
+  never drawn on**, and it is one coherent half — *the chart-reading half is deep, the
+  survive-and-improve half is a list of tick-boxes.* Untouched: `risk-management.md` (3,411w — the
+  **largest page in the corpus**), `mind-and-emotional-control.md` (2,824w),
+  `journaling-system.md` (2,000w), `exercises.md` (1,571w), plus triads / aura-asset /
+  discipline-systems / psychology-foundations / time-sum / learning-path / tracker.
+  Uncited rules **R38 R42 R44 R46** are the risk spine; **R15** governs the very Pearson numbers the
+  page already prints without naming it. **R23 and R37 are correctly absent** (R23 cannot exist in
+  Tradezella — the boundary probe proved it; R37 is flagged and de-emphasised in the corpus itself).
+  ⭐ **The sharpest gap is `exercises.md`: S1 exists for "repetition until the protocol is automatic"
+  and the drill library that builds each section to automatic is not in the product at all.**
+- **verified — at the rendered layer, over CDP** (`verify.mjs`, `verify-run.mjs`,
+  `verify-branch.mjs`, `verify-leaves.mjs` in `s1b/`): all 19 steps walked, chart reveal tracks the
+  step and never runs ahead, both branch paths, persistence + reset, all six tree leaves reachable,
+  **tree highlights 13 rules and auto-ticks 0** (the invariant holds), no horizontal overflow at 1280
+  or 400, no console errors or warnings, reduced motion lands on end state, light + dark both render.
+- **⛔ flagged — two defects found in our own instruments, both of the S1c/S1d family:**
+  **(1)** `chrome --headless --window-size=400 --screenshot` showed text clipped and was read as a CSS
+  grid-overflow bug; measuring over CDP gave `scrollWidth 385` against a 400px viewport — **there was
+  never any overflow.** `--window-size` does not set the layout viewport. A `min-width:0` "fix" was
+  applied that fixed nothing. **Device metrics must come from `Emulation.setDeviceMetricsOverride`
+  before any narrow-viewport claim is believed.**
+  **(2)** `chip()` falls back to a bare string when a rule is not shipped, so **R14 rendered as plain
+  text with no error anywhere** — the subset shipped 41 of 54. All 54 now ship and a check asserts
+  every declared rule on every step renders as a real chip.
+- **⛔ flagged — the Chrome extension is not connected**, so nothing was seen in Paul's own browser.
+  CDP is the stronger *measuring* instrument but it is not his environment.
+- **⛔ S1e-b was NOT advanced.** It is now ⏸ GATED (previously the active lane) on Paul's TradingView SSMT
+  validation. This session ran S1b — which the tracker had as ⏸ NEXT — because S1e-b is blocked on
+  him and he asked for this directly. **The order was changed by his request, not by drift.**
+- **next:** Paul reviews the page. Then either (a) close the coverage gap — risk + psychology +
+  the drill library — or (b) port §01 into `/runner` as S1b proper, or (c) run the TradingView check
+  and return to S1e-b. See §Boot Prompt (S1b-b).
+
+### 2026-08-15 — S1e-b: the DETECTORS were wrong, and Paul's Pine indicators proved it
+
+- **approach:** ran STEP 0's regression first (green), then Paul supplied three **Pine
+  indicators** (`QT[✦]Ultimate++` ×2, `QT[✦]Pro`) — an *independent implementation* of the same
+  model. Read them against `rules.md` and the `concepts/aura/*` pages rather than against memory.
+  All three are saved verbatim at `neurospect-learn/api/docs/evidence/s1e/reference/`.
+- **⭐⭐ THE HEADLINE — there are TWO SMT objects and we conflated them.**
+  **Swing-point SMT** (3-candle pivot, qualifies *range anchors*, aura-06) and **cycle
+  (Sequential) SMT** (segment-extreme divergence, sets *bias*, aura-07/12) are different
+  objects doing different jobs. `aura_setup_engine.py` built only the first and then used it for
+  the second's job. The new `aura_qt_smt.py` builds only the second. **The model needs both.**
+- **⭐ THE CYCLES ARE QUARTERLY-THEORY SEGMENTS, NOT TIMEFRAMES.** "Daily cycle" = the four
+  **6-hour quarters of the day** (day starts 18:00 NY); "Weekly cycle" = the **days within the
+  week**. Confirmed by the corpus, not just the indicator — rule 22: *"between quarters within a
+  week, between days within a session, between hours."* This is why S1e reported **no weekly SMT
+  on 91%** of entries: we hunted pivots on weekly BARS over a 12-week lookback.
+- **⭐ Cycle labels are off by one rung.** aura-07: *"mark swing points on the weekly time frame …
+  what you're looking at is **monthly** cycle SMT."* Independent of the segment fix.
+- **⭐ SMT lifecycle + nesting were both wrong.** An SSMT stays **active until price takes the
+  diverged extreme** (R23), and "Sequential" is **activity OVERLAP of ≥2 cycles**, not
+  co-formation. Implemented in `aura_qt_smt.py`.
+- **⭐ R17 measured, and it fails R15's premise.** Pearson on daily returns vs NQ:
+  **ES +0.9291 · YM +0.8319 · CHFUSD +0.0406** (n=2,931, session-date join). At r≈0 agreement is
+  not expected, so a divergence carries no information — and the indicator **ORs** the legs
+  (`array.set(X_SSMT,6,true)` from both the tertiary AND the quad), so an uncorrelated leg can
+  only ADD signals. CHFUSD produced **392 of 598** 90m divergences; dropping it roughly **halves**
+  every Sequential count. ⛔ Rule 17 mandates the leg, rule 15 forbids it — a real, unresolved
+  contradiction, and R17 is itself a *(flagged)* rule.
+- **⭐ The TARGET was the wrong object.** `gaps.md`/aura-12: TP is **equilibrium of the HTF range**,
+  then **liquidity WITHIN a gap** in discount/premium — *"that internal level is the precise
+  target, NOT the gap boundary."* The engine used **the range extreme**, which is what produced
+  the `0.0R PLANNED` trades. Entry zone is likewise the **LTF** range, not the HTF one.
+- **⭐ Paul re-scoped (2026-08-15):** *"the main goal is that you get the entry levels correct
+  rather than the risk management and trade management."* He takes **half off at nearest IRL**,
+  rest to final TP, SL to breakeven — so the engine's single-target model measured a trade he
+  would never take. **The acceptance test is now LEVEL CORRECTNESS checked against the chart, not
+  expectancy.** The 128-trade tally and the 384-cell sweep are **historical**, not results.
+- **did:** `aura_qt_smt.py` (segment SMT + lifecycle + nesting); `aura_pd_arrays.py` (four gap
+  types + "what lies within" + look-left/zoom-in fallbacks + confluence stacking);
+  `s1e/object-inventory.md` (exhaustive object list built from the concept pages, with a coverage
+  matrix); `s1e/reference/README.md`; killed the 72-config sweep as obsolete.
+- **flagged — nobody implements these**, not us and not the indicator: range nesting · liquidity-
+  within-gap fallbacks · confluence stacking · candle-level confirmation · cross-asset skip · the
+  patience rule. **The indicators do NOT define iFVG at all** (0 matches across all three
+  scripts), so that definition rests on the Aura corpus alone and cannot be cross-checked.
+- **flagged — two bugs found in my own new PD code within an hour of writing it:** `lifecycle()`
+  overwrote `kind` on inversion, **relabelling every NDOG/NWOG as an iFVG** (208 → 204 after fix,
+  4 NDOGs recovered); and inversion was checked before mitigation, so **mitigation was never
+  recorded**. Both found by reading the emitted numbers, not by anything erroring.
+- **verified:** STEP 0 regression **0 differences** vs pre-refactor default (the session-date-join
+  edit is now proven safe); the 3 `.pine` files verified populated (136K/132K/148K, placeholders
+  gone); NDOG session gaps confirmed present by direct measurement before trusting the detector.
+- **next:** Paul runs the **TradingView SSMT validation** (steps + expected active-sets are in the
+  boot prompt). Everything downstream inherits from that detector, so no further layers until it
+  passes.
+
+### 2026-08-14/15 — S1e PART-RUN: 128 entries measured, and the strategy was never actually tested
+
+- **approach:** fixed the blocking screenshot problem first, then STEP 0's history bound, then the
+  declared span, then the tally — reporting each measurement to Paul before using it.
+- **⭐ the headline is again a defect, and it is the biggest one yet:** the engine **reports**
+  Aura's quality rules as soft branches and **gates on none of them**, so the 128-entry tally is a
+  LOOSE SUPERSET of Aura with every quality filter off — **R17 violated on 100%** of entries,
+  **R18 91%**, **R30 90%**, **R30/R32 56%**, **R45 38%**. Turning the preferences back on collapses
+  the sample to **n=0** before the filters run out. So *"expectancy +0.038R"* is **not a verdict on
+  Aura** — that measurement was never about Aura.
+- **⭐⭐ root cause of the R17 100%:** **CHFUSD shares 0 of NQ's 3,794 daily timestamps** (ES shares
+  3,794/3,794, YM 3,792/3,794). The Aura Asset's daily bars sit on a different session boundary, so
+  the exact-timestamp join can never match and the leg reads `NOT-VISIBLE` even when admitted.
+  **Admitting the 4th leg is necessary but NOT sufficient** — which is why the sweep's Aura-Asset
+  axis was **inert** and question 1 has still not been tested.
+- **decided:** span `2023-01-03 → 2025-04-30`, chosen by Paul from the measured history bound and
+  written down **before** any outcome was computed (`declared-span.md`). Sweep grid + reporting
+  rule **pre-registered** before running (`sweep-preregistration.md`).
+- **did:** solved the 3-phase screenshot blocker; measured the 5m history bound; 24 bar exports;
+  `aura_s1e_pack_bars.py`, `aura_s1e_derive_15m.py`, `aura_s1e_sweep.py`; added 5 config axes to the
+  engine; ran the span (128 entries) and a 384-cell sweep; wrote `execution-audit.md`.
+- **⭐ the screenshot blocker was a WRONG DIAGNOSIS, not a broken tool.** Three phases recorded
+  *"`Page.captureScreenshot` times out, renderer may be frozen"*. The page was **`hidden`** —
+  window minimised/occluded — so Chrome throttled it and TradingView never painted: canvases sat at
+  the default 300×150 with **zero** non-transparent pixels while 391 bars were loaded. Un-minimise
+  and it paints instantly. **No new API was needed.** Focus is irrelevant; **occlusion** is the
+  trigger, and a hidden page returns a **stale frame with no error** — caught in the act when
+  hiding all 33 shapes changed the canvas hash not at all.
+- **flagged — two instrument artefacts that would have become false findings:** CHFUSD 5m first
+  read gave **678 bars / 4 days** (lazy loading — 177,074 after nudges); **NQ 15m is genuinely
+  capped** at 4,492 bars from 2025-03-23 (reproduced by two independent probes), recovered by
+  aggregating 5m with a positive control (4,489 buckets, **0 mismatches**).
+- **verified:** S1c regression through the NEW export pipeline — 20/22 days identical, same setup,
+  same bias; the 2 differences are exactly the days S1c reported `DATA` for lack of lookback.
+  Config refactor re-verified at **0 differences**. Per-shape markup style diff **0 drift / 33**.
+- **⛔ flagged — UNVERIFIED WORK ON DISK:** the **session-date join edit** to
+  `aura_setup_engine.py` has **not** had its regression run (Paul's laptop was dying). The default
+  path is *believed* unchanged but is **not proven**. Run that first next session.
+- **next:** superseded by the 2026-08-29 session — see §Boot Prompt (S1b-b), the active lane.
+
+### 2026-08-14 — S1d BUILT: the week is marked up, and the one trade cannot be scored
+
+- **approach:** measured the hard constraint *first* — walked the 05-30 trade forward on the
+  existing 5m bars before writing any engine code, and found neither stop nor target is
+  reached before the data edge. Reported that collision with deliverable 2 immediately rather
+  than discovering it at sign-off. Then exported the missing cycles (native weekly, 1m week),
+  hardened the engine, and gated every change on re-running S1c's span unchanged.
+- **decided:** weekly is a **reported rung, not a gate** — promoting it would delete setups on
+  no calibration evidence, and that judgement is Paul's. R8 is **measured but not resolved**,
+  because the rulebook contradicts itself on it. 1m is admitted for **outcome sequencing and
+  R13 zoom-in only**, never as a signal cycle (R28).
+- **did:** engine → `S1d.1` (weekly cycle, NWOG/NDOG on measured boundaries, R21, R22, R13
+  both routes, R8 anchor check, outcome simulation, bounded shape spec, declared FVG floor,
+  `--selection-basis`); new `aura_bar_receiver.py`; native weekly + 1m exports; ran the
+  declared week (1 entry, 4 stand-asides); drew and verified **33 bounded shapes**, zero
+  `horizontal_line`; wrote `week-summary.md`, `accuracy.md`, `chart-shapes-drawn.md`.
+- **⭐ flagged — the headline is again a defect, not a trade:** the chart **silently clamped 13
+  of 33 shapes** to the loaded data window while every success signal passed, and 15
+  rectangles had been emitted with their end before their start. Also: **my own** session-
+  boundary measurement classified CHFUSD's weekend break as its daily boundary, and **R8's
+  check could never pass** by construction. The cheap check that found most of them was
+  reading the emitted numbers like a trader, not confirming the code ran.
+- **flagged — scope honesty:** deliverable 2's *realised* outcomes is **only partly met** and
+  cannot be met from this session's data. Deliverable 3's "day-by-day shape" is thinner than
+  it looks: 4 of 5 stand-asides are one finding restated.
+- **verified:** S1c regression — 22/22 day-verdicts identical, same setup, same entry gap;
+  `aura_verify_record.py` 12/12 including no-lookahead; per-shape coordinate readback 0 drift
+  on both markup sets; 0 `horizontal_line` by enumeration; shapes persist 33→33 across a full
+  navigation; removal proved 33→0; weekly SMT detector proved live (13 events); weekly
+  alignment positive control; 1m/5m outcome cross-check identical.
+- **next:** **S1b** — the guided walkthrough and the **D0 decision tree**, which does not
+  exist in the app (18 routes, none of them a tree). Paul went looking for it because this
+  tracker's `✅ DECIDED` heading read as `✅ DONE`; heading corrected. **Before S1b builds
+  anything, Paul should review the week's 1 entry and 4 stand-asides** — that review is the
+  calibration input S1d exists to produce.
 
 ### 2026-08-13 — S1c BUILT: the rules compute, and the engine was wrong five ways first
 
@@ -851,7 +1255,11 @@ bars or levels; resolving a soft rule into a hard branch; or building the walkth
 
 ---
 
-## Boot Prompt (Phase S1d — a full replayed week, marked up) ⏭ ACTIVE
+## Boot Prompt Archive (Phase S1d — a full replayed week, marked up) ✅ RUN 2026-08-14
+
+> **HISTORY — do not execute.** See §S1d as-built for what it produced, and note two places it
+> asked for something the data cannot give: **realised outcomes** (the replay edge forbids them)
+> and **deeper 5m history** (not needed at one week).
 
 **Launch:** `claude --model opus[1m]`, `/effort high`. This phase produces the artifact Paul will
 **learn the model from**. Wrong reads teach wrong, and S1c proved that is not theoretical — it
@@ -944,7 +1352,582 @@ position; or leaving shapes on his chart.
 
 ---
 
-## Boot Prompt (Phase S1b — the guided walkthrough, with diagrams) — ⏸ NEXT, after S1d
+## ⭐⭐ MARKUP QUALITY — Paul, 2026-08-14: *"paramount"*. Do this FIRST, inside S1e's STEP 0
+
+> *"The chart mark ups being high quality and accurate is paramount and we should try research a
+> way to get them at premium aesthetic quality and accuracy."*
+
+**Accuracy is now proven; AESTHETIC QUALITY IS UNVERIFIED, and that must be stated plainly.** S1d
+proved the *geometry* by per-shape coordinate readback (0 drift, 33/33) — but **no session has ever
+seen the rendered markup.** `Page.captureScreenshot` times out on this page (30 s, "renderer may be
+frozen") while the DOM answers instantly, so every S1c/S1d visual claim rests on coordinates, not on
+an image. Paul's own consumer-layer rule applies: *the rendered surface a user sees* is the
+consumer's layer, and it has not been checked.
+
+### The blocking item: get an image WITHOUT CDP
+
+Everything else is unjudgeable until this works. Do not retry `Page.captureScreenshot`.
+
+- The **TradingView Charting Library screenshots itself** — probe for `takeScreenshot()` /
+  `getScreenshotData()` on the widget and on `chart(i)`, plus the `onScreenshotReady` /
+  `screenshot_ready` subscription. This path never touches the broken CDP route.
+- Failing that, the chart iframe is same-origin (`blob:`) so its `<canvas>` layers can be
+  composited and read with `toDataURL()`, then POSTed to `api/scripts/aura_bar_receiver.py` — the
+  receiver already lands arbitrary payloads to disk and is the natural sink for a PNG.
+
+### ⚠️ The likely cause of poor appearance: override keys are SILENTLY IGNORED when wrong
+
+S1d passed a single guessed bag of overrides to every shape —
+`{linecolor, color, backgroundColor, transparency, linewidth, showLabel, textcolor}` — but
+**TradingView override keys are shape-specific**, and an unrecognised key is dropped without error.
+**This is the same failure class as the coordinate clamp**: accepted, no exception, wrong result.
+So the drawn shapes may be carrying library defaults, not the colour convention.
+
+**Verify, don't assume:** read `getShapeById(id).getProperties()` back and **diff the style fields
+against what was intended**, per shape, exactly as the geometry is diffed. Expect roughly
+`rectangle` → `color` · `backgroundColor` · `fillBackground` · `transparency` · `linewidth` ·
+`linestyle`; `trend_line`/`ray` → `linecolor` · `linewidth` · `linestyle` · `extendLeft`/`extendRight`
+· `showLabel` · `textcolor` · `fontsize`. Confirm the real names from the read-back, not from memory.
+
+### What "premium" means concretely here — the quality bar to design against
+
+[[concepts/mastery/aura/chart-markup]] §Colour convention already fixes the palette; these are the
+things it does not yet say, and they are what separate a readable chart from a wall of ink:
+
+1. **Visual hierarchy.** Zones must *recede* (grey, dashed, high transparency, behind everything);
+   range boundaries are structural (white, solid); SMT swings are the load-bearing filter (yellow,
+   and visibly distinct from unqualified swings); execution objects sit in front. Encode this as
+   **line-width and z-order rules**, not just colour.
+2. **Label collision is a real problem at this density.** 33 labelled objects on one pane will
+   overlap. Candidate fix: label only structural objects and the **traded** gap, set
+   `showLabel:false` on the context gaps, and move the `[S1d]`-style marker into a single legend
+   object rather than repeating it 33 times — the marker requirement is *visible provenance*, which
+   one unmissable label satisfies better than 33 competing ones.
+3. **Fill vs outline.** Zone rectangles want a high-transparency fill; overlapping gap boxes are
+   more legible outlined or very lightly filled, or adjacent boxes merge into one blue smear.
+4. **Density is still an open question.** S1d cut 27 boxes → 15 (a declared 4-tick FVG floor, an
+   M6 zone filter, and excluding gaps that inverted *after* the entry — hindsight has no place on the
+   chart that justifies the entry). **15 may still be too many.** Consider separating *"the traded
+   gap plus its immediate context"* from *"the full census"* as two views, and **say what was
+   omitted** either way — a silent cap reads as "there was nothing there".
+5. **Only then judge it.** Capture the image, look at it, and iterate against the bar above. An
+   aesthetic claim with no image behind it is worth nothing, which is precisely the position S1d
+   ended in.
+
+⛔ **Accuracy still outranks aesthetics where they conflict.** A prettier chart that asserts a level
+applies when R6 says it died is worse than an ugly correct one — that is exactly what the infinite
+horizontal lines did.
+
+---
+
+## Boot Prompt (Phase S1b-b — close the coverage gap, or port) ⏭ ACTIVE
+
+**Launch:** `claude --model opus[1m]`, `/effort high`. Written 2026-08-29 at a context checkpoint.
+S1b shipped **as an Artifact, not in the app** — read §Session Log 2026-08-29 before anything.
+
+### ⛔ STEP 0 — before any new work
+
+1. **Everything is uncommitted, in BOTH repos, and it is now a lot.** `neurospect-learn` carries the
+   whole S1d/S1e body *plus* `api/docs/evidence/s1b/` and two new scripts
+   (`aura_figure_pack.py`, `aura_guided_pack.py`); `neurospect-wiki` carries this tracker, `log.md`
+   and `index.md`. **Paul commits.** Ask before touching git.
+2. **The app is untouched and must stay that way until Paul says otherwise.** `/runner` has no
+   guided run in it. A green tick in this tracker means the *design* is settled, never that the code
+   exists — the same distinction that sent Paul looking for a decision tree that was never built
+   (2026-08-14).
+3. **⛔ Do NOT re-derive the coverage measurement.** It was run: `45/54` rules cited, **19,427 of
+   41,568 corpus words (47%) never drawn on**. The script is
+   `neurospect-learn/api/docs/evidence/s1b/`-adjacent (`coverage.py`, in the session scratch — re-create
+   from the numbers above if needed, it is ~50 lines). Re-running it is fine; re-*discovering* it is
+   a wasted hour.
+4. **S1e-b is ⏸ GATED on Paul's TradingView SSMT validation** (see its own prompt below) and
+   nothing this session did touches that gate. It was the active lane until 2026-08-29.
+
+5. **⚠️ A PARALLEL LANE EXISTS, and it was written the same day.**
+   `processes/distributed-workflow/active/platform-architecture.md` (created 2026-08-29 04:50, still
+   **untracked in git**) carries its own `⏭ ACTIVE` prompt — Phase P0b, after a five-lens council —
+   and states that three trackers were ACTIVE when it was written. **That statement is now stale in
+   one respect: this tracker's active lane is S1b-b, not S1e-b** (S1e-b was demoted to ⏸ GATED on
+   2026-08-29). It was left unedited deliberately — it is another session's live work and clobbering
+   it would be exactly the overlap failure the reground rules exist to prevent. **Tell Paul the two
+   lanes exist and let him pick; do not merge them.**
+
+### ⭐ THE DECISION THAT OPENS THIS SESSION — ask Paul, do not assume
+
+Three routes, and they are genuinely different work. **Ask which.**
+
+**(a) Close the coverage gap.** The measured finding: the chart-reading half is deep, the
+survive-and-improve half is tick-boxes. Three named gaps, in the order they matter:
+  - **The drill library.** `concepts/mastery/aura/exercises.md` (1,571w) + `learning-path.md` +
+    `tracker.md`. **This is the sharpest one** — S1 exists for *"repetition until the protocol is
+    automatic"* and the layer that delivers repetition is not in the product at all.
+  - **The risk spine.** `risk-management.md` is the **largest page in the corpus** (3,411w) and the
+    guided run reduces it to one tick. **R38 R42 R44 R46** are cited nowhere. R44 (expectancy, with
+    the break-even formula `1/(1+R:R)`) must be *taught* even though the page correctly claims no
+    expectancy number of its own.
+  - **The psychological half.** `mind-and-emotional-control` + `psychology-foundations` +
+    `discipline-systems` + `journaling-system` = 7,742 words, zero coverage — while §06 already
+    asserts *"dOoMeR puts the value here."* The page makes the claim and does not teach it.
+  - Also uncited: **R15** (triad selection is math-first, Pearson on daily returns over 2–3 years)
+    — which is the rule the CHFUSD **+0.04** number already on the page is measuring against.
+  - ⚠️ **R23 and R37 are correctly absent.** R23 cannot exist in Tradezella (the boundary probe
+    proved it); R37 is flagged and de-emphasised in the corpus itself. Do not "fix" them.
+
+**(b) Port §01 into `/runner` as S1b proper.** Bigger than it was on 2026-08-27: 19 steps, the
+progressive chart reveal, the branch, the artifact-state grammar. Needs `e2e/runner.spec.ts`
+extended, render-verification at 400px, and evidence into `s1b/`. ⚠️ It would build on top of the
+**uncommitted 2026-08-20 UI overhaul** — see the deployment/UI note below.
+
+**(c) Run the TradingView SSMT check and go back to S1e-b.** Only Paul can do the check.
+
+### ⚠️ THE OTHER OPEN THING — a workstream with no tracker
+
+The **2026-08-20 UI overhaul** in `neurospect-learn` (brand system, dark mode that was *built but
+unreachable*, motion layer, 166 classes swept to semantic tokens, public landing page, `/settings`,
+plus `check-tokens` and `check-contrast` gates that were both deliberately broken to prove they can
+fail) has **no tracker, no `log.md` entry and no `index.md` line**, and is uncommitted. Evidence is
+good — `api/docs/evidence/ui/README.md` — but nothing in the wiki points at it.
+`learning-platform-ui.md` is **✅ CLOSED (2026-07-25)** and is not its home. **Paul agreed a new
+`platform-design-system.md` tracker is needed; it has not been written.** Offer it early.
+
+### WHAT S1b ACTUALLY BUILT
+
+`https://claude.ai/code/artifact/2da34972-c89e-4a23-b064-a02e1df302b9` — republish by passing that
+URL, or the same file path if the session already published it.
+
+Six sections: **§01 the 19-step guided run** · §02 the 8 checklist phases · §03 the live D0 tree ·
+§04 the markup-primitive argument · §05 four marked-up worked examples + four corpus trades ·
+§06 the five-tier card. Source and build in `api/docs/evidence/s1b/` — `build_artifact.py` assembles
+`aura-protocol.src.html` + `part2/3/4.js` + the figure packs; `worked.py` and
+`api/scripts/aura_guided_pack.py` produce the figures.
+
+**Two invariants that must survive any edit:**
+- **The tree never auto-ticks a rule.** Verified: 13 highlighted, 0 checked. Manufacturing adherence
+  the user did not assert is the same failure as batch-ticking 33 boxes.
+- **Every step declares its artifact state** — DRAWN / NOT-RECORDED / UNRESOLVED / ACTION. A blank
+  chart at M1 must keep reading as *"only the qualified swing was recorded"*, never as a blank step.
+
+### ⚠️ INSTRUMENT LESSONS EARNED THIS SESSION — do not re-learn these
+
+- **`chrome --headless --window-size=W` does NOT set the layout viewport.** A 400px screenshot showed
+  text clipped; CDP measured `scrollWidth 385` against a 400px viewport — **there was no overflow at
+  all**, and a `min-width:0` "fix" was applied that fixed nothing. Use
+  `Emulation.setDeviceMetricsOverride` before believing any narrow-viewport claim.
+- **`chip()` degrades a missing rule to plain text with no error.** R14 rendered untagged because the
+  subset shipped 41 of 54 rules. All 54 now ship; the check asserts every declared rule renders as a
+  real chip. Same failure class as the silently-ignored style keys and the silent coordinate clamp.
+- **The Chrome extension is not connected.** Everything was verified over CDP through headless
+  Chrome. That is the stronger *measuring* instrument, but **nothing has been seen in Paul's own
+  browser.**
+- The Playwright MCP runs in a container and cannot reach a host `127.0.0.1` server; `host.docker.internal`
+  was blocked. Serve locally and drive headless Chrome over `--remote-debugging-port` instead — and
+  serve `.html` as `text/html; charset=utf-8` or the page mojibakes (`serve.py` in `s1b/`).
+
+### THIS PHASE IS NOT
+
+Advancing the replay · writing to the database or the evidence layer · claiming an edge or an
+expectancy · presenting the S1d levels as correct play (the detectors under them were found wrong on
+2026-08-15) · committing anything without asking Paul.
+
+---
+
+## Boot Prompt (Phase S1e-b — finish the sweep, then review) ⏸ GATED on Paul's TradingView SSMT check
+
+**Launch:** `claude --model opus[1m]`, `/effort high`. Written 2026-08-15 mid-phase; S1e is
+**PART-RUN, not finished**. The S1e prompt below it is **✅ SUPERSEDED — do not re-run its STEP 0**;
+its measurements are done and recorded.
+
+### ⛔ STEP 0 — THE FIRST THING, BEFORE ANY NEW WORK
+
+1. ✅ **STEP 0's regression RAN 2026-08-15 and is GREEN** — 0 differences vs the pre-refactor
+   default; the only 2 differences from S1c's published run are the known `DATA → R3` lookback
+   days. The session-date-join edit is proven safe. **Do not re-derive this.**
+2. ⏳ **THE GATING ITEM IS PAUL'S TRADINGVIEW CHECK — see §SSMT VALIDATION below.** Everything
+   downstream (range, premium/discount, entry) inherits from the rebuilt SMT detector. **Do not
+   stack layers on it until it passes.**
+3. **Everything is uncommitted** — all of S1d *and* all of S1e, plus 8 scripts. Paul commits.
+
+### ⏳ SSMT VALIDATION — what Paul is running, and what to do with the answer
+
+**Indicator:** `s1e/reference/qt-ultimate.pine` (script 2, **no quad**, so the Aura Asset cannot
+contribute and it matches our index-legs-only sheet). TradingView, **NQ1!**.
+**Settings:** Calculation Mode `Auto` · Type of SSMT **`Normal`** (default is "All") · Triad
+`Auto` (confirm it resolves to ES+YM) · Normal Daily + Normal Weekly **on**, everything else off ·
+Timezone `UTC-4` (correct — late May is EDT, matching our DST-aware calc) · Day Start Hour `18`.
+
+⚠️ **Chart TF gates which cycle is visible**: Daily-cycle shows only on **15m–30m**; Weekly-cycle
+only on **1H–3H**. Two passes.
+⚠️ **The indicator DELETES invalidated SSMT lines**, so scrolling back shows almost nothing. Use
+**Bar Replay**.
+
+Expected **active sets** (index legs, computed by `aura_qt_smt.py`):
+
+| Replay to (ET) | expected |
+|---|---|
+| Tue 2025-05-27 12:30 | Daily **LONG** vs YM, NQ 21,145.00 → 21,192.75 |
+| Wed 2025-05-28 15:00 | same, still live |
+| Thu 2025-05-29 10:00 | same, still live |
+| Fri 2025-05-30 15:00 | Daily **SHORT** vs ES, NQ 21,412.25 → 21,421.00 |
+| Fri 2025-05-30 17:00 (**1H**) | Weekly **LONG** vs YM, NQ 21,301.00 → 21,071.50 |
+
+Caveats to give Paul: the indicator draws an SSMT **live as the segment develops** while we date it
+at the **segment close** (no lookahead), so it may appear earlier — what matters is presence at the
+checkpoint. Price offsets by a constant are contract/backadjustment, not a detector error.
+
+**If it PASSES** → build in this order: range framing (A3/A4/A5 on the segment model) →
+premium/discount vs the **LTF** range (D2) → wire the PD arrays (already built) → entry level.
+**If it FAILS** → fix the detector before anything else; do not proceed on a broken foundation.
+
+### WHERE S1e GOT TO
+
+**The tally (baseline config, declared span `2023-01-03 → 2025-04-30`, 607 weekdays):**
+**128 entries · 52 TARGET / 76 STOP · win 40.6% · avg win +1.56R · avg loss −1.00R ·
+expectancy +0.038R · total +4.84R · median −1.00R.** All 128 resolved, 0 unresolved.
+**−7.57R without its single best trade.** 128 entries = **32 episodes**; two carry the whole result.
+Rejections: R6 335 · R3 81 · R29 56 · R35 3 · R30 2 · DATA 2.
+
+**⛔ Do not quote that as a verdict on Aura.** The engine gates on **none** of Aura's quality rules:
+R17 violated 100% · R18 91% · R30 90% · R30/R32 56% · R45 38%. Enforcing them → **n = 0**.
+The strategy in `rules.md` **has never actually been backtested**.
+
+### ❌ OBSOLETE 2026-08-15 — the sweep below was KILLED, do not resume it
+
+The 72-config sweep varied a **12/16/20/26-week weekly lookback that does not exist** under the
+segment model ("weekly cycle" = the days within the week). Running it would produce a tidy table
+nobody should read. `sweep/sweep-results.json` (run 1, 384 cells) stays on disk as **history**.
+The section below is kept only so the decision is auditable.
+
+### ~~THE ONE THING THAT MUST HAPPEN NEXT — the sweep did NOT test question 1~~
+
+Paul answered **yes to all four** open questions and said *"exhaust all configurations then
+review."* A 48-run / 384-cell sweep exists (`sweep/sweep-results.json`) — **but its Aura-Asset axis
+is INERT.** Admitting the leg only removed a refusal note; it changed **not one trade**, because
+**CHFUSD shares 0 of NQ's 3,794 daily timestamps** and the exact-timestamp join returns nothing.
+
+`--aura-asset-join session_date` was written to fix exactly this and **works** — in a half-year
+probe the leg finally voted (`TOOK 4 · DID-NOT-TAKE 44 · WITHIN-NOISE 1`, 48 → 49 setups). It has
+**never been run over the full span**.
+
+**So: amend the pre-registration IN WRITING (say the axis was added mid-sweep and why — the
+original axis was inert), then re-run the sweep with the join axis added:**
+
+| Axis | Values |
+|---|---|
+| Aura Asset | `(off, timestamp)`, `(on, timestamp)`, **`(on, session_date)`** |
+| Weekly lookback | 12, 16, 20, 26 |
+| Retest | report, require_first, session_first |
+| Zone ref | htf, ltf |
+
+= **72 runs** (skip `off × session_date`, it is a no-op) × 8 post-hoc enforcement filters.
+`aura_s1e_sweep.py` needs the axis added to its grid.
+
+⛔ **The pre-registered reporting rule still binds:** publish **every** cell; adopt **no** cell on
+expectancy alone; cells under **n=20** are `UNDERPOWERED`; record `total_r_ex_best` everywhere.
+384→576 cells against ~32 independent episodes **will** produce a flattering winner by chance.
+
+### What the sweep already established (do not re-derive)
+
+- **`session_first` takes R30 violations 89.8% → 0% while keeping all 128 entries** — every "not the
+  first retest" case was an **overnight** touch, i.e. an artefact of the 08:00–16:00 window.
+- **`zone=ltf` genuinely changes the read** (violations 56.2% → 51.6%, 38.5% → 30.8%).
+- **Weekly SMT is genuinely rare** — 12 → 26 weeks only moves "no weekly SMT" 91% → 83.6%.
+- Weekly-lookback and zone-ref act **through branches**, so they move only the enforcement cells,
+  not the base cells. That is by design, not a broken axis.
+
+### ⚠️ THE CHART — read before touching it
+
+- **33 `[S1d]` shapes are still on NQ** (session `831607`), 0 on ES/CHFUSD/YM. Paul has **not**
+  reviewed that week and **does not intend to** — he wants a week with real executions instead — so
+  they are **cleared for removal**.
+- ⛔ **THE REMOVAL SNIPPET IN `s1d/chart-shapes-drawn.md` IS NOW UNSAFE.** It matches on label text
+  starting `[S1d]`, and this session **cleared the text on 22 of the 33 shapes** as part of the
+  restyle. It would delete 11 and silently leave 22. **Remove by id** (all 33, captured before the
+  text was cleared):
+
+  ```
+  DpXZGc V1tss5 8TH79V pPhrhQ eJE9Qf pRq4zz l3UtTu c9k1W2 d7gq6D Ezbo9f HySfUL tUUTgR 7LSSkm
+  NeWy5G 2DkjrO DEoIbp NyOAuu kk3LGD gpFqdk SomsQh r3BmYz MZXFE6 KAwTMv xLO3E1 gFdFpl LzoW04
+  0XrWOh P3jOLg 0O7ZOa daacPF pgTgVn v23oek SU8xSr
+  ```
+  Verify **33 → 0**, and re-verify after a reload (shapes are server-side).
+- **Replay is UNTOUCHED.** Session clock reads **Sun 2025-06-01 17:00 ET**; last futures bar is
+  `2025-05-30 20:55 UTC` (Friday close). ⚠️ The tracker's older claim that the replay is "parked at
+  2025-05-30 20:59 UTC" is the **data edge of one leg**, not the replay position.
+- **Chrome must be VISIBLE (not minimised or fully covered) or the chart does not paint** and
+  captures return **stale frames with no error**. Prove the renderer is live before trusting any
+  image: hide a shape → canvas pixel-hash must change → restore it.
+- `createMultipointShape`'s **return value is not a usable shape handle** (`getShapeById` throws);
+  find shapes via `getAllShapes()`.
+- Override keys are **shape-specific and silently dropped when wrong**: `rectangle` wants
+  `textColor`/`fontSize`; `trend_line`/`ray` want `textcolor`/`fontsize`. **`showLabel` does not
+  exist** — suppress a label with `text: ''`. Z-order **is** settable (`sendToBack`/`bringToFront`).
+- `isAutoScale` was found **false**; re-enable it or the HTF view renders as vertical streaks.
+
+### DELIVERABLES (in order)
+
+1. STEP 0's regression, green.
+2. Amended pre-registration + the **72-run** sweep including the working Aura-Asset join.
+3. The sensitivity map — every cell — with `UNDERPOWERED` marked and `total_r_ex_best` shown.
+4. **Then the visual review Paul asked for:** remove the `[S1d]` shapes by id, and mark up a
+   representative set of entry days with the S1e hierarchy (see `markup-quality.md`) so he can
+   judge **the read**, not the arithmetic. Pick days that each answer one open question — a
+   100%-R17 case, an overnight-retest case, a premium-LONG, and the two big winners — rather than
+   at random.
+5. Per-entry reviewable records: rule log · marked chart · soft branches · outcome.
+6. `accuracy.md`; tracker + `log.md` + `index.md` reconciled.
+
+**THIS PHASE IS NOT:** advancing the replay; writing to the database or evidence layer; claiming an
+edge; adopting a sweep cell because it looked good; or reporting a win rate without its R:R and its
+rejection census.
+
+### Paul's standing asks, in his words
+
+> *"I want to review a backtest session and see what trades you take to see if you are reading the
+> chart and concepts correctly."* · *"This should completely comprehensive so we both can really
+> understand for this execution of this strategy. I want to become an expert in executing it and
+> understanding its nuances etc"* · *"We need to exhaust all configurations then review."*
+
+He also asked for **HTF and LTF views** as the standing markup split, and agreed strongly with it.
+
+---
+
+## Boot Prompt (Phase S1e — N valid entries, with WINS AND LOSSES) — ✅ SUPERSEDED 2026-08-15 (part-run; STEP 0 measurements DONE, do not redo)
+
+**Launch:** `claude --model opus[1m]`, `/effort high`.
+
+### Paul's ask, 2026-08-14 — in his words
+
+> *"The review has to be a number of valid entries and then review the number of wins and losses.
+> But I want to review a backtest session and see what trades you take to see if you are reading
+> the chart and concepts correctly."*
+
+**Promoted ahead of S1b at his direction.** S1d produced exactly **one** entry and it could not be
+scored, so it cannot answer the question he is actually asking. This phase exists to produce a
+reviewable set of entries **with resolved outcomes**.
+
+### ⭐⭐ MEASURED 2026-08-14 BEFORE ANY EXPORT — the gate census, and it corrects the estimate
+
+`api/scripts/aura_gate_census.py`, run over **2025-01-02 → 05-30 (107 weekdays enumerated, not
+sampled)**. Counting basis declared in the script before any number: one unit = one ET weekday,
+verdict = the **first** gate to reject, buckets mutually exclusive and summing to the population.
+
+| Bucket | Days | Share |
+|---|---:|---:|
+| `R6` — range dead | 59 | 55.1% |
+| **`REACHED-ENTRY-STAGE`** | **28** | **26.2%** |
+| `R3` — no SMT-qualified daily swing | 20 | 18.7% |
+
+**⛔ THIS CORRECTS THE "~1 SETUP PER 22 WEEKDAYS ⇒ 10–11 MONTHS" ESTIMATE, WHICH WAS WRONG.**
+The HTF gates are **not** the bottleneck — **26% of weekdays clear every one of them** (R3 → R7 →
+R4 → R6 → R18). Extrapolating a *setup* rate as if it were a *gate* rate was an error; the census
+measures the gates directly.
+
+**But the real constraint is worse, and it is CLUSTERING, not scarcity.** Those 28 days collapse to
+**7 distinct driving episodes** (same SMT pivot + same range + same bias), from only **5 distinct
+SMT pivots**:
+
+| Bias | Driving SMT | Range | Days |
+|---|---|---|---:|
+| SHORT | 2024-12-11 | 20,983.75–22,111.25 | 6 |
+| SHORT | 2024-12-11 | 20,694.00–22,093.50 | 11 |
+| SHORT | 2025-01-31 | 20,763.75–22,078.25 | 4 |
+| SHORT | 2025-02-07 | 18,976.75–20,536.75 | 2 |
+| SHORT | 2025-02-07 | 16,460.00–20,044.25 | 3 |
+| LONG | 2025-05-02 | 19,103.75–20,276.75 | 1 |
+| SHORT | 2025-05-20 | 20,727.00–21,562.25 | 1 |
+
+**26 of 28 are SHORT, and 17 of 28 hang off a single SMT pivot (2024-12-11).**
+
+### ⛔ THE COUNTING-BASIS DECISION THIS FORCES — Paul's call, before any tally is computed
+
+**Consecutive entry-stage days are not independent trades.** They are the same idea, re-entered
+because the same daily SMT and the same range are still live (R7 keeps following that range until an
+opposing or same-cycle SMT forms). So:
+
+- **basis = one entry-DAY** → 28 units per 5 months ⇒ ~10 units in under 2 months. But a win rate
+  over 28 correlated days is **28 samples of ~7 bets**, and would overstate the sample size by ~4×.
+  This is the FU92-420 failure exactly: a counting basis that flatters the number.
+- **basis = one EPISODE** (one driving SMT + range) → **7 units per 5 months** ⇒ ~10 independent
+  ideas needs **~7 months** of 5m history. Honest, and expensive.
+
+**Either way, R30's 5m iFVG step cuts further** — in S1c's window 2 entry-stage days yielded 1
+setup — so entries are a fraction of the 28.
+
+**Do not compute expectancy (R44) over correlated entry-days as if they were independent.** If the
+day-level basis is chosen, the artifact must report **both** counts and say which one the ratios use.
+
+### ⛔ THE THREE CONSTRAINTS THAT DEFINE THIS PHASE — read before planning
+
+**1. Outcomes need forward bars, so the span must END WELL BEFORE the replay edge.**
+S1d's entry was unresolvable *only* because it sat on the edge (2025-05-30 16:59 ET, confirmed at
+1m). Entries earlier in history have bars after them. So the declared span must stop far enough
+short of the edge that every entry in it can resolve — and any that still cannot **stay
+`UNRESOLVED-AT-DATA-EDGE`**, never a breakeven.
+
+**2. ⭐ The arithmetic of "a number of entries" is brutal, and it must be stated to Paul BEFORE
+the export work.** At S1c's observed rate — **1 setup per 22 weekdays** — a tally of ~10 entries
+needs roughly **10–11 months** of intraday history. STEP 0 is therefore to measure **how much 5m
+history the chart will actually give up** (`setVisibleRange` forces deeper loading; S1c's
+300-bar ceiling was a viewport artifact), because that bound decides whether this phase delivers
+10 entries, 4, or 1. **Report the measured bound and the implied entry count before building
+anything**, and let him choose the span with the real number in front of him.
+
+**3. ⭐⭐ A win/loss tally from these gates measures THE ENGINE as much as it measures Aura.**
+R6 alone rejected 13 of 21 days in S1c and 4 of 5 in S1d. If R6 is too strict, the entries in the
+tally are survivors of a possibly-miscalibrated filter, and the trades it *should* have taken are
+invisible. **So the stand-aside review does not disappear — it becomes the control on the tally.**
+Publish both: `N entries` alongside `M stand-asides by failing rule`. A win rate without the
+rejection census is a number about a filter nobody has validated.
+
+### The counting basis — DECLARE IT BEFORE PRODUCING ANY NUMBER
+
+Per the estate's analysis gate, and it applies with full force here:
+
+- **One unit = one entry the engine took**, in a **contiguous declared span**, chosen and written
+  down **before** any outcome is computed. Not cherry-picked, not extended after seeing results.
+- **Report EVERY entry in the span.** No dropping an ugly one, no stopping early on a good run.
+- **Outcome verdicts stay four-way:** `TARGET` / `STOP` / `UNRESOLVED-AT-RESOLUTION` /
+  `UNRESOLVED-AT-DATA-EDGE`. Unresolved trades are reported **separately and never folded into a
+  win rate** — the engine already refuses to guess in-bar sequence, and that refusal must survive
+  into the summary table.
+- **A win rate alone is meaningless (R44).** Publish `win%`, `avg win R`, `avg loss R` and
+  `expectancy = (win% × avg win R) − (loss% × avg loss R)` together, or publish none of them.
+- **State the sample size next to every ratio.** At n = 10, a single trade moves the win rate by
+  10 points. Say so on the artifact rather than hoping he infers it.
+
+### What to build
+
+1. **Deeper export.** 5m (and 15m/60m as needed) back as far as the chart will give, all four
+   symbols, into `docs/evidence/s1e/bars/` via `api/scripts/aura_bar_receiver.py` (its
+   `GET /whoami` signature guard is the port-collision lesson — keep it).
+2. **Run the hardened engine over the declared span.** It is already re-runnable and versioned;
+   this phase should need little or no rule work. If it does, **re-prove the S1c regression** (all
+   22 day-verdicts identical) before trusting anything.
+3. **The tally**, per the counting basis above, with the rejection census beside it.
+4. **Markup for each entry day** — bounded shapes, `[S1e]`-marked, drawn per
+   [[concepts/mastery/aura/chart-markup]] **§0c** (split HTF/LTF across resolutions, snap to loaded
+   bars, and **diff read-back coordinates per shape** — a matching count proves nothing).
+5. **A reviewable per-entry record** so Paul can judge the *read*, not just the result: the rule
+   log, the marked chart, the soft branches, and the outcome. That is the actual request —
+   *"see what trades you take to see if you are reading the chart and concepts correctly."*
+
+### ⚠️ THE TRAPS
+
+- **Do not advance Paul's replay** (still parked 2025-05-30 20:59 UTC). Work behind the edge.
+- **Do not quote expectancy as an edge.** Ten or twenty machine trades on one instrument over one
+  regime is not a validated edge, and S1c/S1d found **eleven** defects that each produced
+  confident-looking output. Assume a twelfth exists.
+- **`QUARANTINE` holds.** Machine trades never touch `evidence_assets`, rep credit, the streak,
+  calibration or the Readiness Gate.
+- **Remove all `[S1d]` shapes first** (snippet in `s1d/chart-shapes-drawn.md`) and confirm zero,
+  or the two phases' markup will be indistinguishable on the chart.
+- **Never resolve a judgement rule** — R8 (a rulebook contradiction), R9, R31 stay UNRESOLVED or
+  render as soft branches.
+
+### ⭐ RUN THE VERIFICATION FAN-OUT HERE — this is the phase that justifies it
+
+Paul asked about workflows on 2026-08-14 and the assessment is in the S1b prompt below. This is
+where it pays: with N entries instead of 1, hand-checking every rule on every trade stops being
+feasible. Build `.claude/workflows/aura-verify.js` — **one agent per rule** (R3, R6, R8, R11, R13,
+R18, R21, R22, R30, R33, R35), each re-deriving that rule's verdict from `rules.md` and the raw
+bars and prompted to **refute** the engine, with the engine's output withheld until it commits.
+Rules are independent → `pipeline()`, no barrier. **Do not** parallelise chart interaction (one
+Chrome, one session, Paul's replay state, and the chart silently clamps geometry to whatever data
+is loaded — a racing sibling changes another agent's output without either erroring), and **do
+not** have agents judge markup from screenshots (the whole architecture is
+arithmetic-on-exported-OHLC precisely because perception cannot be audited).
+
+### DELIVERABLES
+
+0. **⭐ MARKUP QUALITY FIRST** — see §MARKUP QUALITY above. Get a rendered image by a route that is
+   not CDP, diff the **style** properties back per shape as well as the geometry, and fix the
+   hierarchy/label-density problems before drawing N entries' worth of shapes. Paul called this
+   *paramount*, and drawing many more shapes before the appearance is verified would multiply an
+   unverified result.
+1. The measured 5m history bound and the implied entry count — **reported to Paul before the span
+   is fixed.**
+2. The declared span, written down before outcomes are computed.
+3. `N` entries with four-way outcome verdicts, `win%` + `avg win R` + `avg loss R` + expectancy,
+   **each carrying its sample size**, and the **rejection census** beside them.
+4. A per-entry reviewable record: rule log · marked chart · soft branches · outcome.
+5. `accuracy.md` updated; tracker + `log.md` + `index.md` reconciled; then hand back to **S1b**.
+
+**THIS PHASE IS NOT:** advancing the replay; writing to the database or evidence layer; building
+the walkthrough UI (S1b); claiming an edge; or reporting a win rate without its R:R and its
+rejection census.
+
+---
+
+## Boot Prompt Archive (Phase S1b — the guided walkthrough, with diagrams) — ✅ RUN 2026-08-29 as an Artifact, not in the app
+
+### ⛔ STEP 0 — WHAT S1d HANDED YOU (2026-08-14). Read before designing anything.
+
+**FIRST ACTION: ask Paul whether he has reviewed the S1d week yet, and whether he agrees with
+the four R6 stand-asides.** That review is the calibration input S1d exists to produce, and it
+changes S1b's content: if he thinks R6 is too strict, the walkthrough must teach the judgement
+rather than the gate. Read `neurospect-learn/api/docs/evidence/s1d/week-summary.md` **whole**
+before asking, and `s1d/accuracy.md` before writing a single number into UI.
+
+**Also confirm the 33 `[S1d]` shapes have been removed** from session `831607` — the removal
+snippet is in `s1d/chart-shapes-drawn.md`. They were left deliberately for review; they must be
+gone before Paul marks that week by hand.
+
+**Three things S1d changed that S1b's design must absorb:**
+
+1. **D0's soft/hard split has MORE material now.** The engine's `HARD_GATES` / `SOFT_BRANCHES`
+   lists are still the tree's spine, but S1d added: weekly is **reported, not a gate**; R8 is a
+   **rulebook contradiction** (rule 8's two sentences cannot both be satisfied by one swing);
+   R22 can degenerate to the same price as R35; and the entry window can **hide an earlier
+   retest**. Every one of those is a place the tree will want to draw a clean branch and must
+   not. Take the lists from code — do not re-decide them.
+2. **⛔ There is NO realised outcome to display, for any trade.** The one entry in the declared
+   week is `UNRESOLVED-AT-DATA-EDGE` (1.20R in favour, 0.41R against, then the bars stop). If
+   S1b renders an outcome, R or win/loss anywhere, it must render **that verdict**, not a blank
+   and not a breakeven. `n = 1` still holds, and the week was **selected**.
+3. **The real worked example now exists and is machine-generated.** If S1b shows it, it renders
+   permanently and visibly marked as such. Do not fabricate price data — see §THE DIAGRAM RULE.
+
+### ⭐ The workflow idea (Paul, 2026-08-14) — scoped, with the parts that would backfire
+
+Paul asked whether multi-agent orchestration could speed this up and be specialised for
+chart/markup work. Assessment, so it is not re-litigated from scratch:
+
+**Worth building — an `aura-verify` workflow (verification, not building).** Every defect across
+S1c and S1d was found by re-deriving a number by a *different route*: 11 defects in two phases,
+all of which produced confident-looking output. That is a fan-out: **one agent per rule** (R3,
+R6, R8, R11, R13, R18, R21, R22, R30, R33, R35), each re-deriving that rule's verdict from
+`rules.md` and the raw bars and prompted to **refute** the engine, with the engine's own output
+withheld until it has committed. Rules are independent, so `pipeline()` with no barrier. Same
+shape works per-day when the span grows past one week — which is the point at which this stops
+being optional.
+
+**Would backfire, and why:**
+- **Chart interaction must stay single-threaded.** One Chrome, one Tradezella session, holding
+  Paul's real replay state. Parallel agents setting resolution / visible range / shapes would
+  race — and S1d proved the chart silently clamps geometry to whatever data happens to be
+  loaded, so a racing sibling changes another agent's *output* without either erroring.
+- **Markup quality did not come from compute.** It came from reading emitted coordinates and
+  noticing they ran backwards. A fleet would have drawn 15 nonsense rectangles faster and
+  produced a confident screenshot of them.
+- **Vision-based chart reading is a trap for this project specifically.** The whole S1c/S1d
+  design is arithmetic-on-exported-OHLC *because* perception cannot be audited. Agents judging
+  markup from screenshots would reintroduce exactly the unfalsifiable reads the architecture
+  exists to prevent. Images have one legitimate job: proving shapes painted.
+- **Agent fleets converge on answers**, and R8/R9/R31 must stay UNRESOLVED. Adversarial
+  *verification* is safe; adversarial *resolution* would teach Paul that Aura is deterministic.
+
+Build it as `.claude/workflows/aura-verify.js` and invoke it from a boot prompt — not as a
+build-the-app workflow.
+
+### 📝 Skill gap to close (offer at session end, don't do it mid-work)
+
+`~/.claude/skills/web-automation/claude-in-chrome-driving.md` should gain S1d's §7b lesson:
+**enumeration by count proves nothing** — the chart silently clamps shape coordinates to the
+loaded data window, and only a per-shape requested-vs-read-back comparison catches it. Also that
+the chart iframe's id **changes between page loads**, so a hardcoded id silently matches nothing.
+
+---
+
 
 ### ⚠️ WHAT S1c HANDED YOU — read §S1c as-built before designing anything
 
@@ -1079,7 +2062,13 @@ preference, never a gate.** Reuse the shipped idiom rather than inventing one: `
 soft/flagged rules with `*` and an amber ring, and the popover already says *"Preserved as stated — not
 hardened."* Hard gates keep the existing amber hard-gate treatment; the two must be visually distinct.
 
-### ✅ DECIDED 2026-08-13 (Paul): **LIVE**, with the full map one tap away
+### ⏳ DESIGN DECIDED 2026-08-13 (Paul), NOT YET BUILT: **LIVE**, with the full map one tap away
+
+> ⚠️ **This heading previously read `✅ DECIDED`, and Paul went looking for the decision tree in the
+> running app because of it** (2026-08-14). Nothing is built: `app/src/App.tsx` registers 18 routes
+> and none is a decision tree; there is no `DecisionTree` / `branchAnswer` / "full map" identifier
+> anywhere in `app/src`. A green tick means **the design question is settled**, never that the code
+> exists. Keep the distinction visible in this tracker.
 
 Not a poster. The tree shows **the path you are on**, plus the choice at the current node, with a
 `[full map]` toggle revealing the whole static tree for study. Live **absorbs** static — build one
