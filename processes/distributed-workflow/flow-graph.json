@@ -1,0 +1,599 @@
+[
+ {
+  "file": "ai-coach.md",
+  "title": "AI Trading Coach \u2014 Workstream Tracker",
+  "updated": "2026-04-24",
+  "closed": false,
+  "links": [
+   "course-and-kb.md",
+   "journal-analytics.md"
+  ],
+  "phases": [
+   {
+    "phase": "s",
+    "title": "",
+    "status": "UNMARKED",
+    "on": "",
+    "kind": "",
+    "line": 254
+   }
+  ],
+  "words": 4483
+ },
+ {
+  "file": "aura-ingest.md",
+  "title": "Aura Playlist Ingest \u2014 Workstream Tracker",
+  "updated": "2026-07-16",
+  "closed": false,
+  "links": [
+   "course-and-kb.md"
+  ],
+  "phases": [
+   {
+    "phase": "Phase 3",
+    "title": "reconciliation)",
+    "status": "UNMARKED",
+    "on": "",
+    "kind": "",
+    "line": 237
+   }
+  ],
+  "words": 2497
+ },
+ {
+  "file": "aura-session-runner.md",
+  "title": "Aura Session Runner \u2014 Workstream Tracker",
+  "updated": "2026-08-14",
+  "closed": false,
+  "links": [
+   "backtest-companion.md"
+  ],
+  "phases": [
+   {
+    "phase": "Phase S1c",
+    "title": "computed setup detection) \u2705 RUN 2026-08-13",
+    "status": "RUN",
+    "on": "",
+    "kind": "",
+    "line": 1140
+   },
+   {
+    "phase": "Phase S1d",
+    "title": "a full replayed week, marked up) \u2705 RUN 2026-08-14",
+    "status": "RUN",
+    "on": "",
+    "kind": "",
+    "line": 1258
+   },
+   {
+    "phase": "Phase S1b-b",
+    "title": "close the coverage gap, or port) \u23ed ACTIVE",
+    "status": "ACTIVE",
+    "on": "",
+    "kind": "",
+    "line": 1423
+   },
+   {
+    "phase": "Phase S1e-b",
+    "title": "finish the sweep, then review) \u23f8 GATED on Paul's TradingView SSMT chec",
+    "status": "GATED",
+    "on": "Paul's TradingView SSMT check",
+    "kind": "HUMAN",
+    "line": 1534
+   },
+   {
+    "phase": "Phase S1e",
+    "title": "N valid entries, with WINS AND LOSSES)",
+    "status": "SUPERSEDED",
+    "on": "",
+    "kind": "",
+    "line": 1694
+   },
+   {
+    "phase": "Phase S1b",
+    "title": "the guided walkthrough, with diagrams)",
+    "status": "RUN",
+    "on": "",
+    "kind": "",
+    "line": 1861
+   },
+   {
+    "phase": "Phase S2",
+    "title": "capture-first, and the two-clock decision)",
+    "status": "GATED",
+    "on": "real sessions",
+    "kind": "WORK",
+    "line": 2155
+   },
+   {
+    "phase": "Phase S1",
+    "title": "the read-only Aura session runner) \u2705 RUN 2026-08-12",
+    "status": "RUN",
+    "on": "",
+    "kind": "",
+    "line": 2234
+   }
+  ],
+  "words": 25493
+ },
+ {
+  "file": "backtest-companion.md",
+  "title": "Backtest Companion \u2014 Workstream Tracker",
+  "updated": "2026-08-12",
+  "closed": false,
+  "links": [
+   "aura-session-runner.md",
+   "deployment.md",
+   "learning-enforcement.md"
+  ],
+  "phases": [
+   {
+    "phase": "Skill authoring",
+    "title": "the divergent council)",
+    "status": "RUN",
+    "on": "",
+    "kind": "",
+    "line": 974
+   },
+   {
+    "phase": "Phase B1",
+    "title": "deep research + design)",
+    "status": "RUN",
+    "on": "",
+    "kind": "",
+    "line": 1056
+   },
+   {
+    "phase": "Phase B3",
+    "title": "deploy `neurospect-learn`)",
+    "status": "UNMARKED",
+    "on": "",
+    "kind": "",
+    "line": 1171
+   },
+   {
+    "phase": "Phase B3b",
+    "title": "provision, seed, and RENDER-verify)",
+    "status": "NEVER-RUN",
+    "on": "",
+    "kind": "",
+    "line": 1235
+   },
+   {
+    "phase": "Phase B4",
+    "title": "capture-first in `neurospect-learn`)",
+    "status": "NEVER-RUN",
+    "on": "",
+    "kind": "",
+    "line": 1306
+   }
+  ],
+  "words": 16481
+ },
+ {
+  "file": "broker-integration.md",
+  "title": "Broker Integration \u2014 Workstream Tracker",
+  "updated": "2026-04-26",
+  "closed": false,
+  "links": [],
+  "phases": [
+   {
+    "phase": "Phase 1a",
+    "title": "",
+    "status": "UNMARKED",
+    "on": "",
+    "kind": "",
+    "line": 488
+   },
+   {
+    "phase": "Phase 1b",
+    "title": "",
+    "status": "UNMARKED",
+    "on": "",
+    "kind": "",
+    "line": 587
+   },
+   {
+    "phase": "Phase 1c",
+    "title": "",
+    "status": "UNMARKED",
+    "on": "",
+    "kind": "",
+    "line": 653
+   }
+  ],
+  "words": 7389
+ },
+ {
+  "file": "course-and-kb.md",
+  "title": "Course Construction & Entry Models Library \u2014 Workstream Tracker",
+  "updated": "2026-04-22",
+  "closed": false,
+  "links": [
+   "ai-coach.md",
+   "kickoff.md"
+  ],
+  "phases": [
+   {
+    "phase": "",
+    "title": "",
+    "status": "UNMARKED",
+    "on": "",
+    "kind": "",
+    "line": 217
+   }
+  ],
+  "words": 2475
+ },
+ {
+  "file": "deployment.md",
+  "title": "Deployment \u2014 Workstream Tracker",
+  "updated": "2026-04-24",
+  "closed": false,
+  "links": [
+   "ai-coach.md",
+   "journal-analytics.md"
+  ],
+  "phases": [
+   {
+    "phase": "Phase 5",
+    "title": "",
+    "status": "UNMARKED",
+    "on": "",
+    "kind": "",
+    "line": 309
+   },
+   {
+    "phase": "Phase 4",
+    "title": "",
+    "status": "UNMARKED",
+    "on": "",
+    "kind": "",
+    "line": 328
+   },
+   {
+    "phase": "Phase 1",
+    "title": "",
+    "status": "UNMARKED",
+    "on": "",
+    "kind": "",
+    "line": 373
+   }
+  ],
+  "words": 3370
+ },
+ {
+  "file": "journal-analytics.md",
+  "title": "Trade Journal & Analytics Module \u2014 Workstream Tracker",
+  "updated": "2026-04-23",
+  "closed": false,
+  "links": [
+   "ai-coach.md",
+   "aura-ingest.md",
+   "course-and-kb.md"
+  ],
+  "phases": [
+   {
+    "phase": "s",
+    "title": "",
+    "status": "UNMARKED",
+    "on": "",
+    "kind": "",
+    "line": 183
+   },
+   {
+    "phase": "`missed_trades` Implementation",
+    "title": "",
+    "status": "UNMARKED",
+    "on": "",
+    "kind": "",
+    "line": 689
+   }
+  ],
+  "words": 6859
+ },
+ {
+  "file": "journaling-ux.md",
+  "title": "Journaling UX \u2014 Workstream Tracker",
+  "updated": "2026-04-26",
+  "closed": false,
+  "links": [
+   "deployment.md"
+  ],
+  "phases": [],
+  "words": 2758
+ },
+ {
+  "file": "kickoff.md",
+  "title": "Neurospect Kickoff \u2014 Workstream Tracker",
+  "updated": "2026-04-18",
+  "closed": false,
+  "links": [],
+  "phases": [
+   {
+    "phase": "s",
+    "title": "",
+    "status": "UNMARKED",
+    "on": "",
+    "kind": "",
+    "line": 119
+   }
+  ],
+  "words": 1598
+ },
+ {
+  "file": "learning-enforcement.md",
+  "title": "Learning Enforcement \u2014 Workstream Tracker",
+  "updated": "2026-08-10",
+  "closed": false,
+  "links": [
+   "ai-coach.md",
+   "broker-integration.md",
+   "course-and-kb.md",
+   "deployment.md",
+   "journal-analytics.md",
+   "journaling-ux.md",
+   "learning-platform-ui.md",
+   "monorepo-migration.md"
+  ],
+  "phases": [
+   {
+    "phase": "Phase E6",
+    "title": "gamification + honesty surfaces) \u2705 RUN 2026-08-10",
+    "status": "RUN",
+    "on": "",
+    "kind": "",
+    "line": 985
+   },
+   {
+    "phase": "Phase E5",
+    "title": "pre-commitment + calibration) \u2705 RUN 2026-08-10",
+    "status": "RUN",
+    "on": "",
+    "kind": "",
+    "line": 1081
+   },
+   {
+    "phase": "Phase E4",
+    "title": "AI vision second reader) \u2705 RUN 2026-08-10",
+    "status": "RUN",
+    "on": "",
+    "kind": "",
+    "line": 1159
+   },
+   {
+    "phase": "Phase E3",
+    "title": "rubrics + self-check) \u2705 RUN 2026-08-02",
+    "status": "RUN",
+    "on": "",
+    "kind": "",
+    "line": 1320
+   },
+   {
+    "phase": "Phase E2",
+    "title": "evidence layer + capture) \u2705 RUN 2026-07-28",
+    "status": "RUN",
+    "on": "",
+    "kind": "",
+    "line": 1377
+   },
+   {
+    "phase": "Phase E1",
+    "title": "deep research + design) \u2705 RUN 2026-07-28",
+    "status": "RUN",
+    "on": "",
+    "kind": "",
+    "line": 1444
+   }
+  ],
+  "words": 23060
+ },
+ {
+  "file": "learning-platform-ui.md",
+  "title": "Learning Platform UI \u2014 Workstream Tracker",
+  "updated": "2026-07-25",
+  "closed": true,
+  "links": [
+   "journal-analytics.md",
+   "learning-enforcement.md",
+   "mastery-layer.md",
+   "monorepo-migration.md"
+  ],
+  "phases": [
+   {
+    "phase": "Phase 6",
+    "title": "Phase-5 debt)",
+    "status": "RUN",
+    "on": "",
+    "kind": "",
+    "line": 747
+   },
+   {
+    "phase": "Phase 5g",
+    "title": "Gate / readiness view)",
+    "status": "RUN",
+    "on": "",
+    "kind": "",
+    "line": 793
+   },
+   {
+    "phase": "Phase 5f",
+    "title": "Journal + expectancy)",
+    "status": "RUN",
+    "on": "",
+    "kind": "",
+    "line": 831
+   },
+   {
+    "phase": "Phase 5e-3",
+    "title": "Study Planner UI)",
+    "status": "RUN",
+    "on": "",
+    "kind": "",
+    "line": 880
+   },
+   {
+    "phase": "Phase 5e-2",
+    "title": "Study Planner engine) \u2705 EXECUTED 2026-07-22",
+    "status": "RUN",
+    "on": "",
+    "kind": "",
+    "line": 934
+   },
+   {
+    "phase": "Phase 5e-1b",
+    "title": "multi-track curriculum)",
+    "status": "RUN",
+    "on": "",
+    "kind": "",
+    "line": 979
+   },
+   {
+    "phase": "Phase 5e-1",
+    "title": "progress foundation)",
+    "status": "RUN",
+    "on": "",
+    "kind": "",
+    "line": 1018
+   },
+   {
+    "phase": "Study Planner + progress layer",
+    "title": "PLAN-MODE DESIGN)",
+    "status": "RUN",
+    "on": "",
+    "kind": "",
+    "line": 1145
+   },
+   {
+    "phase": "Phase 5e",
+    "title": "progress tracker)",
+    "status": "SUPERSEDED",
+    "on": "",
+    "kind": "",
+    "line": 1239
+   },
+   {
+    "phase": "Phase 5d",
+    "title": "content API + ingest + library/reader)",
+    "status": "RUN",
+    "on": "",
+    "kind": "",
+    "line": 1349
+   },
+   {
+    "phase": "Phase 5c",
+    "title": "data model + migrations)",
+    "status": "RUN",
+    "on": "",
+    "kind": "",
+    "line": 1447
+   },
+   {
+    "phase": "Phase 5b",
+    "title": "scaffold `neurospect-learn`)",
+    "status": "RUN",
+    "on": "",
+    "kind": "",
+    "line": 1530
+   },
+   {
+    "phase": "Phase 5a",
+    "title": "Learning Platform UI design)",
+    "status": "RUN",
+    "on": "",
+    "kind": "",
+    "line": 1625
+   }
+  ],
+  "words": 25019
+ },
+ {
+  "file": "mastery-layer.md",
+  "title": "Mastery Layer \u2014 Workstream Tracker",
+  "updated": "2026-07-17",
+  "closed": false,
+  "links": [
+   "aura-ingest.md",
+   "course-and-kb.md",
+   "learning-platform-ui.md"
+  ],
+  "phases": [
+   {
+    "phase": "Phase 4b",
+    "title": "finish the Tier-1 upgrade pass)",
+    "status": "RUN",
+    "on": "",
+    "kind": "",
+    "line": 249
+   },
+   {
+    "phase": "Phase 4",
+    "title": "graded learning roadmap + Tier-1 upgrade)",
+    "status": "RUN",
+    "on": "",
+    "kind": "",
+    "line": 296
+   },
+   {
+    "phase": "Phase 3",
+    "title": "course-content deep research)",
+    "status": "RUN",
+    "on": "",
+    "kind": "",
+    "line": 372
+   },
+   {
+    "phase": "Phase 2",
+    "title": "ICT-course track)",
+    "status": "RUN",
+    "on": "",
+    "kind": "",
+    "line": 455
+   }
+  ],
+  "words": 5570
+ },
+ {
+  "file": "monorepo-migration.md",
+  "title": "Monorepo Migration \u2014 Workstream Tracker",
+  "updated": "2026-08-09",
+  "closed": false,
+  "links": [
+   "ai-coach.md",
+   "broker-integration.md",
+   "deployment.md",
+   "journal-analytics.md",
+   "journaling-ux.md",
+   "learning-enforcement.md"
+  ],
+  "phases": [
+   {
+    "phase": "",
+    "title": "",
+    "status": "UNMARKED",
+    "on": "",
+    "kind": "",
+    "line": 170
+   }
+  ],
+  "words": 1839
+ },
+ {
+  "file": "platform-architecture.md",
+  "title": "Platform Architecture \u2014 Workstream Tracker",
+  "updated": "2026-08-29",
+  "closed": false,
+  "links": [],
+  "phases": [
+   {
+    "phase": "Phase P0b",
+    "title": "run the two gates) \u23ed ACTIVE",
+    "status": "ACTIVE",
+    "on": "",
+    "kind": "",
+    "line": 42
+   }
+  ],
+  "words": 7352
+ }
+]

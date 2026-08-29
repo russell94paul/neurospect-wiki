@@ -1,0 +1,214 @@
+<title>Neurospect Lanes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#eef0f6; --surface:#fbfcfe; --sunk:#e3e7f1; --line:#c9d0e2;
+  --ink:#111726; --ink-2:#3d4863; --muted:#69748f;
+  --live:#8a6608; --live-s:#f2e6c2;
+  --gate:#a83f2b; --gate-s:#f6ded8;
+  --done:#1f6b48; --link:#2f5f9e; --link-s:#dde7f6;
+  --r:3px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#0b101b; --surface:#121926; --sunk:#0d131f; --line:#26314a;
+  --ink:#e4eaf6; --ink-2:#b4bfd7; --muted:#8492af;
+  --live:#e5bd52; --live-s:#38300f;
+  --gate:#e08670; --gate-s:#3a1d16;
+  --done:#63c295; --link:#7fb0e8; --link-s:#15263c;
+}}
+:root[data-theme="dark"]{
+  --ground:#0b101b; --surface:#121926; --sunk:#0d131f; --line:#26314a;
+  --ink:#e4eaf6; --ink-2:#b4bfd7; --muted:#8492af;
+  --live:#e5bd52; --live-s:#38300f;
+  --gate:#e08670; --gate-s:#3a1d16;
+  --done:#63c295; --link:#7fb0e8; --link-s:#15263c;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);
+  font:400 15px/1.55 Archivo,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace}
+h1{font-size:clamp(30px,5vw,48px);font-weight:800;letter-spacing:-.03em;line-height:1;margin:0 0 14px}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.19em;text-transform:uppercase;
+  color:var(--muted);margin:0 0 16px}
+header{padding:52px 0 30px}
+.lede{font-size:17px;color:var(--ink-2);max-width:62ch;margin:0}
+.lede b{color:var(--ink)}
+
+/* headline counters — geometry from the numbers, not decoration */
+.tiles{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin:26px 0 0}
+.tile{border:1px solid var(--line);border-radius:var(--r);background:var(--surface);padding:14px 15px}
+.tile.hot{border-left:3px solid var(--live)}
+.tile.bad{border-left:3px solid var(--gate)}
+.tile .n{font-family:"IBM Plex Mono",monospace;font-size:30px;font-weight:600;line-height:1;
+  font-variant-numeric:tabular-nums;color:var(--ink)}
+.tile .k{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.35}
+
+section{padding:34px 0;border-top:1px solid var(--line)}
+h2{font-size:20px;font-weight:700;letter-spacing:-.015em;margin:0 0 5px}
+.dek{color:var(--muted);font-size:14px;margin:0 0 18px;max-width:66ch}
+
+/* lane rows */
+.lane{border:1px solid var(--line);border-radius:var(--r);background:var(--surface);
+  margin:0 0 9px;padding:13px 15px}
+.lane.live{border-left:3px solid var(--live)}
+.lane.closed{opacity:.62}
+.lhd{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin:0 0 9px}
+.lname{font-weight:700;font-size:15.5px}
+.lfile{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--muted)}
+.lmeta{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--muted)}
+.ph{display:flex;flex-wrap:wrap;gap:5px}
+.p{font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:600;padding:3px 7px;
+  border-radius:2px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.p.ACTIVE{border-color:var(--live);background:var(--live);color:var(--surface)}
+.p.GATED{border-color:var(--gate);color:var(--gate);border-style:dashed}
+.p.RUN{border-color:transparent;background:var(--sunk);color:var(--done)}
+.p.SUPERSEDED,.p['NEVER-RUN'],.p.MOVED{text-decoration:line-through}
+.p.UNMARKED{border-style:dotted;border-color:var(--gate);color:var(--gate)}
+.p.NEXT{border-color:var(--link);color:var(--link)}
+
+.gate{border:1px solid var(--gate);border-left:3px solid var(--gate);background:var(--gate-s);
+  border-radius:var(--r);padding:14px 16px;margin:0 0 10px}
+.gate .who{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--gate);display:block;margin:0 0 6px}
+.gate b{color:var(--ink)}
+
+figure{margin:0}
+.figbox{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--sunk)}
+svg{display:block;min-width:620px;width:100%;height:auto}
+figcaption{font-size:13px;color:var(--muted);margin:10px 0 0;max-width:70ch}
+.dep text{font-family:"IBM Plex Mono",monospace;font-size:10px;fill:var(--muted)}
+.dep .nd{fill:var(--surface);stroke:var(--line)}
+.dep .nd.live{stroke:var(--live);stroke-width:2}
+.dep .nd.closed{opacity:.5}
+.dep .ed{stroke:var(--link);fill:none;opacity:.42}
+.dep .lbl{fill:var(--ink-2);font-size:10.5px}
+.dep .lbl.live{fill:var(--live);font-weight:600}
+
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+td,th{padding:7px 10px 7px 0;border-bottom:1px solid var(--line);text-align:left;
+  vertical-align:top;color:var(--ink-2)}
+th{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}
+td.f{font-family:"IBM Plex Mono",monospace;font-size:11.5px;white-space:nowrap}
+footer{padding:30px 0 50px;color:var(--muted);font-size:12.5px;line-height:1.6}
+footer code{font-family:"IBM Plex Mono",monospace}
+</style>
+
+<div class="wrap">
+<header>
+  <p class="eyebrow">Neurospect · distributed-workflow</p>
+  <h1>Lanes</h1>
+  <p class="lede">Every workstream tracker, its phases, and what each one is waiting on —
+  <b>parsed from the tracker files, not typed.</b> Fifteen files and 136,000 words reduced to the
+  only question that matters at the start of a session: <b>what can be worked on right now, and
+  what is blocked on a person?</b></p>
+  <div class="tiles" id="tiles"></div>
+</header>
+
+<section>
+  <h2>What is live</h2>
+  <p class="dek">A lane is live when its tracker carries a boot prompt marked <span class="p ACTIVE">ACTIVE</span>.
+  More than one is normal here — they are different lanes, not drift — but a session must be told
+  which, never guess.</p>
+  <div id="live"></div>
+</section>
+
+<section>
+  <h2>What is blocked, and on whom</h2>
+  <p class="dek">A gate on a <b>person</b> cannot be cleared by any amount of work. It is the only
+  category worth surfacing above everything else.</p>
+  <div id="gates"></div>
+</section>
+
+<section>
+  <h2>How the trackers depend on each other</h2>
+  <p class="dek">An edge is one tracker citing another. Thickness is not encoded; position is —
+  trackers are ordered by how many others point at them, so the load-bearing ones sit at the top.</p>
+  <figure>
+    <div class="figbox">__DEPS__</div>
+    <figcaption id="depcap"></figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>Phases with no readable state</h2>
+  <p class="dek">These boot prompts carry no status marker the parser can read, so their state
+  exists only in prose — which is exactly how a stale lane survives unnoticed. Some are heading-format
+  variance rather than genuinely unmarked; either way the state is not machine-readable.</p>
+  <table><thead><tr><th>Tracker</th><th>Phase heading</th><th>Line</th></tr></thead>
+  <tbody id="unmarked"></tbody></table>
+</section>
+
+<section>
+  <h2>Every tracker</h2>
+  <p class="dek">Newest first by <code class="mono">updated:</code>. Phase chips carry each boot
+  prompt's own marker.</p>
+  <div id="all"></div>
+</section>
+
+<footer>
+  <p><b>Source.</b> <code>neurospect-wiki/scripts/extract_flow.py</code> parses
+  <code>processes/distributed-workflow/active/*.md</code> into
+  <code>flow-graph.json</code>; this page renders that file. Phase status and gate reason both come
+  from the boot-prompt heading — body prose saying "blocked on…" is discussion, not status, and was
+  producing false gates. Re-run the script and rebuild to refresh.</p>
+</footer>
+</div>
+
+<script>
+const G = __GRAPH__;
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const phases = G.flatMap(t => t.phases.map(p => ({...p, file:t.file, tracker:t.title})));
+const live   = phases.filter(p => p.status==='ACTIVE');
+const gated  = phases.filter(p => p.status==='GATED');
+const unm    = phases.filter(p => p.status==='UNMARKED');
+const human  = gated.filter(p => p.kind==='HUMAN');
+
+document.getElementById('tiles').innerHTML = [
+  [live.length,  'lanes you can work on now', 'hot'],
+  [human.length, 'gates only Paul can clear', 'bad'],
+  [unm.length,   'phases with no readable state', 'bad'],
+  [G.length,     'trackers · ' + phases.length + ' phases'],
+  [G.reduce((a,t)=>a+t.words,0).toLocaleString(), 'words of tracker prose'],
+].map(([n,k,c]) => `<div class="tile ${c||''}"><div class="n">${n}</div><div class="k">${k}</div></div>`).join('');
+
+const chip = p => `<span class="p ${p.status}" title="${esc(p.title||'')} · line ${p.line}">${esc(p.phase||'—')}</span>`;
+
+document.getElementById('live').innerHTML = live.map(p => {
+  const t = G.find(x=>x.file===p.file);
+  return `<div class="lane live"><div class="lhd">
+    <span class="lname">${esc(p.tracker)}</span>
+    <span class="lfile">${esc(p.file)} · line ${p.line}</span>
+    <span class="lmeta">updated ${esc(t.updated)}</span></div>
+    <div class="ph">${chip(p)}</div>
+    <p class="dek" style="margin:9px 0 0">${esc(p.title||'')}</p></div>`;
+}).join('');
+
+document.getElementById('gates').innerHTML = gated.length ? gated.map(p =>
+  `<div class="gate"><span class="who">${p.kind==='HUMAN'?'Blocked on a person':'Blocked on work'}</span>
+   <b>${esc(p.file)} · ${esc(p.phase)}</b> is waiting on <b>${esc(p.on)}</b>.
+   ${p.kind==='HUMAN'?'No amount of engineering clears this one.':''}</div>`).join('')
+  : '<p class="dek">No gates declared in any heading.</p>';
+
+document.getElementById('unmarked').innerHTML = unm.map(p =>
+  `<tr><td class="f">${esc(p.file)}</td><td>${esc(p.title||p.phase||'(no phase named)')}</td>
+   <td class="f">${p.line}</td></tr>`).join('');
+
+const order = [...G].sort((a,b)=> (b.updated||'').localeCompare(a.updated||''));
+document.getElementById('all').innerHTML = order.map(t => {
+  const isLive = t.phases.some(p=>p.status==='ACTIVE');
+  return `<div class="lane ${isLive?'live':''} ${t.closed?'closed':''}"><div class="lhd">
+    <span class="lname">${esc(t.title)}</span>
+    <span class="lfile">${esc(t.file)}</span>
+    <span class="lmeta">${t.closed?'CLOSED · ':''}updated ${esc(t.updated)} · ${t.words.toLocaleString()} words</span>
+    </div><div class="ph">${t.phases.length? t.phases.map(chip).join('') : '<span class="p">no boot prompts</span>'}</div></div>`;
+}).join('');
+
+const indeg = {}; G.forEach(t=>t.links.forEach(l=>indeg[l]=(indeg[l]||0)+1));
+document.getElementById('depcap').textContent =
+  `${G.reduce((a,t)=>a+t.links.length,0)} edges across ${G.length} trackers. ` +
+  `Most-cited: ` + Object.entries(indeg).sort((a,b)=>b[1]-a[1]).slice(0,3)
+    .map(([f,n])=>`${f} (${n})`).join(', ') + '.';
+</script>
