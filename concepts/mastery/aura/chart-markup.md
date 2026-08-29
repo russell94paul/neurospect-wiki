@@ -3,7 +3,7 @@ tags: [mastery, aura, tradezella, chart, markup, drawing, indicators, probe, run
 aliases: [Aura Chart Markup, Chart Markup Protocol, Markup Order]
 sources: [concepts/mastery/aura/rules.md, concepts/mastery/aura/checklist.md, processes/distributed-workflow/active/aura-session-runner.md]
 created: 2026-08-12
-updated: 2026-08-12
+updated: 2026-08-14
 ---
 
 # Aura Chart Markup Protocol
@@ -119,6 +119,43 @@ it is the visual form of R6.
 (gap `formed_time` / `inverted_time`, the range's `move_to`, and R6's `broken_by` timestamp), so
 the data for bounded shapes was present and simply not used. Any future drawing pass emits
 rectangles and rays with computed start/end times — not `horizontal_line`.
+
+### 0c. ⭐ Drawing bounded shapes through the chart API — two measured traps
+
+`DONE 2026-08-14` in S1d: 33 bounded shapes drawn on session `831607`, zero `horizontal_line`.
+Both traps below produced output that looked entirely correct.
+
+**1. The chart SILENTLY CLAMPS shape coordinates to the LOADED DATA WINDOW.** A first pass ran
+with the chart on `1m`, whose loaded series covered only one week. Shapes whose computed extent
+fell outside that window were clamped without any error: 7 HTF shapes collapsed to **zero
+width** (both endpoints pinned to the first loaded bar) and 6 more were clamped at both ends —
+**13 of 33 wrong.** Meanwhile `createMultipointShape` threw nothing, its promise resolved, and
+`getAllShapes()` returned the correct **count**.
+
+> **Counting is not verifying.** S1c established that `createShape`'s *return value* proves
+> nothing. S1d adds that *enumeration by count* proves nothing either. The only honest check is
+> a **per-shape comparison of requested vs read-back coordinates** (`getShapeById(id).getPoints()`).
+
+**2. One resolution cannot hold both a month-long range and a 5-minute gap box.** This is not a
+tooling limitation to work around — it is [[concepts/mastery/aura/rules]] **R27's cascade**
+showing up in the drawing layer, and the fix is to mirror the cascade:
+
+| Markup set | Draw at | Why |
+|---|---|---|
+| Ranges, discount/premium, SMT swings, the invalidating close | an **HTF** chart (60m or D) whose loaded data spans the whole framing period | a month-long extent needs a month of loaded bars |
+| iFVG / NWOG / NDOG boxes, liquidity, entry / stop / target | the **5m** entry chart with the week loaded | a 5-minute box is sub-bar on a daily chart |
+
+Snap each endpoint onto the **nearest loaded bar deliberately** and record the delta, so the
+clamp becomes a stated decision rather than hidden corruption. Measured: **−30 min** for HTF
+shapes (daily bars stamp 13:30 UTC, nearest 60m bar is 13:00) and **0 min** for LTF shapes.
+Shape geometry **survives a later resolution change** — the clamp happens only at creation.
+
+**Also:** a machine-drawn shape must carry a visible marker (`[S1d]` here) so a computed level can
+never be mistaken for a hand read, and the removal snippet must **discover** the chart iframe
+rather than hardcode its id — the id changes between page loads, so a hardcoded id silently
+matches nothing and removes nothing.
+
+Evidence: `neurospect-learn/api/docs/evidence/s1d/chart-shapes-drawn.md`.
 
 ## 1. The markup order — every replayed day, always this sequence
 
